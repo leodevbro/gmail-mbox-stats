@@ -3,6 +3,3 @@ node_modules/
 
 # Generated stats
 mboxStats/
-
-# Compiled
-buildJS/
