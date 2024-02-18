@@ -4,6 +4,9 @@
   "description": "Nice tool to analyze Gmail MBOX file",
   "main": "./bin.js",
   "scripts": {
+    "compile": "npx tsc --project tsconfig.json",
+    "go": "node ./bin.js",
+    "compilego": "npm run compile && npm run go",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -32,5 +35,15 @@
   "bugs": {
     "url": "https://github.com/leodevbro/gmail-mbox-stats/issues"
   },
-  "homepage": "https://github.com/leodevbro/gmail-mbox-stats#readme"
+  "homepage": "https://github.com/leodevbro/gmail-mbox-stats#readme",
+  "dependencies": {
+    "csv-parse": "^5.5.3",
+    "csv-stringify": "^6.4.5",
+    "mailparser": "^3.6.7",
+    "node-mbox": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/mailparser": "^3.4.4",
+    "@types/node": "^20.11.19"
+  }
 }

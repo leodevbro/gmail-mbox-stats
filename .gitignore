@@ -3,3 +3,6 @@ build/
 
 # Dependency directories
 node_modules/
+
+# Generated stats
+mboxStats/
