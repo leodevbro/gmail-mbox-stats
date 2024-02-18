@@ -152,4 +152,7 @@ console.log('haaaa_end', process.argv, process.env.npm_config_aaabbbrt); // npm 
 
 console.log("qqqqwqwqqw::::", qqqqwqwqqw);
 
-export const huhuhu = 714;
+export const logExecutionMessage = () => {
+  const executionMessage = "Started MBOX file analyzation";
+  console.log(executionMessage);
+};
