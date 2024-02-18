@@ -1,6 +1,6 @@
 {
   "name": "gmail-mbox-stats",
-  "version": "0.9.7",
+  "version": "0.9.9",
   "description": "Nice tool to analyze Gmail MBOX file",
   "main": "./bin.js",
   "scripts": {
@@ -9,9 +9,12 @@
     "compilego": "npm run compile && npm run go",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "gmail-mbox-stats": "./bin.js"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/leodevbro/gmail-mbox-stats.git"
+    "url": "https://github.com/leodevbro/gmail-mbox-stats"
   },
   "keywords": [
     "gmail",
