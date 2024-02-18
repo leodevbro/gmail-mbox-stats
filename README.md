@@ -1,5 +1,5 @@
 # gmail-mbox-stats
-gmail-mbox-stats is a simple tool to analyze Gmail MBOX file.
+gmail-mbox-stats is a very simple tool to analyze Gmail MBOX file.
 
 .
 
