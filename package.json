@@ -1,0 +1,36 @@
+{
+  "name": "gmail-mbox-stats",
+  "version": "0.9.7",
+  "description": "Nice tool to analyze Gmail MBOX file",
+  "main": "./bin.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leodevbro/gmail-mbox-stats.git"
+  },
+  "keywords": [
+    "gmail",
+    "stat",
+    "stats",
+    "mbox",
+    "mail",
+    "mails",
+    "email",
+    "emails",
+    "mailbox",
+    "sender",
+    "senders",
+    "frequent",
+    "frequency",
+    "inbox",
+    "outbox",
+    "sent"
+  ],
+  "author": "leodevbro",
+  "bugs": {
+    "url": "https://github.com/leodevbro/gmail-mbox-stats/issues"
+  },
+  "homepage": "https://github.com/leodevbro/gmail-mbox-stats#readme"
+}
