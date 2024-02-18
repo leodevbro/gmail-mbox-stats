@@ -1,6 +1,6 @@
 {
   "name": "gmail-mbox-stats",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "description": "Nice tool to analyze Gmail MBOX file",
   "main": "./bin.js",
   "scripts": {
