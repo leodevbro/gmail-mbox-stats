@@ -1,7 +1,10 @@
 import { Headers as TyMailparserHeaders } from "mailparser";
 
+export type TyMailDomain = `@${string}.${string}`;
+export type TyMailAddress = `${string}${TyMailDomain}`;
+
 const exampleOfOneValueOfFromOrTo = {
-  address: "leodevbro@gmail.com" as `${string}@${string}.${string}`,
+  address: "leodevbro@gmail.com" as TyMailAddress,
   name: "Levan Katsadze" as string,
 } as const;
 
@@ -57,6 +60,13 @@ export type TyMboxMailHeaders = TyDeepHintsOfHeadersMap &
 type TyMailHeaders = TyMboxMailHeaders extends TyMailparserHeaders
   ? TyMboxMailHeaders
   : never;
+
+export type TyMainInfoForMail = {
+  from: TyExampleObjOfHeaders["from"];
+  to: TyExampleObjOfHeaders["to"];
+  date: TyExampleObjOfHeaders["date"];
+  messageId: TyExampleObjOfHeaders["message-id"];
+};
 
 // const dsfsdf = new Map() as TyMboxMailHeaders;
 
