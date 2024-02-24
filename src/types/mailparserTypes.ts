@@ -16,6 +16,8 @@ const exampleOfFromOrTo = {
   text: '"Levan Katsadze" <leodevbro@gmail.com>' as string,
 } as const;
 
+export type TyFromOrTo = typeof exampleOfFromOrTo;
+
 const exampleObjOfHeaders = {
   "x-gm-thrid": "1786467213154837659" as string,
   "x-gmail-labels": "Sent,Opened" as string,
@@ -29,8 +31,8 @@ const exampleObjOfHeaders = {
   "message-id":
     "<CAKQNcJf6xnUS+B4jEgnQr1psUXWXZbsH-G2f9T8d01XO8FrfvQ@mail.gmail.com>" as string,
   subject: "Re: Find the most sender - gmail" as string,
-  from: exampleOfFromOrTo,
-  to: exampleOfFromOrTo,
+  from: exampleOfFromOrTo as TyFromOrTo,
+  to: exampleOfFromOrTo as TyFromOrTo,
   "content-type": {
     value: "multipart/alternative" as string,
     params: { boundary: "000000000000100d3c060dafb0ca" as string },
