@@ -27,16 +27,18 @@ const handleSenderOrReceiverAddressAndDomain = ({
   mapForDomain: Map<TyMailDomain, number>;
   mapForFullInfo: Map<string, number>;
 }): void => {
-  const senderOrReceiver_arr = senderOrReceiver.value; // probably there will be always one sender, no more, no less, but still.
+  const senderOrReceiver_arr = senderOrReceiver.value.map((x) => x.address); // probably there will be always one sender, no more, no less, but still.
+
+  const withUniqueAddresses = [...new Set(senderOrReceiver_arr)];
 
   // for: ${str_frequency}${str_Sender}${str_Address} - or for receiver
-  senderOrReceiver_arr.forEach((senderOrReceiver) => {
-    incrementInMap(mapForAddress, senderOrReceiver.address);
+  withUniqueAddresses.forEach((senderOrReceiver) => {
+    incrementInMap(mapForAddress, senderOrReceiver);
   });
 
   // for: ${str_frequency}${str_Sender}${str_Domain} - for or receiver
-  senderOrReceiver_arr.forEach((senderOrReceiver) => {
-    const address = senderOrReceiver.address;
+  withUniqueAddresses.forEach((senderOrReceiver) => {
+    const address = senderOrReceiver;
     const indexOfTheAtSymbol = address.indexOf("@");
     if (indexOfTheAtSymbol <= 0) {
       throw new Error(`Email address is not correct --- ${address}`);
