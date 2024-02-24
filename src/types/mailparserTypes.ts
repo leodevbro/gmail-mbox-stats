@@ -22,7 +22,7 @@ const exampleObjOfHeaders = {
   "x-gm-thrid": "1786467213154837659" as string,
   "x-gmail-labels": "Sent,Opened" as string,
   "mime-version": "1.0" as string,
-  date: "2023-12-30T01:01:24.000Z" as string,
+  date: new Date(), // Date object which can be converted to this format string: "2023-12-30T01:01:24.000Z",
   references: [
     "<CAKQNcJcvLk-8O0X36+v1xQW3AzMgaKP9o_6XPMdzvfO+jeKsnw@mail.gmail.com>",
     "<C01B40B9-2E0B-4EF5-BC80-7CD20E769218@gmail.com>",
