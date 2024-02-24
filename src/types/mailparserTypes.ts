@@ -1,3 +1,5 @@
+import { Headers as TyMailparserHeaders } from "mailparser";
+
 const exampleOfOneValueOfFromOrTo = {
   address: "leodevbro@gmail.com" as `${string}@${string}.${string}`,
   name: "Levan Katsadze" as string,
@@ -50,6 +52,12 @@ type TyDeepHintsOfHeadersMap = {
 export type TyMboxMailHeaders = TyDeepHintsOfHeadersMap &
   Map<TyKeyOfMboxMailHeaders, TyValueOfMboxMailHeaders>;
 
-const dsfsdf = new Map() as TyMboxMailHeaders;
+// just to check
+// @ts-ignore
+type TyMailHeaders = TyMboxMailHeaders extends TyMailparserHeaders
+  ? TyMboxMailHeaders
+  : never;
 
-export const qqqqq = dsfsdf.get("from");
+// const dsfsdf = new Map() as TyMboxMailHeaders;
+
+// export const qqqqq = dsfsdf.get("from");
