@@ -1,24 +1,37 @@
-// @ts-ignore
-import { MboxStream } from "node-mbox";
+import nodeMbox from "node-mbox";
 
-import { createReadStream, createWriteStream } from "node:fs";
-// const split = require('line-stream');
+import { createReadStream, writeFileSync } from "node:fs";
 
-import { MailParser, type Headers } from "mailparser";
+import { MailParser, Headers as TyMailparserHeaders } from "mailparser";
 
-import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
-import { parse as parseCsvInto2dArr } from "csv-parse";
+// import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
 
-import { qqqqwqwqqw } from "./somets/zzz";
+// import { parse as parseCsvInto2dArr } from "csv-parse";
 
-// const mboxFilename = './All_mail_Including_Spam_and_Trash.mbox';
-const mboxFilename =
-  "D:/fast/_senders/Takeout/Mail_new/All_mail_Including_Spam_and_Trash.mbox";
+import { getEnvItemValue } from "./utils/mainUtils";
+import { groundFolder, prepareOutputFolderStructure } from "./utils/stepUtils";
+import { TyMboxMailHeaders } from "./types/mailparserTypes";
 
-const mainOutputFilename = "./mboxStats/my_file.csv"; // TODO:
+const allMailListFile =
+  groundFolder.innerFolders.mboxStats.innerFiles.allMailList_csv;
 
-const mailbox = createReadStream(mboxFilename);
-const mbox = MboxStream(mailbox, {
+const resultsInnerFiles =
+  groundFolder.innerFolders.mboxStats.innerFolders.results.innerFiles;
+
+const argNameForMboxFilePath = "mboxpath"; // main input !!!
+
+const mboxFilePath = getEnvItemValue(argNameForMboxFilePath);
+
+if (!mboxFilePath || typeof mboxFilePath !== "string") {
+  throw new Error("mboxPath notation is not valid");
+}
+
+// const mainOutputFilename = "tempFilePath"; // TODO:
+
+prepareOutputFolderStructure(mboxFilePath);
+
+const mailbox = createReadStream(mboxFilePath);
+const mbox = nodeMbox.MboxStream(mailbox, {
   /* options */
 });
 
@@ -26,32 +39,27 @@ const counter = {
   v: 0,
 };
 
-const myFn = () => {
-  const wr_stream = createWriteStream(mainOutputFilename);
-
-  const hFn = (headers: Headers): void => {
-    if (counter.v === 0) {
-      console.log(headers.get("from"));
-      console.log(headers.get("to"));
-      // console.log(typeof msg);
-    }
+const analyzeMbox = () => {
+  const scanHeaders = (headersMap: TyMailparserHeaders): void => {
+    const headers = headersMap as TyMboxMailHeaders;
 
     try {
-      // @ts-ignore
       const senderAddress = headers.get("from").value[0].address;
+      const currFreqMap = resultsInnerFiles.frequencySenderAddress.freqMap;
+      currFreqMap.set(senderAddress, (currFreqMap.get(senderAddress) || 0) + 1);
 
       // console.log('From   :', headers.get('from').value[0].address);
       // console.log('Subject:', headers.get('subject'), '\n');
 
-      // wr_stream.once('open', function(fd) {
+      writeFileSync(allMailListFile.pathAbsOrRel, `${senderAddress}\n`, {
+        flag: "a+",
+      });
       counter.v += 1;
-      wr_stream.write(`${senderAddress}\n`);
-      // wr_stream.end();
-      // });
     } catch (err) {
       console.log(err);
     }
 
+    // just for CLI visualization:
     const asStr = String(counter.v);
     const le = asStr.length;
     if (asStr.slice(le - 3) === "000") {
@@ -59,28 +67,24 @@ const myFn = () => {
     }
   };
 
-  // @ts-ignore
-  mbox.on("data", function (msg: Buffer) {
+  mbox.on("data", function (msg) {
     // parse message using MailParser
 
     const mailparser = new MailParser({
       // streamAttachments: true
     });
-    mailparser.on("headers", hFn);
+    mailparser.on("headers", scanHeaders);
     mailparser.write(msg);
     mailparser.end();
-    // mailparser.off('headers', hFn);
   });
 
-  // @ts-ignore
-  mbox.on("error", function (err: any) {
+  mbox.on("error", function (err) {
     console.log("got an error", err);
   });
 
-  // @ts-ignore
   mbox.on("finish", function () {
     console.log(
-      "dfinish ed one reading mbox file-->>>><<<>>>>>>>>==",
+      "finished one reading mbox file-->>>><<<>>>>>>>>==",
       counter.v,
     );
 
@@ -99,10 +103,7 @@ const myFn = () => {
   });
 };
 
-console.log("haaaa_end", process.argv, process.env.npm_config_envi); // npm run go --aaabbbrt="sdfs"
-console.log("imushavaa");
-
-myFn();
+analyzeMbox();
 
 /*
 
@@ -149,8 +150,6 @@ try {
 console.log('haaaa_end', process.argv, process.env.npm_config_aaabbbrt); // npm run go --aaabbbrt="sdfs"
 
 */
-
-console.log("qqqqwqwqqw::::", qqqqwqwqqw);
 
 export const logExecutionMessage = () => {
   const executionMessage = "Started MBOX file analyzation";
