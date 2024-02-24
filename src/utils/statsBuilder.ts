@@ -49,7 +49,7 @@ const handleSenderOrReceiverAddressAndDomain = ({
   incrementInMap(mapForFullInfo, senderOrReceiver.text);
 };
 
-export const addOneBrickToStats = (
+export const addOneMailInfoToStats = (
   mainInfoOfOneMail: TyMainInfoForMail,
 ): void => {
   // for sender
