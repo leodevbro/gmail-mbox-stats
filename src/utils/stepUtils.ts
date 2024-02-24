@@ -1,6 +1,7 @@
 import path from "node:path";
 
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { TyMailAddress, TyMailDomain } from "../types/mailparserTypes";
 
 const dotCsv = ".csv";
 
@@ -53,12 +54,12 @@ export const groundFolder = {
             frequencySenderAddress: {
               fileName: `${str_frequency}${str_Sender}${str_Address}${dotCsv}`,
               pathAbsOrRel: "" as string,
-              freqMap: new Map<string, number>([]),
+              freqMap: new Map<TyMailAddress, number>([]),
             },
             frequencySenderDomain: {
               fileName: `${str_frequency}${str_Sender}${str_Domain}${dotCsv}`,
               pathAbsOrRel: "" as string,
-              freqMap: new Map<string, number>([]),
+              freqMap: new Map<TyMailDomain, number>([]),
             },
             frequencySenderFullInfo: {
               fileName: `${str_frequency}${str_Sender}${str_FullInfo}${dotCsv}`,
@@ -71,12 +72,12 @@ export const groundFolder = {
             frequencyReceiverAddress: {
               fileName: `${str_frequency}${str_Receiver}${str_Address}${dotCsv}`,
               pathAbsOrRel: "" as string,
-              freqMap: new Map<string, number>([]),
+              freqMap: new Map<TyMailAddress, number>([]),
             },
             frequencyReceiverDomain: {
               fileName: `${str_frequency}${str_Receiver}${str_Domain}${dotCsv}`,
               pathAbsOrRel: "" as string,
-              freqMap: new Map<string, number>([]),
+              freqMap: new Map<TyMailDomain, number>([]),
             },
             frequencyReceiverFullInfo: {
               fileName: `${str_frequency}${str_Receiver}${str_FullInfo}${dotCsv}`,
