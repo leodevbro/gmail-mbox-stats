@@ -1,3 +1,16 @@
+export type IsInArray<A extends readonly unknown[], X> = X extends A[number]
+  ? true
+  : false;
+
+export type HasUniqueItems<A extends readonly unknown[]> = A extends readonly [
+  infer X,
+  ...infer Rest,
+]
+  ? IsInArray<Rest, X> extends true
+    ? [false, "Encountered value with duplicates:", X]
+    : HasUniqueItems<Rest>
+  : true;
+
 type TyEnum<K extends string> = {
   [Key in K]: Key;
 };
@@ -14,9 +27,18 @@ type TyCoolEnum<Tuple extends Readonly<string[]>> = {
 };
 
 // generate type-safe object (as enum) from array of strings
-export const createCoolEnum = <Tuple extends Readonly<string[]>>(
-  arr: Tuple,
+export const createCoolEnum = <
+  // prettier-ignore
+  TupleInput extends (
+    number extends TupleInput["length"] ? `Should be as const` :
+    HasUniqueItems<Exclude<TupleInput, string>> extends true ? Readonly<string[]> :
+    `Should have unique elements, found duplicate`
+  ),
+  Tuple extends Exclude<TupleInput, string>,
+>(
+  arrInput: TupleInput,
 ): TyCoolEnum<Tuple> => {
+  const arr = arrInput as unknown as Tuple;
   const asSet = new Set<Tuple[number]>(arr);
 
   if (asSet.size !== arr.length) {
@@ -29,7 +51,7 @@ export const createCoolEnum = <Tuple extends Readonly<string[]>>(
     accu[curr] = curr;
 
     return accu;
-  }, {} as { [Key: string]: string }) as TheObjEnum;
+  }, {} as Record<string, string>) as TheObjEnum;
 
   type TheStrToInd = TyStrToInd<Tuple[number]>;
 
@@ -37,7 +59,7 @@ export const createCoolEnum = <Tuple extends Readonly<string[]>>(
     accu[curr] = index;
 
     return accu;
-  }, {} as { [Key: string]: number }) as TheStrToInd;
+  }, {} as Record<string, number>) as TheStrToInd;
 
   const final: TyCoolEnum<Tuple> = {
     asArr: arr,
@@ -48,3 +70,11 @@ export const createCoolEnum = <Tuple extends Readonly<string[]>>(
 
   return final;
 };
+
+// test:
+// let jijdfdf = ["vbvvbvbbvb", "qeqeqeqe", "i7777", "i7777"] as const;
+
+// const qqdqd = createCoolEnum(jijdfdf);
+// const qqdqd2 = createCoolEnum(["dfdf", "bbbbb"]);
+// qqdqd.asObjEnum.i7777;
+// qqdqd2.asObjEnum.dfdf;
