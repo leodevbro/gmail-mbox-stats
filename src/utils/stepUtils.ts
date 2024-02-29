@@ -98,6 +98,33 @@ export type TyDoTheCheck = TyCheckThatTObjExtendsTSource<
   typeof groundFolder
 >;
 
+export const getPrettyDateTime = (): string => {
+  const newDate = new Date();
+  const localDT = {
+    year: newDate.getFullYear(),
+    month: newDate.getMonth() + 1,
+    monthDay: newDate.getDate(),
+    //
+    hour: newDate.getHours(),
+    minute: newDate.getMinutes(),
+    seconds: newDate.getSeconds(),
+  };
+
+  const eachStr: Record<keyof typeof localDT, string> = {
+    year: String(localDT.year),
+    month: String(localDT.month).padStart(2, "0"),
+    monthDay: String(localDT.monthDay).padStart(2, "0"),
+    //
+    hour: String(localDT.hour).padStart(2, "0"),
+    minute: String(localDT.minute).padStart(2, "0"),
+    seconds: String(localDT.seconds).padStart(2, "0"),
+  };
+
+  const str = `${eachStr.year}-${eachStr.month}-${eachStr.monthDay}_${eachStr.hour}-${eachStr.minute}-${eachStr.seconds}`;
+
+  return str;
+};
+
 export const prepareOutputFolderStructure = (mboxFilePath: string) => {
   if (!mboxFilePath || typeof mboxFilePath !== "string") {
     throw new Error("mboxPath notation is not valid");
@@ -105,7 +132,7 @@ export const prepareOutputFolderStructure = (mboxFilePath: string) => {
 
   const mboxStatsFolderPath = path.join(
     path.dirname(mboxFilePath),
-    groundFolder.innerFolders.mboxStats.folderName,
+    groundFolder.innerFolders.mboxStats.folderName + "_" + getPrettyDateTime(),
   );
 
   // console.log("haaaa_end", process.argv, process.env.npm_config_sss); // npm run go --aaabbbrt="sdfs"
