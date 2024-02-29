@@ -4,11 +4,12 @@ export type TyMailDomain = `@${string}.${string}`;
 export type TyMailAddress = `${string}${TyMailDomain}`;
 
 const exampleOfOneValueOfFromOrTo = {
-  address: "leodevbro@gmail.com" as TyMailAddress,
+  address: "leodevbro@gmail.com" as TyMailAddress | undefined,
   name: "Levan Katsadze" as string,
+  group: [] as any[] | undefined,
 } as const;
 
-const exampleOfFromOrTo = {
+const exampleOfGroupOfParticipants = {
   value: [
     exampleOfOneValueOfFromOrTo,
   ] as (typeof exampleOfOneValueOfFromOrTo)[],
@@ -16,7 +17,9 @@ const exampleOfFromOrTo = {
   text: '"Levan Katsadze" <leodevbro@gmail.com>' as string,
 } as const;
 
-export type TyFromOrTo = typeof exampleOfFromOrTo;
+export type TyGroupOfParticipants =
+  | typeof exampleOfGroupOfParticipants
+  | undefined;
 
 const exampleObjOfHeaders = {
   "x-gm-thrid": "1786467213154837659" as string,
@@ -30,9 +33,15 @@ const exampleObjOfHeaders = {
   "in-reply-to": "<C01B40B9-2E0B-4EF5-BC80-7CD20E769218@gmail.com>" as string,
   "message-id":
     "<CAKQNcJf6xnUS+B4jEgnQr1psUXWXZbsH-G2f9T8d01XO8FrfvQ@mail.gmail.com>" as string,
+
   subject: "Re: Find the most sender - gmail" as string,
-  from: exampleOfFromOrTo as TyFromOrTo,
-  to: exampleOfFromOrTo as TyFromOrTo,
+  //
+  from: exampleOfGroupOfParticipants as TyGroupOfParticipants,
+  to: exampleOfGroupOfParticipants as TyGroupOfParticipants,
+  "delivered-to": exampleOfGroupOfParticipants as TyGroupOfParticipants,
+  cc: exampleOfGroupOfParticipants as TyGroupOfParticipants,
+  bcc: exampleOfGroupOfParticipants as TyGroupOfParticipants,
+  //
   "content-type": {
     value: "multipart/alternative" as string,
     params: { boundary: "000000000000100d3c060dafb0ca" as string },
@@ -66,10 +75,13 @@ type TyMailHeaders = TyMboxMailHeaders extends TyMailparserHeaders
 export type TyMainInfoForMail = {
   from: TyExampleObjOfHeaders["from"];
   to: TyExampleObjOfHeaders["to"];
+  "delivered-to": TyExampleObjOfHeaders["delivered-to"];
+  cc: TyExampleObjOfHeaders["cc"];
+  bcc: TyExampleObjOfHeaders["bcc"];
   date: TyExampleObjOfHeaders["date"];
   messageId: TyExampleObjOfHeaders["message-id"];
 };
 
+// test:
 // const dsfsdf = new Map() as TyMboxMailHeaders;
-
 // export const qqqqq = dsfsdf.get("from");
