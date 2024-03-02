@@ -57,16 +57,16 @@ type TyDeepHintsOfHeadersMap = {
 export type TyMboxMailHeaders = TyDeepHintsOfHeadersMap &
   Map<TyKeyOfMboxMailHeaders, TyValueOfMboxMailHeaders>;
 
-export type TyMainInfoForMail = {
-  from: TyParticipationFamilyInfo;
-  to: TyParticipationFamilyInfo;
-  "delivered-to": TyParticipationFamilyInfo;
-  cc: TyParticipationFamilyInfo;
-  bcc: TyParticipationFamilyInfo;
-  //
-  date: TyGmailMailHeadersAsObj["date"];
-  messageId: TyGmailMailHeadersAsObj["message-id"];
-};
+type TyParticipationData = Pick<
+  TyGmailMailHeadersAsObj,
+  "from" | "to" | "delivered-to" | "cc" | "bcc"
+>;
+
+type TyMajorData = Pick<TyGmailMailHeadersAsObj, "date" | "message-id">;
+
+export type TyMainInfoForMail = TyParticipationData & TyMajorData;
+
+export type TyFamilyKind = keyof TyParticipationData;
 
 // zen/Zen means normalized, simplified, cleaned, to avoid runtime errors
 export type TyZenParticipant = {
