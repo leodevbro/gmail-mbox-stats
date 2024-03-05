@@ -54,9 +54,9 @@ const step = {
   v: 0,
 };
 
-const counter = {
-  v: 0,
-};
+// const counter = {
+//   v: 0,
+// };
 
 export const mainRoles: TyParticipantRole[] = ["sender", "receiver"];
 
@@ -188,16 +188,16 @@ const analyzeMbox = () => {
       // maybe more logical for "addOneMailInfoToStats" to be here:
       addOneMailInfoToStats(mainInfoForThisMail, step.v);
 
-      counter.v += 1;
+      // counter.v += 1;
     } catch (err) {
       console.log(err);
     }
 
     // just for CLI visualization:
-    const asStr = String(counter.v);
+    const asStr = String(step.v);
     const le = asStr.length;
     if (asStr.slice(le - 3) === "000") {
-      console.log(counter.v);
+      console.log(step.v);
     }
   };
 
@@ -217,17 +217,17 @@ const analyzeMbox = () => {
   });
 
   mbox.on("finish", function () {
-    console.log("finished one reading mbox file-->>>><<<>>>>>>>>==", counter.v);
+    console.log("finished one reading mbox file-->>>><<<>>>>>>>>==", step.v);
 
     setTimeout(() => {
-      const currCount = counter.v;
+      const currCount = step.v;
       console.log("dfin-------le", currCount);
 
       setTimeout(() => {
-        if (currCount === counter.v) {
+        if (currCount === step.v) {
           console.log("success");
         } else {
-          console.log("Warning: Maybe count is incorrect:", counter.v);
+          console.log("Warning: Maybe count is incorrect:", step.v);
 
           const theMapMap =
             groundFolder.innerFolders.mboxStats.innerFolders.results.innerFiles
