@@ -1,32 +1,47 @@
+// https://support.google.com/mail/answer/7190
+// In Gmail, find mail (message) by id
+// just type like this:
+// rfc822msgid:CAA_p-vyCSYhMN=mGZBd7GibPgaBxNX7ayh4sheQgPYqCS97P3A@mail.gmail.com
+// the id is after the ":" (colon).
+
+//
+//
+// listFile parter to be 500K lines. // TODO
+
 import nodeMbox from "node-mbox";
 
 import { createReadStream, writeFileSync } from "node:fs";
 
 import { MailParser, Headers as TyMailparserHeaders } from "mailparser";
 
-// import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
+import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
 
 // import { parse as parseCsvInto2dArr } from "csv-parse";
 
 import { getEnvItemValue } from "./utils/mainUtils";
 import { groundFolder, prepareOutputFolderStructure } from "./utils/stepUtils";
-import { TyMboxMailHeaders } from "./types/mailparserTypes";
+import {
+  TyMainInfoForMail,
+  TyMboxMailHeaders,
+  TyZenMainInfoForMail,
+} from "./types/mailparserTypes";
+import { TyParticipantRole, addOneMailInfoToStats } from "./utils/statsBuilder";
+import {
+  combineTwoFamiliesIntoZenArr,
+  getZenParticipantsFromFamily,
+  prepareZenParticipantArrAsMainListItemStr,
+} from "./utils/sweetUtils";
 
 const allMailListFile =
   groundFolder.innerFolders.mboxStats.innerFiles.allMailList_csv;
-
-const resultsInnerFiles =
-  groundFolder.innerFolders.mboxStats.innerFolders.results.innerFiles;
 
 const argNameForMboxFilePath = "mboxpath"; // main input !!!
 
 const mboxFilePath = getEnvItemValue(argNameForMboxFilePath);
 
 if (!mboxFilePath || typeof mboxFilePath !== "string") {
-  throw new Error("mboxPath notation is not valid");
+  throw new Error("mboxpath notation is not valid");
 }
-
-// const mainOutputFilename = "tempFilePath"; // TODO:
 
 prepareOutputFolderStructure(mboxFilePath);
 
@@ -35,25 +50,144 @@ const mbox = nodeMbox.MboxStream(mailbox, {
   /* options */
 });
 
+const step = {
+  v: 0,
+};
+
 const counter = {
   v: 0,
 };
 
+export const mainRoles: TyParticipantRole[] = ["sender", "receiver"];
+
 const analyzeMbox = () => {
   const scanHeaders = (headersMap: TyMailparserHeaders): void => {
+    step.v += 1;
     const headers = headersMap as TyMboxMailHeaders;
 
     try {
-      const senderAddress = headers.get("from").value[0].address;
-      const currFreqMap = resultsInnerFiles.frequencySenderAddress.freqMap;
-      currFreqMap.set(senderAddress, (currFreqMap.get(senderAddress) || 0) + 1);
+      const init_From = headers.get("from");
+      const init_To = headers.get("to");
+      const init_deliveredTo = headers.get("delivered-to");
+      const init_cc = headers.get("cc");
+      const init_bcc = headers.get("bcc");
+      //
+      const init_date = headers.get("date");
+      const init_messageId = headers.get("message-id");
 
-      // console.log('From   :', headers.get('from').value[0].address);
-      // console.log('Subject:', headers.get('subject'), '\n');
+      const initialMainInfoForThisMail: TyMainInfoForMail = {
+        from: init_From,
+        to: init_To,
+        "delivered-to": init_deliveredTo,
+        cc: init_cc,
+        bcc: init_bcc,
+        //
+        date: init_date,
+        ["message-id"]: init_messageId,
+      };
 
-      writeFileSync(allMailListFile.pathAbsOrRel, `${senderAddress}\n`, {
-        flag: "a+",
-      });
+      const zenMainInfoForThisMail: TyZenMainInfoForMail = {
+        from: getZenParticipantsFromFamily({
+          family: initialMainInfoForThisMail.from,
+          step: step.v,
+          familyKind: "from",
+        }),
+        zenTo: combineTwoFamiliesIntoZenArr({
+          step: step.v,
+          twoFamilies: [
+            {
+              familyKind: "to",
+              participationInfo: initialMainInfoForThisMail.to,
+            },
+            {
+              familyKind: "delivered-to",
+              participationInfo: initialMainInfoForThisMail["delivered-to"],
+            },
+          ],
+        }),
+        cc: getZenParticipantsFromFamily({
+          family: initialMainInfoForThisMail.cc,
+          step: step.v,
+          familyKind: "cc",
+        }),
+        bcc: getZenParticipantsFromFamily({
+          family: initialMainInfoForThisMail.bcc,
+          step: step.v,
+          familyKind: "bcc",
+        }),
+        //
+        date: initialMainInfoForThisMail.date,
+        "message-id": initialMainInfoForThisMail["message-id"],
+      };
+
+      const mainInfoForThisMail_asArr_forCsvLine = [
+        // sender
+        prepareZenParticipantArrAsMainListItemStr({
+          messageId: zenMainInfoForThisMail["message-id"],
+          ptcProp: "address",
+          step: step.v,
+          zenFamilyKind: "from",
+          zenParticipants: zenMainInfoForThisMail.from,
+        }),
+        prepareZenParticipantArrAsMainListItemStr({
+          messageId: zenMainInfoForThisMail["message-id"],
+          ptcProp: "AddressAndName",
+          step: step.v,
+          zenFamilyKind: "from",
+          zenParticipants: zenMainInfoForThisMail.from,
+        }),
+
+        // receiver
+        prepareZenParticipantArrAsMainListItemStr({
+          messageId: zenMainInfoForThisMail["message-id"],
+          ptcProp: "address",
+          step: step.v,
+          zenFamilyKind: "zenTo",
+          zenParticipants: zenMainInfoForThisMail.zenTo,
+        }),
+
+        // cc
+        prepareZenParticipantArrAsMainListItemStr({
+          messageId: zenMainInfoForThisMail["message-id"],
+          ptcProp: "address",
+          step: step.v,
+          zenFamilyKind: "cc",
+          zenParticipants: zenMainInfoForThisMail.cc,
+        }),
+
+        // bcc
+        prepareZenParticipantArrAsMainListItemStr({
+          messageId: zenMainInfoForThisMail["message-id"],
+          ptcProp: "address",
+          step: step.v,
+          zenFamilyKind: "bcc",
+          zenParticipants: zenMainInfoForThisMail.bcc,
+        }),
+
+        //
+        zenMainInfoForThisMail.date?.toISOString() || "",
+        zenMainInfoForThisMail["message-id"],
+      ];
+
+      const csvCurrLineForAllMailListFile = stringify2dArrIntoCsv(
+        [mainInfoForThisMail_asArr_forCsvLine],
+        {
+          header: false,
+          columns: undefined,
+        },
+      );
+
+      writeFileSync(
+        allMailListFile.pathAbsOrRel,
+        csvCurrLineForAllMailListFile,
+        {
+          flag: "a+",
+        },
+      );
+
+      // maybe more logical for "addOneMailInfoToStats" to be here:
+      addOneMailInfoToStats(mainInfoForThisMail, step.v);
+
       counter.v += 1;
     } catch (err) {
       console.log(err);
@@ -83,10 +217,7 @@ const analyzeMbox = () => {
   });
 
   mbox.on("finish", function () {
-    console.log(
-      "finished one reading mbox file-->>>><<<>>>>>>>>==",
-      counter.v,
-    );
+    console.log("finished one reading mbox file-->>>><<<>>>>>>>>==", counter.v);
 
     setTimeout(() => {
       const currCount = counter.v;
@@ -97,8 +228,20 @@ const analyzeMbox = () => {
           console.log("success");
         } else {
           console.log("Warning: Maybe count is incorrect:", counter.v);
+
+          const theMapMap =
+            groundFolder.innerFolders.mboxStats.innerFolders.results.innerFiles
+              .frequencySenderAddress.freqMap;
+
+          const asSortedArr = [...theMapMap].sort((a, b) => b[1] - a[1]);
+
+          console.log(
+            theMapMap.size,
+            asSortedArr.length,
+            JSON.stringify(asSortedArr.slice(0, 10)),
+          );
         }
-      }, 3000);
+      }, 7000);
     }, 2);
   });
 };
