@@ -62,11 +62,11 @@ type TyParticipationData = Pick<
   "from" | "to" | "delivered-to" | "cc" | "bcc"
 >;
 
+export type TyFamilyKind = keyof TyParticipationData;
+
 type TyMajorData = Pick<TyGmailMailHeadersAsObj, "date" | "message-id">;
 
 export type TyMainInfoForMail = TyParticipationData & TyMajorData;
-
-export type TyFamilyKind = keyof TyParticipationData;
 
 // zen/Zen means normalized, simplified, cleaned, to avoid runtime errors
 export type TyZenParticipant = {
@@ -75,12 +75,13 @@ export type TyZenParticipant = {
 };
 
 // zen/Zen means normalized, simplified, cleaned, to avoid runtime errors
-export type TyZenMainInfoForMail = {
+export type TyZenParticipationData = {
   from: TyZenParticipant[];
   zenTo: TyZenParticipant[]; // combination of "to" and "delivered-to"
   cc: TyZenParticipant[];
   bcc: TyZenParticipant[];
-  //
-  date: TyGmailMailHeadersAsObj["date"];
-  messageId: TyGmailMailHeadersAsObj["message-id"];
 };
+
+export type TyZenFamilyKind = keyof TyZenParticipationData;
+
+export type TyZenMainInfoForMail = TyZenParticipationData & TyMajorData;
