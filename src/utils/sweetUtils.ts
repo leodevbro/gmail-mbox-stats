@@ -161,6 +161,10 @@ export const combineTwoFamiliesIntoZenArr = ({
   return final;
 };
 
+export const combineAddressAndName = (address: string, name: string) => {
+  return `${address} --- ${name}`;
+};
+
 export const prepareZenParticipantArrAsMainListItemStr = ({
   zenParticipants,
   ptcProp,
@@ -169,7 +173,7 @@ export const prepareZenParticipantArrAsMainListItemStr = ({
   messageId,
 }: {
   zenParticipants: TyZenParticipant[];
-  ptcProp: keyof TyZenParticipant;
+  ptcProp: keyof TyZenParticipant | "AddressAndName";
   zenFamilyKind: TyZenFamilyKind;
   step: number;
   messageId: TyGmailMailHeadersAsObj["message-id"];
@@ -190,6 +194,13 @@ export const prepareZenParticipantArrAsMainListItemStr = ({
   }
 
   if (zenParticipants.length === 1) {
+    if (ptcProp === "AddressAndName") {
+      const strItem = combineAddressAndName(
+        zenParticipants[0]["address"],
+        zenParticipants[0]["name"],
+      );
+      return strItem;
+    }
     const strItem = zenParticipants[0][ptcProp];
     return strItem;
   }
@@ -197,6 +208,10 @@ export const prepareZenParticipantArrAsMainListItemStr = ({
   // here, length is more than 1
 
   const strArr = zenParticipants.map((prt) => {
+    if (ptcProp === "AddressAndName") {
+      const str = combineAddressAndName(prt["address"], prt["name"]);
+      return str;
+    }
     const str = prt[ptcProp];
     return str;
   });
