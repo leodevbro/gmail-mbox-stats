@@ -8,9 +8,11 @@ const dotCsv = ".csv";
 const str_frequency = "frequency";
 const str_Sender = "Sender";
 const str_Receiver = "Receiver";
+const str_Cc = "Cc";
+const str_Bcc = "Bcc";
 const str_Address = "Address";
 const str_Domain = "Domain";
-const str_FullInfo = "FullInfo";
+const str_AddressAndName = "AddressAndName";
 
 export type TyOneFileIndicator = {
   fileName: `${string}.csv`;
@@ -61,8 +63,8 @@ export const groundFolder = {
               pathAbsOrRel: "" as string,
               freqMap: new Map<TyMailDomain, number>([]),
             },
-            frequencySenderFullInfo: {
-              fileName: `${str_frequency}${str_Sender}${str_FullInfo}${dotCsv}`,
+            frequencySenderAddressAndName: {
+              fileName: `${str_frequency}${str_Sender}${str_AddressAndName}${dotCsv}`,
               pathAbsOrRel: "" as string,
               freqMap: new Map<string, number>([]),
             },
@@ -74,16 +76,52 @@ export const groundFolder = {
               pathAbsOrRel: "" as string,
               freqMap: new Map<TyMailAddress, number>([]),
             },
-            frequencyReceiverDomain: {
-              fileName: `${str_frequency}${str_Receiver}${str_Domain}${dotCsv}`,
+            // frequencyReceiverDomain: {
+            //   fileName: `${str_frequency}${str_Receiver}${str_Domain}${dotCsv}`,
+            //   pathAbsOrRel: "" as string,
+            //   freqMap: new Map<TyMailDomain, number>([]),
+            // },
+            // frequencyReceiverAddressAndName: {
+            //   fileName: `${str_frequency}${str_Receiver}${str_AddressAndName}${dotCsv}`,
+            //   pathAbsOrRel: "" as string,
+            //   freqMap: new Map<string, number>([]),
+            // },
+
+            // cc:
+
+            frequencyCcAddress: {
+              fileName: `${str_frequency}${str_Cc}${str_Address}${dotCsv}`,
               pathAbsOrRel: "" as string,
-              freqMap: new Map<TyMailDomain, number>([]),
+              freqMap: new Map<TyMailAddress, number>([]),
             },
-            frequencyReceiverFullInfo: {
-              fileName: `${str_frequency}${str_Receiver}${str_FullInfo}${dotCsv}`,
+            // frequencyCcDomain: {
+            //   fileName: `${str_frequency}${str_Cc}${str_Domain}${dotCsv}`,
+            //   pathAbsOrRel: "" as string,
+            //   freqMap: new Map<TyMailDomain, number>([]),
+            // },
+            // frequencyCcAddressAndName: {
+            //   fileName: `${str_frequency}${str_Cc}${str_AddressAndName}${dotCsv}`,
+            //   pathAbsOrRel: "" as string,
+            //   freqMap: new Map<string, number>([]),
+            // },
+
+            // bcc:
+
+            frequencyBccAddress: {
+              fileName: `${str_frequency}${str_Bcc}${str_Address}${dotCsv}`,
               pathAbsOrRel: "" as string,
-              freqMap: new Map<string, number>([]),
+              freqMap: new Map<TyMailAddress, number>([]),
             },
+            // frequencyBccDomain: {
+            //   fileName: `${str_frequency}${str_Bcc}${str_Domain}${dotCsv}`,
+            //   pathAbsOrRel: "" as string,
+            //   freqMap: new Map<TyMailDomain, number>([]),
+            // },
+            // frequencyBccAddressAndName: {
+            //   fileName: `${str_frequency}${str_Bcc}${str_AddressAndName}${dotCsv}`,
+            //   pathAbsOrRel: "" as string,
+            //   freqMap: new Map<string, number>([]),
+            // },
           },
         },
       },
@@ -200,6 +238,7 @@ export const prepareOutputFolderStructure = (mboxFilePath: string) => {
     resultsFoldersInnerFiles,
   ) as (keyof typeof resultsFoldersInnerFiles)[];
 
+  // create results files:
   for (const propName of arrOfObjKeysOfCandFiles) {
     const thePath = path.join(
       resultsFolderPath,
