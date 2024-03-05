@@ -1,80 +1,204 @@
-import { mainRoles } from "..";
 import {
-  TyGroupOfParticipants,
-  TyMailAddress,
-  TyMainInfoForMail,
+  TyFamilyKind,
+  TyGmailMailHeadersAsObj,
+  TyParticipationFamilyInfo,
+  TyZenFamilyKind,
+  TyZenParticipant,
 } from "../types/mailparserTypes";
-import {
-  TyParticipantRole,
-  getSearchableIdForToBeEasyToCopy,
-  unknownVal,
-} from "./statsBuilder";
+import { getSearchableIdForToBeEasyToCopy } from "./statsBuilder";
 
-export const getAddressesFromGroup = (
-  group: TyGroupOfParticipants,
-): TyMailAddress[] => {
-  const arrRaw = (group?.value || []).map((x) => x.address);
-  const arr = arrRaw.filter((x) => x) as TyMailAddress[];
-
-  return arr;
+type TyFamilyMeta = {
+  familyKind: TyFamilyKind;
+  participationInfo?: TyParticipationFamilyInfo;
 };
 
-export const getLogicalAddressesOfReceivers = ({
-  mailMainInfo,
-  stepN,
+// export const getAddressesFromFamily = (
+//   family?: TyParticipationFamilyInfo,
+// ): TyMailAddress[] => {
+//   if (!family) {
+//     return [];
+//   }
+//   family;
+
+//   const arrRaw = family.value.map((x) => x.address);
+//   const arr = arrRaw.filter((x) => x) as TyMailAddress[];
+
+//   return arr;
+// };
+
+// export const getLogicalAddressesOfReceivers = ({
+//   mailMainInfo,
+//   stepN,
+// }: {
+//   mailMainInfo: TyMainInfoForMail;
+//   stepN: number;
+// }): TyMailAddress[] => {
+//   const theTo = getAddressesFromFamily(mailMainInfo.to);
+//   const theDeliveredTo = getAddressesFromFamily(mailMainInfo["delivered-to"]);
+
+//   const combinedArr = [...theTo, ...theDeliveredTo];
+
+//   const theSet = new Set(combinedArr);
+
+//   if (theSet.size === 0) {
+//     console.log(
+//       `${stepN} - here: ${"receiver"} address not found - ${JSON.stringify(
+//         mailMainInfo,
+//       )} - ${getSearchableIdForToBeEasyToCopy(mailMainInfo.messageId)}`,
+//     );
+//   }
+
+//   const finalArr = [...theSet];
+
+//   return finalArr;
+// };
+
+// export const getOneAddressOrArr = (
+//   participant: TyGroupOfParticipants | undefined | null,
+//   participantRole: TyParticipantRole,
+// ) => {
+//   const isMainParticipant = mainRoles.includes(participantRole);
+
+//   if (!participant) {
+//     if (isMainParticipant) {
+//       console.log(`${participantRole} address not found`);
+//     }
+//     return unknownVal.address[participantRole];
+//   }
+
+//   const arr = participant.value;
+//   const fullArrOfAddresses = arr
+//     .map((x) => x.address)
+//     .filter((x) => x) as TyMailAddress[];
+//   const withOnlyUniqueValues = [...new Set(fullArrOfAddresses)];
+
+//   if (withOnlyUniqueValues.length === 0) {
+//     if (isMainParticipant) {
+//       console.log(`${participantRole} address not found`);
+//     }
+//     return unknownVal.address[participantRole];
+//   }
+
+//   if (withOnlyUniqueValues.length === 1) {
+//     return withOnlyUniqueValues[0];
+//   }
+
+//   return withOnlyUniqueValues;
+// };
+
+export const getZenParticipantsFromFamily = ({
+  family,
+}: // familyKind,
+// step,
+{
+  family?: TyParticipationFamilyInfo;
+  familyKind: TyFamilyKind;
+  step: number;
+}): TyZenParticipant[] => {
+  if (!family) {
+    return [];
+  }
+
+  if (!family.value) {
+    return [];
+  }
+
+  const zenArr: TyZenParticipant[] = family.value
+    .map((ptc) => {
+      const zenPtc: TyZenParticipant = {
+        address: ptc.address || "",
+        name: ptc.name || "",
+      };
+
+      return zenPtc;
+    })
+    .filter((x) => x.address);
+
+  const uniqified = new Map<string, TyZenParticipant>(
+    zenArr.map((p) => [p.address, p]),
+  );
+
+  const final = [...uniqified].map((duo) => duo[1]);
+
+  return final;
+};
+
+export const combineTwoFamiliesIntoZenArr = ({
+  twoFamilies,
+  familyKind,
+  step,
 }: {
-  mailMainInfo: TyMainInfoForMail;
-  stepN: number;
-}): TyMailAddress[] => {
-  const theTo = getAddressesFromGroup(mailMainInfo.to);
-  const theDeliveredTo = getAddressesFromGroup(mailMainInfo["delivered-to"]);
+  twoFamilies: [TyFamilyMeta, TyFamilyMeta];
+  familyKind: TyFamilyKind;
+  step: number;
+}): TyZenParticipant[] => {
+  const firstFamily = twoFamilies[0].participationInfo;
+  const secondFamily = twoFamilies[1].participationInfo;
 
-  const combinedArr = [...theTo, ...theDeliveredTo];
-
-  const theSet = new Set(combinedArr);
-
-  if (theSet.size === 0) {
-    console.log(
-      `${stepN} - here: ${"receiver"} address not found - ${JSON.stringify(
-        mailMainInfo,
-      )} - ${getSearchableIdForToBeEasyToCopy(mailMainInfo.messageId)}`,
-    );
+  if (!firstFamily && !secondFamily) {
+    return [];
   }
 
-  const finalArr = [...theSet];
+  const zenOfFirst = getZenParticipantsFromFamily({
+    familyKind,
+    step,
+    family: firstFamily,
+  });
 
-  return finalArr;
+  const zenOfSecond = getZenParticipantsFromFamily({
+    familyKind,
+    step,
+    family: secondFamily,
+  });
+
+  const uniqified = new Map<string, TyZenParticipant>(
+    [...zenOfFirst, ...zenOfSecond].map((p) => [p.address, p]),
+  );
+
+  const final = [...uniqified].map((duo) => duo[1]);
+
+  return final;
 };
 
-export const getOneAddressOrArr = (
-  participant: TyGroupOfParticipants | undefined | null,
-  participantRole: TyParticipantRole,
-) => {
-  const isMainParticipant = mainRoles.includes(participantRole);
-
-  if (!participant) {
-    if (isMainParticipant) {
-      console.log(`${participantRole} address not found`);
+export const prepareZenParticipantArrAsMainListItemStr = ({
+  zenParticipants,
+  ptcProp,
+  zenFamilyKind,
+  step,
+  messageId,
+}: {
+  zenParticipants: TyZenParticipant[];
+  ptcProp: keyof TyZenParticipant;
+  zenFamilyKind: TyZenFamilyKind;
+  step: number;
+  messageId: TyGmailMailHeadersAsObj["message-id"];
+}): string => {
+  if (zenParticipants.length === 0) {
+    if (
+      ptcProp === "address" &&
+      (["from", "zenTo"] as TyZenFamilyKind[]).includes(zenFamilyKind)
+    ) {
+      console.log(
+        `${step} - here: '${zenFamilyKind}' ${ptcProp} not found  - ${getSearchableIdForToBeEasyToCopy(
+          messageId,
+        )}`,
+      );
     }
-    return unknownVal.address[participantRole];
+
+    return "";
   }
 
-  const arr = participant.value;
-  const fullArrOfAddresses = arr
-    .map((x) => x.address)
-    .filter((x) => x) as TyMailAddress[];
-  const withOnlyUniqueValues = [...new Set(fullArrOfAddresses)];
-
-  if (withOnlyUniqueValues.length === 0) {
-    if (isMainParticipant) {
-      console.log(`${participantRole} address not found`);
-    }
-    return unknownVal.address[participantRole];
+  if (zenParticipants.length === 1) {
+    const strItem = zenParticipants[0][ptcProp];
+    return strItem;
   }
 
-  if (withOnlyUniqueValues.length === 1) {
-    return withOnlyUniqueValues[0];
-  }
+  // here, length is more than 1
 
-  return withOnlyUniqueValues;
+  const strArr = zenParticipants.map((prt) => {
+    const str = prt[ptcProp];
+    return str;
+  });
+
+  return String(strArr);
 };
