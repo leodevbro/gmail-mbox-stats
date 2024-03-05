@@ -125,30 +125,31 @@ export const getZenParticipantsFromFamily = ({
 
 export const combineTwoFamiliesIntoZenArr = ({
   twoFamilies,
-  familyKind,
   step,
 }: {
   twoFamilies: [TyFamilyMeta, TyFamilyMeta];
-  familyKind: TyFamilyKind;
   step: number;
 }): TyZenParticipant[] => {
-  const firstFamily = twoFamilies[0].participationInfo;
-  const secondFamily = twoFamilies[1].participationInfo;
+  const firstFamilyMeta = twoFamilies[0];
+  const secondFamilyMeta = twoFamilies[1];
 
-  if (!firstFamily && !secondFamily) {
+  if (
+    !firstFamilyMeta.participationInfo &&
+    !secondFamilyMeta.participationInfo
+  ) {
     return [];
   }
 
   const zenOfFirst = getZenParticipantsFromFamily({
-    familyKind,
+    familyKind: firstFamilyMeta.familyKind,
     step,
-    family: firstFamily,
+    family: firstFamilyMeta.participationInfo,
   });
 
   const zenOfSecond = getZenParticipantsFromFamily({
-    familyKind,
+    familyKind: secondFamilyMeta.familyKind,
     step,
-    family: secondFamily,
+    family: secondFamilyMeta.participationInfo,
   });
 
   const uniqified = new Map<string, TyZenParticipant>(
