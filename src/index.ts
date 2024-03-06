@@ -72,6 +72,13 @@ const analyzeMbox = () => {
       const init_date = headers.get("date");
       const init_messageId = headers.get("message-id");
 
+      // if (
+      //   init_messageId ===
+      //   "<CAA_p-vxkKrYGM+QcZMbjvTkxQ6biC+6zdH4Mcp+bmAYzBXaxfQ@mail.gmail.com>"
+      // ) {
+      //   console.log("baaa", JSON.stringify([...headers]));
+      // }
+
       const initialMainInfoForThisMail: TyMainInfoForMail = {
         from: init_From,
         to: init_To,
@@ -89,6 +96,7 @@ const analyzeMbox = () => {
           step: step.v,
           familyKind: "from",
           messageId: initialMainInfoForThisMail["message-id"],
+          fromCombiner: false,
         }),
         zenTo: combineTwoFamiliesIntoZenArr({
           step: step.v,
@@ -109,12 +117,14 @@ const analyzeMbox = () => {
           step: step.v,
           familyKind: "cc",
           messageId: initialMainInfoForThisMail["message-id"],
+          fromCombiner: false,
         }),
         bcc: getZenParticipantsFromFamily({
           family: initialMainInfoForThisMail.bcc,
           step: step.v,
           familyKind: "bcc",
           messageId: initialMainInfoForThisMail["message-id"],
+          fromCombiner: false,
         }),
         //
         date: initialMainInfoForThisMail.date,
@@ -296,6 +306,6 @@ console.log('haaaa_end', process.argv, process.env.npm_config_aaabbbrt); // npm 
 */
 
 export const logExecutionMessage = () => {
-  const executionMessage = "Started MBOX file analyzation 004";
+  const executionMessage = "Started MBOX file analyzation 008";
   console.log(executionMessage);
 };
