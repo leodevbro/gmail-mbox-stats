@@ -216,5 +216,5 @@ export const prepareZenParticipantArrAsMainListItemStr = ({
     return str;
   });
 
-  return String(strArr);
+  return JSON.stringify(strArr);
 };
