@@ -25,7 +25,10 @@ import {
   TyMboxMailHeaders,
   TyZenMainInfoForMail,
 } from "./types/mailparserTypes";
-import { addOneMailInfoToStats } from "./utils/statsBuilder";
+import {
+  addOneMailInfoToStats,
+  generateSearchableIdOfMail,
+} from "./utils/statsBuilder";
 import {
   combineTwoFamiliesIntoZenArr,
   getZenParticipantsFromFamily,
@@ -164,7 +167,7 @@ const analyzeMbox = () => {
 
         //
         zenMainInfoForThisMail.date?.toISOString() || "",
-        zenMainInfoForThisMail["message-id"],
+        generateSearchableIdOfMail(zenMainInfoForThisMail["message-id"]),
       ];
 
       const csvCurrLineForAllMailListFile = stringify2dArrIntoCsv(

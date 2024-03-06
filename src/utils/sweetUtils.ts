@@ -5,7 +5,12 @@ import {
   TyZenFamilyKind,
   TyZenParticipant,
 } from "../types/mailparserTypes";
-import { getSearchableIdForToBeEasyToCopy } from "./statsBuilder";
+import {
+  getSearchableIdForToBeEasyToCopy,
+  isMaybeCorrectNotationOfAddress,
+  str_EMPTY,
+  str_STRANGE,
+} from "./statsBuilder";
 
 type TyFamilyMeta = {
   familyKind: TyFamilyKind;
@@ -86,39 +91,86 @@ type TyFamilyMeta = {
 //   return withOnlyUniqueValues;
 // };
 
+const emptyZenParticipant: TyZenParticipant = {
+  address: str_EMPTY,
+  name: str_EMPTY,
+};
+
 export const getZenParticipantsFromFamily = ({
   family,
-}: // familyKind,
-// step,
-{
+  messageId,
+  familyKind,
+  step,
+}: {
   family?: TyParticipationFamilyInfo;
   familyKind: TyFamilyKind;
   step: number;
+  messageId: TyGmailMailHeadersAsObj["message-id"];
 }): TyZenParticipant[] => {
   if (!family) {
-    return [];
+    console.log(
+      `${step} - here: '${familyKind}' participant not found  - ${getSearchableIdForToBeEasyToCopy(
+        messageId,
+      )} '!family'`,
+    );
+    return [emptyZenParticipant];
   }
 
   if (!family.value) {
-    return [];
+    console.log(
+      `${step} - here: '${familyKind}' participant not found  - ${getSearchableIdForToBeEasyToCopy(
+        messageId,
+      )} '!family.value'`,
+    );
+    return [emptyZenParticipant];
   }
 
-  const zenArr: TyZenParticipant[] = family.value
-    .map((ptc) => {
-      const zenPtc: TyZenParticipant = {
-        address: ptc.address || "",
-        name: ptc.name || "",
-      };
+  if (family.value.length === 0) {
+    console.log(
+      `${step} - here: '${familyKind}' participant not found  - ${getSearchableIdForToBeEasyToCopy(
+        messageId,
+      )} 'family.value.length === 0'`,
+    );
+    return [emptyZenParticipant];
+  }
 
-      return zenPtc;
-    })
-    .filter((x) => x.address);
+  const zenArr: TyZenParticipant[] = family.value.map((ptc) => {
+    const zenPtc: TyZenParticipant = {
+      address: ptc.address
+        ? isMaybeCorrectNotationOfAddress(ptc.address)
+          ? ptc.address
+          : `${str_STRANGE}${ptc.address}`
+        : str_EMPTY,
+      name: ptc.name || str_EMPTY,
+    };
+
+    return zenPtc;
+  });
 
   const uniqified = new Map<string, TyZenParticipant>(
     zenArr.map((p) => [p.address, p]),
   );
 
-  const final = [...uniqified].map((duo) => duo[1]);
+  const final = [...uniqified].map((duo) => {
+    const prt = duo[1];
+    if (prt.address === str_EMPTY) {
+      console.log(
+        `${step} - here: '${familyKind}' participant address is empty - ${getSearchableIdForToBeEasyToCopy(
+          messageId,
+        )} 'prt.address === str_EMPTY'`,
+      );
+    }
+
+    if (prt.address.includes(str_STRANGE)) {
+      console.log(
+        `${step} - here: '${familyKind}' participant address is strange - ${getSearchableIdForToBeEasyToCopy(
+          messageId,
+        )} 'prt.address.includes(str_STRANGE)'`,
+      );
+    }
+
+    return prt;
+  });
 
   return final;
 };
@@ -126,9 +178,11 @@ export const getZenParticipantsFromFamily = ({
 export const combineTwoFamiliesIntoZenArr = ({
   twoFamilies,
   step,
+  messageId,
 }: {
   twoFamilies: [TyFamilyMeta, TyFamilyMeta];
   step: number;
+  messageId: TyGmailMailHeadersAsObj["message-id"];
 }): TyZenParticipant[] => {
   const firstFamilyMeta = twoFamilies[0];
   const secondFamilyMeta = twoFamilies[1];
@@ -137,19 +191,26 @@ export const combineTwoFamiliesIntoZenArr = ({
     !firstFamilyMeta.participationInfo &&
     !secondFamilyMeta.participationInfo
   ) {
-    return [];
+    console.log(
+      `${step} - here: participant not found  - ${getSearchableIdForToBeEasyToCopy(
+        messageId,
+      )} --- both families are falsy`,
+    );
+    return [emptyZenParticipant];
   }
 
   const zenOfFirst = getZenParticipantsFromFamily({
     familyKind: firstFamilyMeta.familyKind,
     step,
     family: firstFamilyMeta.participationInfo,
+    messageId,
   });
 
   const zenOfSecond = getZenParticipantsFromFamily({
     familyKind: secondFamilyMeta.familyKind,
     step,
     family: secondFamilyMeta.participationInfo,
+    messageId,
   });
 
   const uniqified = new Map<string, TyZenParticipant>(
@@ -157,6 +218,16 @@ export const combineTwoFamiliesIntoZenArr = ({
   );
 
   const final = [...uniqified].map((duo) => duo[1]);
+
+  if (final.length === 0) {
+    console.log(
+      `${step} - here: participant not found  - ${getSearchableIdForToBeEasyToCopy(
+        messageId,
+      )} 'final.length === 0 --- combineTwoFamilies'`,
+    );
+
+    return [emptyZenParticipant];
+  }
 
   return final;
 };
@@ -179,18 +250,13 @@ export const prepareZenParticipantArrAsMainListItemStr = ({
   messageId: TyGmailMailHeadersAsObj["message-id"];
 }): string => {
   if (zenParticipants.length === 0) {
-    if (
-      ptcProp === "address" &&
-      (["from", "zenTo"] as TyZenFamilyKind[]).includes(zenFamilyKind)
-    ) {
-      console.log(
-        `${step} - here: '${zenFamilyKind}' ${ptcProp} not found  - ${getSearchableIdForToBeEasyToCopy(
-          messageId,
-        )}`,
-      );
-    }
+    console.log(
+      `${step} - error!!! here: '${zenFamilyKind}' ${ptcProp} not found  - ${getSearchableIdForToBeEasyToCopy(
+        messageId,
+      )}`,
+    );
 
-    return "";
+    return str_EMPTY;
   }
 
   if (zenParticipants.length === 1) {

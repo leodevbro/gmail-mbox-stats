@@ -70,7 +70,7 @@ export const str_STRANGE = "STRANGE-->";
 const resultsInnerFiles =
   groundFolder.innerFolders.mboxStats.innerFolders.results.innerFiles;
 
-const isMaybeCorrectNotationOfAddress = (notation: string): boolean => {
+export const isMaybeCorrectNotationOfAddress = (notation: string): boolean => {
   const indexOfTheAtSymbol = notation.indexOf("@");
   const theAtSymbolIsAtCorrectIndex =
     indexOfTheAtSymbol >= 1 && indexOfTheAtSymbol <= notation.length - 3;
@@ -91,14 +91,14 @@ const incrementInMap = <TKey extends string, TMap extends Map<TKey, number>>(
 };
 
 const handleParticipantIntoFreqMap = ({
-  messageId,
+  // messageId,
   participantArr,
   mapForAddress,
   mapForDomain,
   mapForAANInfo, // AAN -> Address and Name
-  participantRole,
-  stepN,
-}: {
+}: // participantRole,
+// stepN,
+{
   messageId: TyGmailMailHeadersAsObj["message-id"];
   participantArr: TyZenParticipant[];
   mapForAddress: Map<TyMailAddress, number>;
@@ -116,25 +116,20 @@ const handleParticipantIntoFreqMap = ({
     throw new Error("participantArr is falsy --- handleParticipantIntoFreqMap");
   }
 
-  // Address and domain
-  participantArr.forEach((prtc, _index) => {
-    if (isMaybeCorrectNotationOfAddress(prtc.address)) {
-      incrementInMap(mapForAddress, prtc.address);
+  if (!participantArr.length) {
+    throw new Error("participantArr is empty --- handleParticipantIntoFreqMap");
+  }
 
-      if (mapForDomain) {
+  // Address and domain
+  participantArr.forEach((prtc) => {
+    incrementInMap(mapForAddress, prtc.address);
+
+    if (mapForDomain) {
+      if (isMaybeCorrectNotationOfAddress(prtc.address)) {
         const indexOfTheAtSymbol = prtc.address.indexOf("@");
         const domain = prtc.address.slice(indexOfTheAtSymbol) as TyMailDomain;
         incrementInMap(mapForDomain, domain);
-      }
-    } else {
-      console.log(
-        `${stepN} - here: '${participantRole}' address notation is incorrect - "${
-          prtc.address
-        }" - ${getSearchableIdForToBeEasyToCopy(messageId)}`,
-      );
-      incrementInMap(mapForAddress, prtc.address);
-
-      if (mapForDomain) {
+      } else {
         incrementInMap(mapForDomain, prtc.address);
       }
     }
