@@ -64,9 +64,6 @@ export const getSearchableIdForToBeEasyToCopy = (nonCleanId: string) => {
 //   },
 // } as const;
 
-export const str_EMPTY = "()";
-export const str_STRANGE = "STRANGE-->";
-
 const resultsInnerFiles =
   groundFolder.innerFolders.mboxStats.innerFolders.results.innerFiles;
 

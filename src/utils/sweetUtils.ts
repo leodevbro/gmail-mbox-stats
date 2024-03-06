@@ -8,8 +8,6 @@ import {
 import {
   getSearchableIdForToBeEasyToCopy,
   isMaybeCorrectNotationOfAddress,
-  str_EMPTY,
-  str_STRANGE,
 } from "./statsBuilder";
 
 type TyFamilyMeta = {
@@ -91,12 +89,15 @@ type TyFamilyMeta = {
 //   return withOnlyUniqueValues;
 // };
 
-const emptyZenParticipant = {
+export const str_EMPTY = "()";
+export const str_STRANGE = "STRANGE-->";
+
+const emptyZenParticipant: TyZenParticipant = {
   address: str_EMPTY,
   name: str_EMPTY,
 } as const;
 
-const sculptEmptyZenParticipant = () => {
+const sculptEmptyZenParticipant = (): TyZenParticipant => {
   const totallyNew = structuredClone(emptyZenParticipant);
   return totallyNew;
 };
@@ -242,7 +243,9 @@ export const combineTwoFamiliesIntoZenArr = ({
     [...zenOfFirst, ...zenOfSecond].map((p) => [p.address, p]),
   );
 
-  const final = [...uniqified].map((duo) => duo[1]);
+  const final = [...uniqified]
+    .map((duo) => duo[1])
+    .filter((x) => x.address && !x.address.includes(str_EMPTY));
 
   if (final.length === 0) {
     const blameKind =
@@ -257,19 +260,6 @@ export const combineTwoFamiliesIntoZenArr = ({
     );
 
     return [sculptEmptyZenParticipant()];
-  }
-
-  if (final.some((x) => !x || !x.address)) {
-    throw new Error(
-      JSON.stringify([
-        final,
-        step,
-        "-->",
-        zenOfFirst,
-        zenOfSecond,
-        secondFamilyMeta.participationInfo,
-      ]),
-    );
   }
 
   final.forEach((prt) => {
