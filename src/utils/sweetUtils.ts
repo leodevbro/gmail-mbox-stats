@@ -91,9 +91,14 @@ type TyFamilyMeta = {
 //   return withOnlyUniqueValues;
 // };
 
-const emptyZenParticipant: TyZenParticipant = {
+const emptyZenParticipant = {
   address: str_EMPTY,
   name: str_EMPTY,
+} as const;
+
+const sculptEmptyZenParticipant = () => {
+  const totallyNew = structuredClone(emptyZenParticipant);
+  return totallyNew;
 };
 
 export const getZenParticipantsFromFamily = ({
@@ -101,37 +106,52 @@ export const getZenParticipantsFromFamily = ({
   messageId,
   familyKind,
   step,
+  fromCombiner,
 }: {
   family?: TyParticipationFamilyInfo;
   familyKind: TyFamilyKind;
   step: number;
   messageId: TyGmailMailHeadersAsObj["message-id"];
+  fromCombiner: boolean;
 }): TyZenParticipant[] => {
   if (!family) {
-    console.log(
-      `${step} - here: '${familyKind}' participant not found  - ${getSearchableIdForToBeEasyToCopy(
-        messageId,
-      )} '!family'`,
-    );
-    return [emptyZenParticipant];
+    if (!fromCombiner) {
+      if (familyKind === "from") {
+        console.log(
+          `${step} - here: '${familyKind}' participant not found  - ${getSearchableIdForToBeEasyToCopy(
+            messageId,
+          )} '!family'`,
+        );
+      }
+    }
+
+    return [sculptEmptyZenParticipant()];
   }
 
   if (!family.value) {
-    console.log(
-      `${step} - here: '${familyKind}' participant not found  - ${getSearchableIdForToBeEasyToCopy(
-        messageId,
-      )} '!family.value'`,
-    );
-    return [emptyZenParticipant];
+    if (!fromCombiner) {
+      if (familyKind === "from") {
+        console.log(
+          `${step} - here: '${familyKind}' participant not found  - ${getSearchableIdForToBeEasyToCopy(
+            messageId,
+          )} '!family.value'`,
+        );
+      }
+    }
+    return [sculptEmptyZenParticipant()];
   }
 
   if (family.value.length === 0) {
-    console.log(
-      `${step} - here: '${familyKind}' participant not found  - ${getSearchableIdForToBeEasyToCopy(
-        messageId,
-      )} 'family.value.length === 0'`,
-    );
-    return [emptyZenParticipant];
+    if (!fromCombiner) {
+      if (familyKind === "from") {
+        console.log(
+          `${step} - here: '${familyKind}' participant not found  - ${getSearchableIdForToBeEasyToCopy(
+            messageId,
+          )} 'family.value.length === 0'`,
+        );
+      }
+    }
+    return [sculptEmptyZenParticipant()];
   }
 
   const zenArr: TyZenParticipant[] = family.value.map((ptc) => {
@@ -153,20 +173,23 @@ export const getZenParticipantsFromFamily = ({
 
   const final = [...uniqified].map((duo) => {
     const prt = duo[1];
-    if (prt.address === str_EMPTY) {
-      console.log(
-        `${step} - here: '${familyKind}' participant address is empty - ${getSearchableIdForToBeEasyToCopy(
-          messageId,
-        )} 'prt.address === str_EMPTY'`,
-      );
-    }
 
-    if (prt.address.includes(str_STRANGE)) {
-      console.log(
-        `${step} - here: '${familyKind}' participant address is strange - ${getSearchableIdForToBeEasyToCopy(
-          messageId,
-        )} 'prt.address.includes(str_STRANGE)'`,
-      );
+    if (!fromCombiner) {
+      if (prt.address === str_EMPTY) {
+        console.log(
+          `${step} - here: '${familyKind}' participant address is empty - ${getSearchableIdForToBeEasyToCopy(
+            messageId,
+          )} 'prt.address === str_EMPTY'`,
+        );
+      }
+
+      if (prt.address.includes(str_STRANGE)) {
+        console.log(
+          `${step} - here: '${familyKind}' participant address is strange - ${getSearchableIdForToBeEasyToCopy(
+            messageId,
+          )} 'prt.address.includes(str_STRANGE)'`,
+        );
+      }
     }
 
     return prt;
@@ -196,7 +219,7 @@ export const combineTwoFamiliesIntoZenArr = ({
         messageId,
       )} --- both families are falsy`,
     );
-    return [emptyZenParticipant];
+    return [sculptEmptyZenParticipant()];
   }
 
   const zenOfFirst = getZenParticipantsFromFamily({
@@ -204,6 +227,7 @@ export const combineTwoFamiliesIntoZenArr = ({
     step,
     family: firstFamilyMeta.participationInfo,
     messageId,
+    fromCombiner: true,
   });
 
   const zenOfSecond = getZenParticipantsFromFamily({
@@ -211,6 +235,7 @@ export const combineTwoFamiliesIntoZenArr = ({
     step,
     family: secondFamilyMeta.participationInfo,
     messageId,
+    fromCombiner: true,
   });
 
   const uniqified = new Map<string, TyZenParticipant>(
@@ -220,14 +245,50 @@ export const combineTwoFamiliesIntoZenArr = ({
   const final = [...uniqified].map((duo) => duo[1]);
 
   if (final.length === 0) {
+    const blameKind =
+      zenOfFirst.length === 0
+        ? firstFamilyMeta.familyKind
+        : secondFamilyMeta.familyKind;
+
     console.log(
-      `${step} - here: participant not found  - ${getSearchableIdForToBeEasyToCopy(
+      `${step} - here: participant "${blameKind}" not found  - ${getSearchableIdForToBeEasyToCopy(
         messageId,
       )} 'final.length === 0 --- combineTwoFamilies'`,
     );
 
-    return [emptyZenParticipant];
+    return [sculptEmptyZenParticipant()];
   }
+
+  if (final.some((x) => !x || !x.address)) {
+    throw new Error(
+      JSON.stringify([
+        final,
+        step,
+        "-->",
+        zenOfFirst,
+        zenOfSecond,
+        secondFamilyMeta.participationInfo,
+      ]),
+    );
+  }
+
+  final.forEach((prt) => {
+    if (!prt.address || prt.address === str_EMPTY) {
+      console.log(
+        `${step} - here: participant address is empty - ${getSearchableIdForToBeEasyToCopy(
+          messageId,
+        )} 'prt.address === str_EMPTY' --- 'combineTwoFamilies'`,
+      );
+    }
+
+    if (prt.address.includes(str_STRANGE)) {
+      console.log(
+        `${step} - here: participant address is strange - ${getSearchableIdForToBeEasyToCopy(
+          messageId,
+        )} 'prt.address.includes(str_STRANGE)' --- 'combineTwoFamilies'`,
+      );
+    }
+  });
 
   return final;
 };
