@@ -70,8 +70,8 @@ export type TyMainInfoForMail = TyParticipationData & TyMajorData;
 
 // zen/Zen means normalized, simplified, cleaned, to avoid runtime errors
 export type TyZenParticipant = {
-  address: string; // "leodevbro@gmail.com" | "" (or "emptyAddress" for frequency stats)
-  name: string; // "Levan Katsadze" | "" (or "emptyName" for frequency stats)
+  address: string; // "leodevbro@gmail.com" | "()" as empty
+  name: string; // "Levan Katsadze" | "()" as empty
 };
 
 // zen/Zen means normalized, simplified, cleaned, to avoid runtime errors
