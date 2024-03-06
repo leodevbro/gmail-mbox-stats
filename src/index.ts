@@ -25,7 +25,7 @@ import {
   TyMboxMailHeaders,
   TyZenMainInfoForMail,
 } from "./types/mailparserTypes";
-import { TyParticipantRole, addOneMailInfoToStats } from "./utils/statsBuilder";
+import { addOneMailInfoToStats } from "./utils/statsBuilder";
 import {
   combineTwoFamiliesIntoZenArr,
   getZenParticipantsFromFamily,
@@ -53,12 +53,6 @@ const mbox = nodeMbox.MboxStream(mailbox, {
 const step = {
   v: 0,
 };
-
-// const counter = {
-//   v: 0,
-// };
-
-export const mainRoles: TyParticipantRole[] = ["sender", "receiver"];
 
 const analyzeMbox = () => {
   const scanHeaders = (headersMap: TyMailparserHeaders): void => {
@@ -186,7 +180,7 @@ const analyzeMbox = () => {
       );
 
       // maybe more logical for "addOneMailInfoToStats" to be here:
-      addOneMailInfoToStats(mainInfoForThisMail, step.v);
+      addOneMailInfoToStats(zenMainInfoForThisMail, step.v);
 
       // counter.v += 1;
     } catch (err) {
@@ -295,6 +289,6 @@ console.log('haaaa_end', process.argv, process.env.npm_config_aaabbbrt); // npm 
 */
 
 export const logExecutionMessage = () => {
-  const executionMessage = "Started MBOX file analyzation";
+  const executionMessage = "Started MBOX file analyzation 004";
   console.log(executionMessage);
 };
