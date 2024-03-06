@@ -1,14 +1,70 @@
 import {
-  TyExampleObjOfHeaders,
-  TyFromOrTo,
+  TyGmailMailHeadersAsObj,
   TyMailAddress,
   TyMailDomain,
-  TyMainInfoForMail,
+  TyZenFamilyKind,
+  TyZenMainInfoForMail,
+  TyZenParticipant,
 } from "../types/mailparserTypes";
 import { groundFolder } from "./stepUtils";
+import { combineAddressAndName } from "./sweetUtils";
 
-const unknowAddressStr = "(unknown address)";
-const unknowDomainStr = "(unknown domain)";
+// export type TyParticipantRole = "sender" | "receiver" | "cc" | "bcc";
+
+const gmailMessageIdSearchParam = "rfc822msgid";
+const gmailMessageIdSearcher = `${gmailMessageIdSearchParam}:`;
+
+export const generateSearchableIdOfMail = (nonCleanId: string): string => {
+  const asArr = nonCleanId.split(/[<>]/);
+  const cleanId = asArr.join("");
+  const searchable = `${gmailMessageIdSearcher}${cleanId}`;
+  return searchable;
+};
+
+export const getSearchableIdForToBeEasyToCopy = (nonCleanId: string) => {
+  return `Search: ===${generateSearchableIdOfMail(nonCleanId)}===`;
+};
+
+//
+//
+//
+//
+//
+//
+
+// id chveneba uket,
+// file name-shi column-ebis dasaxeleba order-is mikhedvit
+// aghar gvinda meili da neimi ertad ert column-shi. iyos mxolod name-i. nu freq-shi gvinda, kibatono.
+
+//
+//
+//
+//
+//
+//
+//
+
+// type TyUnknownValForItem = Record<TyParticipantRole, string>;
+
+// export const unknownVal: {
+//   address: TyUnknownValForItem;
+//   domain: TyUnknownValForItem;
+// } = {
+//   address: {
+//     sender: "(unknown address of sender)",
+//     receiver: "(unknown address of receiver)",
+//     cc: "zZz",
+//     bcc: "zZz",
+//   },
+//   domain: {
+//     sender: "(unknown domain of sender)",
+//     receiver: "(unknown domain of receiver)",
+//     cc: "zZz",
+//     bcc: "zZz",
+//   },
+// } as const;
+
+export const str_EMPTY = "EMPTY";
 
 const resultsInnerFiles =
   groundFolder.innerFolders.mboxStats.innerFolders.results.innerFiles;
@@ -29,81 +85,114 @@ const incrementInMap = <TKey extends string, TMap extends Map<TKey, number>>(
   theMap: TMap,
   key: TKey,
 ) => {
-  theMap.set(key, (theMap.get(key) || 0) + 1);
+  const outdatedVal = theMap.get(key) || 0;
+  theMap.set(key, outdatedVal + 1);
 };
 
-const handleSenderOrReceiverAddressAndDomain = ({
+const handleParticipantIntoFreqMap = ({
   messageId,
-  senderOrReceiver,
+  participantArr,
   mapForAddress,
   mapForDomain,
-  mapForFullInfo,
-  participant,
+  mapForAANInfo, // AAN -> Address and Name
+  participantRole,
+  stepN,
 }: {
-  messageId: TyExampleObjOfHeaders["message-id"];
-  senderOrReceiver: TyFromOrTo;
+  messageId: TyGmailMailHeadersAsObj["message-id"];
+  participantArr: TyZenParticipant[];
   mapForAddress: Map<TyMailAddress, number>;
-  mapForDomain: Map<TyMailDomain, number>;
-  mapForFullInfo: Map<string, number>;
-  participant: "sender" | "receiver";
+  mapForDomain: null | Map<TyMailDomain, number>;
+  mapForAANInfo: null | Map<string, number>; // AAN -> Address and Name
+  participantRole: TyZenFamilyKind;
+  stepN: number;
 }): void => {
-  const senderOrReceiver_arr = senderOrReceiver.value.map((x) => x.address); // probably there will be always one sender, no more, no less, but still.
+  if (!participantArr) {
+    // console.log(
+    //   `${stepN} - here: ${participantRole} not found - ${getSearchableIdForToBeEasyToCopy(
+    //     messageId,
+    //   )}`,
+    // );
+    throw new Error("participantArr is falsy --- handleParticipantIntoFreqMap");
+  }
 
-  const withUniqueAddresses = [...new Set(senderOrReceiver_arr)];
+  // Address and domain
+  participantArr.forEach((prtc, _index) => {
+    if (isMaybeCorrectNotationOfAddress(prtc.address)) {
+      incrementInMap(mapForAddress, prtc.address);
 
-  // for: ${str_frequency}${str_Sender}${str_Address} - or for receiver
-  withUniqueAddresses.forEach(
-    (senderOrReceiver: TyMailAddress | undefined | null) => {
-      if (senderOrReceiver) {
-        if (isMaybeCorrectNotationOfAddress(senderOrReceiver)) {
-          incrementInMap(mapForAddress, senderOrReceiver);
-          //
-          const indexOfTheAtSymbol = senderOrReceiver.indexOf("@");
-          const domain = senderOrReceiver.slice(
-            indexOfTheAtSymbol,
-          ) as TyMailDomain;
-          incrementInMap(mapForDomain, domain);
-        } else {
-          console.log(
-            `${participant} address notation is incorrect - "${senderOrReceiver}", mailId: ${messageId}`,
-          );
-          incrementInMap(mapForAddress, senderOrReceiver);
-          incrementInMap(mapForDomain, senderOrReceiver);
-        }
-      } else {
-        console.log(
-          `${participant} address not found - ${typeof senderOrReceiver} - ${senderOrReceiver}, mailId: ${messageId}`,
-        );
-        incrementInMap(mapForAddress, unknowAddressStr as any);
-        incrementInMap(mapForDomain, unknowDomainStr as any);
+      if (mapForDomain) {
+        const indexOfTheAtSymbol = prtc.address.indexOf("@");
+        const domain = prtc.address.slice(indexOfTheAtSymbol) as TyMailDomain;
+        incrementInMap(mapForDomain, domain);
       }
-    },
-  );
+    } else {
+      console.log(
+        `${stepN} - here: '${participantRole}' address notation is incorrect - "${
+          prtc.address
+        }" - ${getSearchableIdForToBeEasyToCopy(messageId)}`,
+      );
+      incrementInMap(mapForAddress, prtc.address);
 
-  // for: ${str_frequency}${str_Sender}${str_FullInfo} - for or receiver
-  incrementInMap(mapForFullInfo, senderOrReceiver.text);
+      if (mapForDomain) {
+        incrementInMap(mapForDomain, prtc.address);
+      }
+    }
+
+    // AddressAndName
+    if (mapForAANInfo) {
+      incrementInMap(
+        mapForAANInfo,
+        combineAddressAndName(prtc.address, prtc.name),
+      );
+    }
+  });
 };
 
 export const addOneMailInfoToStats = (
-  mainInfoOfOneMail: TyMainInfoForMail,
+  oneMail: TyZenMainInfoForMail,
+  stepN: number,
 ): void => {
   // for sender
-  handleSenderOrReceiverAddressAndDomain({
-    messageId: mainInfoOfOneMail.messageId,
-    senderOrReceiver: mainInfoOfOneMail.from,
+  handleParticipantIntoFreqMap({
+    messageId: oneMail["message-id"],
+    participantArr: oneMail.from,
     mapForAddress: resultsInnerFiles.frequencySenderAddress.freqMap,
     mapForDomain: resultsInnerFiles.frequencySenderDomain.freqMap,
-    mapForFullInfo: resultsInnerFiles.frequencySenderFullInfo.freqMap,
-    participant: "sender",
+    mapForAANInfo: resultsInnerFiles.frequencySenderAddressAndName.freqMap,
+    participantRole: "from",
+    stepN,
   });
 
   // for receiver
-  handleSenderOrReceiverAddressAndDomain({
-    messageId: mainInfoOfOneMail.messageId,
-    senderOrReceiver: mainInfoOfOneMail.to,
+  handleParticipantIntoFreqMap({
+    messageId: oneMail["message-id"],
+    participantArr: oneMail.zenTo,
     mapForAddress: resultsInnerFiles.frequencyReceiverAddress.freqMap,
-    mapForDomain: resultsInnerFiles.frequencyReceiverDomain.freqMap,
-    mapForFullInfo: resultsInnerFiles.frequencyReceiverFullInfo.freqMap,
-    participant: "receiver",
+    mapForDomain: null,
+    mapForAANInfo: null,
+    participantRole: "zenTo",
+    stepN,
+  });
+
+  // for cc
+  handleParticipantIntoFreqMap({
+    messageId: oneMail["message-id"],
+    participantArr: oneMail.cc,
+    mapForAddress: resultsInnerFiles.frequencyCcAddress.freqMap,
+    mapForDomain: null,
+    mapForAANInfo: null,
+    participantRole: "cc",
+    stepN,
+  });
+
+  // for bcc
+  handleParticipantIntoFreqMap({
+    messageId: oneMail["message-id"],
+    participantArr: oneMail.bcc,
+    mapForAddress: resultsInnerFiles.frequencyBccAddress.freqMap,
+    mapForDomain: null,
+    mapForAANInfo: null,
+    participantRole: "bcc",
+    stepN,
   });
 };
