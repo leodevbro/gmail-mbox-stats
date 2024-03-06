@@ -85,9 +85,11 @@ const analyzeMbox = () => {
           family: initialMainInfoForThisMail.from,
           step: step.v,
           familyKind: "from",
+          messageId: initialMainInfoForThisMail["message-id"],
         }),
         zenTo: combineTwoFamiliesIntoZenArr({
           step: step.v,
+          messageId: initialMainInfoForThisMail["message-id"],
           twoFamilies: [
             {
               familyKind: "to",
@@ -103,11 +105,13 @@ const analyzeMbox = () => {
           family: initialMainInfoForThisMail.cc,
           step: step.v,
           familyKind: "cc",
+          messageId: initialMainInfoForThisMail["message-id"],
         }),
         bcc: getZenParticipantsFromFamily({
           family: initialMainInfoForThisMail.bcc,
           step: step.v,
           familyKind: "bcc",
+          messageId: initialMainInfoForThisMail["message-id"],
         }),
         //
         date: initialMainInfoForThisMail.date,
