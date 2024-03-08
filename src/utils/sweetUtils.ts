@@ -89,7 +89,7 @@ type TyFamilyMeta = {
 //   return withOnlyUniqueValues;
 // };
 
-export const str_EMPTY = "()";
+export const str_EMPTY = "(-)";
 export const str_STRANGE = "STRANGE-->";
 
 const emptyZenParticipant: TyZenParticipant = {

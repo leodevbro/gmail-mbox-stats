@@ -19,7 +19,11 @@ import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
 // import { parse as parseCsvInto2dArr } from "csv-parse";
 
 import { getEnvItemValue, waitSomeSeconds } from "./utils/mainUtils";
-import { groundFolder, prepareOutputFolderStructure } from "./utils/stepUtils";
+import {
+  groundFolder,
+  prepareOutputFolderStructure,
+  writeStatsIntoFiles,
+} from "./utils/stepUtils";
 import {
   TyMainInfoForMail,
   TyMboxMailHeaders,
@@ -66,15 +70,10 @@ const checkFullCount = async (currCandidateCount: number): Promise<number> => {
   await waitSomeSeconds(10);
 
   if (currCandidateCount === step.v) {
-    // console.log(
-    //   "check count:",
-    //   step.countOfFullCountCheck,
-    //   "messageCount:",
-    //   step.v,
-    // );
+    console.log("Full count:", step.v);
     return step.v;
   } else {
-    if (step.countOfFullCountCheck >= 10) {
+    if (step.countOfFullCountCheck >= 5) {
       console.log(
         `Something's wrong --- could not determine full count of mails (messages), current count is: ${step.v}`,
       );
@@ -274,9 +273,15 @@ const analyzeMbox = () => {
   mbox.on("finish", async function () {
     console.log("Probably finished reading mbox file. Current count:", step.v);
 
-    const fullCount = await checkFullCount(step.v);
+    await checkFullCount(step.v);
 
-    console.log("Now finished. Full count:", fullCount);
+    console.log("Please wait several seconds more to generate stats files.");
+
+    waitSomeSeconds(5);
+
+    writeStatsIntoFiles();
+
+    console.log(`Success. Full count: ${step.v}`);
 
     // setTimeout(() => {
     //   const currCount = step.v;

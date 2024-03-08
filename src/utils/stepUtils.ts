@@ -2,6 +2,7 @@ import path from "node:path";
 
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { TyMailAddress, TyMailDomain } from "../types/mailparserTypes";
+import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
 
 const dotCsv = ".csv";
 
@@ -255,4 +256,51 @@ export const prepareOutputFolderStructure = (mboxFilePath: string) => {
       console.error(err);
     }
   }
+};
+
+export const writeStatsIntoFiles = () => {
+  const theFilesObj =
+    groundFolder.innerFolders.mboxStats.innerFolders.results.innerFiles;
+
+  const theKeysOfFilesObj = Object.keys(
+    theFilesObj,
+  ) as (keyof typeof theFilesObj)[];
+
+  theKeysOfFilesObj.forEach((propName) => {
+    const currFile = theFilesObj[propName];
+    if (!currFile.pathAbsOrRel) {
+      console.log(
+        `Something's wrong --- path of ${currFile.fileName} not found`,
+      );
+      return;
+    }
+
+    const freqDataAsSortedArr = [...currFile.freqMap].sort(
+      (a, b) => b[1] - a[1],
+    );
+    const fullCountOfNumbers = freqDataAsSortedArr.reduce<number>(
+      (accu, item) => {
+        const currItemFreqNumber = item[1];
+        return accu + currItemFreqNumber;
+      },
+      0,
+    );
+
+    const final2dArr = freqDataAsSortedArr.map((line, lineIndex) => {
+      const coolLine = [...line, lineIndex === 0 ? fullCountOfNumbers : ""];
+      return coolLine;
+    });
+
+    //
+    //
+
+    const csvStringBy2dArr = stringify2dArrIntoCsv(final2dArr, {
+      header: false,
+      columns: undefined,
+    });
+
+    writeFileSync(currFile.pathAbsOrRel, csvStringBy2dArr, {
+      flag: "a+",
+    });
+  });
 };

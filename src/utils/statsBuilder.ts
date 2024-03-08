@@ -7,7 +7,7 @@ import {
   TyZenParticipant,
 } from "../types/mailparserTypes";
 import { groundFolder } from "./stepUtils";
-import { combineAddressAndName } from "./sweetUtils";
+import { combineAddressAndName, str_EMPTY } from "./sweetUtils";
 
 // export type TyParticipantRole = "sender" | "receiver" | "cc" | "bcc";
 
@@ -79,6 +79,9 @@ const incrementInMap = <TKey extends string, TMap extends Map<TKey, number>>(
   theMap: TMap,
   key: TKey,
 ) => {
+  if (!key || key === str_EMPTY) {
+    return;
+  }
   const outdatedVal = theMap.get(key) || 0;
   theMap.set(key, outdatedVal + 1);
 };
