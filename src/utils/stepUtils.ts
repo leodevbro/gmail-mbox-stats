@@ -42,7 +42,7 @@ export const groundFolder = {
       pathAbsOrRel: "" as string,
       innerFiles: {
         allMailList_csv: {
-          fileName: `allMailList${dotCsv}`,
+          fileName: `index__sender-senderName-receiver-cc-bcc-time-id${dotCsv}`,
           pathAbsOrRel: "" as string,
           freqMap: new Map<string, number>([]),
         },
