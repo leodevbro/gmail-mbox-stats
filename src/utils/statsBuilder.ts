@@ -32,10 +32,6 @@ export const getSearchableIdForToBeEasyToCopy = (nonCleanId: string) => {
 //
 //
 
-// id chveneba uket,
-// file name-shi column-ebis dasaxeleba order-is mikhedvit
-// aghar gvinda meili da neimi ertad ert column-shi. iyos mxolod name-i. nu freq-shi gvinda, kibatono.
-
 //
 //
 //

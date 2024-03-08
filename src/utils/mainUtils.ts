@@ -43,3 +43,13 @@ export const getEnvItemValue = (name: string) => {
 
   return undefined;
 };
+
+export const waitSomeSeconds = async (seconds: number) => {
+  const smartPromise = new Promise<true>((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, seconds * 1000);
+  });
+
+  return smartPromise;
+};

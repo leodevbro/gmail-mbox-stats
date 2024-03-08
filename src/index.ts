@@ -18,7 +18,7 @@ import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
 
 // import { parse as parseCsvInto2dArr } from "csv-parse";
 
-import { getEnvItemValue } from "./utils/mainUtils";
+import { getEnvItemValue, waitSomeSeconds } from "./utils/mainUtils";
 import { groundFolder, prepareOutputFolderStructure } from "./utils/stepUtils";
 import {
   TyMainInfoForMail,
@@ -53,8 +53,35 @@ const mbox = nodeMbox.MboxStream(mailbox, {
   /* options */
 });
 
-const step = {
+const step: {
+  v: number;
+  countOfFullCountCheck: number;
+} = {
   v: 0,
+  countOfFullCountCheck: 0,
+};
+
+const checkFullCount = async (currCandidateCount: number): Promise<number> => {
+  step.countOfFullCountCheck += 1;
+  await waitSomeSeconds(10);
+
+  if (currCandidateCount === step.v) {
+    // console.log(
+    //   "check count:",
+    //   step.countOfFullCountCheck,
+    //   "messageCount:",
+    //   step.v,
+    // );
+    return step.v;
+  } else {
+    if (step.countOfFullCountCheck >= 10) {
+      console.log(
+        `Something's wrong --- could not determine full count of mails (messages), current count is: ${step.v}`,
+      );
+      return step.v;
+    }
+    return await checkFullCount(step.v);
+  }
 };
 
 const analyzeMbox = () => {
@@ -89,6 +116,23 @@ const analyzeMbox = () => {
         date: init_date,
         ["message-id"]: init_messageId,
       };
+
+      // if (step.v === 23) {
+      //   const rrr = initialMainInfoForThisMail.to?.value;
+      //   if (rrr) {
+      //     rrr.forEach((x) => {
+      //       x.address = undefined;
+      //     });
+      //   }
+
+      //   const rrr2 = initialMainInfoForThisMail["delivered-to"]?.value;
+      //   if (rrr2) {
+      //     rrr2.forEach((x) => {
+      //       x.address = undefined;
+      //     });
+      //   }
+      //   console.log(initialMainInfoForThisMail["message-id"]);
+      // }
 
       const zenMainInfoForThisMail: TyZenMainInfoForMail = {
         from: getZenParticipantsFromFamily({
@@ -142,7 +186,7 @@ const analyzeMbox = () => {
         }),
         prepareZenParticipantArrAsMainListItemStr({
           messageId: zenMainInfoForThisMail["message-id"],
-          ptcProp: "AddressAndName",
+          ptcProp: "name",
           step: step.v,
           zenFamilyKind: "from",
           zenParticipants: zenMainInfoForThisMail.from,
@@ -227,33 +271,37 @@ const analyzeMbox = () => {
     console.log("got an error", err);
   });
 
-  mbox.on("finish", function () {
-    console.log("finished one reading mbox file-->>>><<<>>>>>>>>==", step.v);
+  mbox.on("finish", async function () {
+    console.log("Probably finished reading mbox file. Current count:", step.v);
 
-    setTimeout(() => {
-      const currCount = step.v;
-      console.log("dfin-------le", currCount);
+    const fullCount = await checkFullCount(step.v);
 
-      setTimeout(() => {
-        if (currCount === step.v) {
-          console.log("success");
-        } else {
-          console.log("Warning: Maybe count is incorrect:", step.v);
+    console.log("Now finished. Full count:", fullCount);
 
-          const theMapMap =
-            groundFolder.innerFolders.mboxStats.innerFolders.results.innerFiles
-              .frequencySenderAddress.freqMap;
+    // setTimeout(() => {
+    //   const currCount = step.v;
+    //   console.log("dfin-------le", currCount);
 
-          const asSortedArr = [...theMapMap].sort((a, b) => b[1] - a[1]);
+    //   setTimeout(() => {
+    //     if (currCount === step.v) {
+    //       console.log("success");
+    //     } else {
+    //       console.log("Warning: Maybe count is incorrect:", step.v);
 
-          console.log(
-            theMapMap.size,
-            asSortedArr.length,
-            JSON.stringify(asSortedArr.slice(0, 10)),
-          );
-        }
-      }, 7000);
-    }, 2);
+    //       const theMapMap =
+    //         groundFolder.innerFolders.mboxStats.innerFolders.results.innerFiles
+    //           .frequencySenderAddress.freqMap;
+
+    //       const asSortedArr = [...theMapMap].sort((a, b) => b[1] - a[1]);
+
+    //       console.log(
+    //         theMapMap.size,
+    //         asSortedArr.length,
+    //         JSON.stringify(asSortedArr.slice(0, 10)),
+    //       );
+    //     }
+    //   }, 7000);
+    // }, 2);
   });
 };
 
