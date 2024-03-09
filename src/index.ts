@@ -405,6 +405,6 @@ console.log('haaaa_end', process.argv, process.env.npm_config_aaabbbrt); // npm 
 */
 
 export const logExecutionMessage = () => {
-  const executionMessage = "Started MBOX file analyzation 008";
+  const executionMessage = "Started MBOX file analyzation v0.9.16";
   console.log(executionMessage);
 };
