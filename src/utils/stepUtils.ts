@@ -3,6 +3,7 @@ import path from "node:path";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { TyMailAddress, TyMailDomain } from "../types/mailparserTypes";
 import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
+import { step } from "..";
 
 const dotCsv = ".csv";
 
@@ -302,6 +303,7 @@ export const prepareOutputFolderStructure = (mboxFilePath: string) => {
 
 export const writeStatsOfSpecificSenderCategoryIntoFiles = (
   folderOfSpecificSenderCategory: TyOneResultCategory,
+  senderCategory: keyof typeof step.countOfMailsWithSenderCategory,
 ) => {
   const theFilesObj = folderOfSpecificSenderCategory.innerFiles;
 
@@ -321,7 +323,7 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
     const freqDataAsSortedArr = [...currFile.freqMap].sort(
       (a, b) => b[1] - a[1],
     );
-    const fullCountOfNumbers = freqDataAsSortedArr.reduce<number>(
+    const fullSumOfNumbers = freqDataAsSortedArr.reduce<number>(
       (accu, item) => {
         const currItemFreqNumber = item[1];
         return accu + currItemFreqNumber;
@@ -329,8 +331,12 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
       0,
     );
 
+    if (currFile.fileName === theFilesObj.frequencySenderAddress.fileName) {
+      step.countOfMailsWithSenderCategory[senderCategory] = fullSumOfNumbers;
+    }
+
     const final2dArr = freqDataAsSortedArr.map((line, lineIndex) => {
-      const coolLine = [...line, lineIndex === 0 ? fullCountOfNumbers : ""];
+      const coolLine = [...line, lineIndex === 0 ? fullSumOfNumbers : ""];
       return coolLine;
     });
 
@@ -352,10 +358,12 @@ export const writeStatsIntoFiles = () => {
   writeStatsOfSpecificSenderCategoryIntoFiles(
     groundFolder.innerFolders.mboxStats.innerFolders
       .resultsForMailsWithSenderAsMe,
+    "me",
   );
 
   writeStatsOfSpecificSenderCategoryIntoFiles(
     groundFolder.innerFolders.mboxStats.innerFolders
       .resultsForMailsWithSenderAsNotMe,
+    "notMe",
   );
 };

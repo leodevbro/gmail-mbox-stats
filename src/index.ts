@@ -74,12 +74,22 @@ const mbox = nodeMbox.MboxStream(mailbox, {
   /* options */
 });
 
-const step: {
+export const step: {
   v: number;
   countOfFullCountCheck: number;
+  //
+  countOfMailsWithSenderCategory: {
+    me: number;
+    notMe: number;
+  };
 } = {
   v: 0,
   countOfFullCountCheck: 0,
+  //
+  countOfMailsWithSenderCategory: {
+    me: 0,
+    notMe: 0,
+  },
 };
 
 const checkFullCount = async (currCandidateCount: number): Promise<number> => {
@@ -300,7 +310,24 @@ const analyzeMbox = () => {
 
     writeStatsIntoFiles();
 
+    console.log("\n\n");
     console.log(`Success. Full count: ${step.v}`);
+    console.log(
+      `Full count of mails where sender is me: ${step.countOfMailsWithSenderCategory.me}`,
+    );
+    console.log(
+      `Full count of mails where sender is not me: ${step.countOfMailsWithSenderCategory.notMe}`,
+    );
+
+    const mePlusNotMe =
+      step.countOfMailsWithSenderCategory.me +
+      step.countOfMailsWithSenderCategory.notMe;
+
+    if (mePlusNotMe !== step.v) {
+      console.log(
+        `Strange - Some kind of error of counting --- "me" (${step.countOfMailsWithSenderCategory.me}) + "notMe" (${step.countOfMailsWithSenderCategory.notMe}) should be totalCount (${step.v}), but the sum is ${mePlusNotMe}`,
+      );
+    }
 
     // setTimeout(() => {
     //   const currCount = step.v;
