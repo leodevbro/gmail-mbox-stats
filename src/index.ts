@@ -32,6 +32,7 @@ import {
 import {
   addOneMailInfoToStats,
   generateSearchableIdOfMail,
+  isMaybeCorrectNotationOfAddress,
 } from "./utils/statsBuilder";
 import {
   combineTwoFamiliesIntoZenArr,
@@ -42,9 +43,23 @@ import {
 const allMailListFile =
   groundFolder.innerFolders.mboxStats.innerFiles.allMailList_csv;
 
+const argNameForMyEmailAddress = "mymail"; // main input !!!
 const argNameForMboxFilePath = "mboxpath"; // main input !!!
 
-export const myEmail = "leodevbro@gmail.com"; // TODO: env
+// export const myEmail = "leodevbro@gmail.com";
+
+export const myEmailRaw: string = getEnvItemValue(
+  argNameForMyEmailAddress,
+) as string;
+if (
+  !myEmailRaw ||
+  typeof myEmailRaw !== "string" ||
+  !isMaybeCorrectNotationOfAddress(myEmailRaw)
+) {
+  throw new Error(`mymail notation is not valid --- ${myEmailRaw}`);
+}
+
+export const myEmail = myEmailRaw.toLowerCase();
 
 const mboxFilePath = getEnvItemValue(argNameForMboxFilePath);
 
@@ -274,9 +289,7 @@ const analyzeMbox = () => {
 
   mbox.on("finish", async function () {
     console.log(
-      "Probably finished reading mbox file. Current count:",
-      step.v,
-      "Please wait.",
+      `Probably finished reading mbox file. Current count: ${step.v}. Please wait.`,
     );
 
     await checkFullCount(step.v);

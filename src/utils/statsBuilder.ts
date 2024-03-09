@@ -152,7 +152,7 @@ export const addOneMailInfoToStats = (
   const currSenderAddress = oneMail.from[0].address; // assumes there will be always 1 sender, not less, not more.
 
   const currSenderCategory: keyof typeof resultsInnerFilesCategories =
-    currSenderAddress === myEmail ? "me" : "notMe";
+    currSenderAddress.toLowerCase() === myEmail ? "me" : "notMe";
 
   const innerFilesForThisCategory =
     resultsInnerFilesCategories[currSenderCategory];
