@@ -32,6 +32,93 @@ export type TyOneFolderIndicator = {
   };
 };
 
+type TyCheckThatTObjExtendsTSource<TSource, TObj extends TSource> = TObj &
+  never;
+
+// const resultsFolderForSpecificSenderCategory: TyOneFolderIndicator
+const resultsFolderForSpecificSenderCategory = {
+  folderName: "results",
+  pathAbsOrRel: "" as string,
+  innerFolders: {},
+  innerFiles: {
+    frequencySenderAddress: {
+      fileName: `${str_frequency}${str_Sender}${str_Address}${dotCsv}`,
+      pathAbsOrRel: "" as string,
+      freqMap: new Map<TyMailAddress, number>([]),
+    },
+    frequencySenderDomain: {
+      fileName: `${str_frequency}${str_Sender}${str_Domain}${dotCsv}`,
+      pathAbsOrRel: "" as string,
+      freqMap: new Map<TyMailDomain, number>([]),
+    },
+    frequencySenderAddressAndName: {
+      fileName: `${str_frequency}${str_Sender}${str_AddressAndName}${dotCsv}`,
+      pathAbsOrRel: "" as string,
+      freqMap: new Map<string, number>([]),
+    },
+
+    // not just first receiver, but includes all receivers. So, count of receivers can me more than count of senders
+
+    frequencyReceiverAddress: {
+      fileName: `${str_frequency}${str_Receiver}${str_Address}${dotCsv}`,
+      pathAbsOrRel: "" as string,
+      freqMap: new Map<TyMailAddress, number>([]),
+    },
+    // frequencyReceiverDomain: {
+    //   fileName: `${str_frequency}${str_Receiver}${str_Domain}${dotCsv}`,
+    //   pathAbsOrRel: "" as string,
+    //   freqMap: new Map<TyMailDomain, number>([]),
+    // },
+    // frequencyReceiverAddressAndName: {
+    //   fileName: `${str_frequency}${str_Receiver}${str_AddressAndName}${dotCsv}`,
+    //   pathAbsOrRel: "" as string,
+    //   freqMap: new Map<string, number>([]),
+    // },
+
+    // cc:
+
+    frequencyCcAddress: {
+      fileName: `${str_frequency}${str_Cc}${str_Address}${dotCsv}`,
+      pathAbsOrRel: "" as string,
+      freqMap: new Map<TyMailAddress, number>([]),
+    },
+    // frequencyCcDomain: {
+    //   fileName: `${str_frequency}${str_Cc}${str_Domain}${dotCsv}`,
+    //   pathAbsOrRel: "" as string,
+    //   freqMap: new Map<TyMailDomain, number>([]),
+    // },
+    // frequencyCcAddressAndName: {
+    //   fileName: `${str_frequency}${str_Cc}${str_AddressAndName}${dotCsv}`,
+    //   pathAbsOrRel: "" as string,
+    //   freqMap: new Map<string, number>([]),
+    // },
+
+    // bcc:
+
+    frequencyBccAddress: {
+      fileName: `${str_frequency}${str_Bcc}${str_Address}${dotCsv}`,
+      pathAbsOrRel: "" as string,
+      freqMap: new Map<TyMailAddress, number>([]),
+    },
+    // frequencyBccDomain: {
+    //   fileName: `${str_frequency}${str_Bcc}${str_Domain}${dotCsv}`,
+    //   pathAbsOrRel: "" as string,
+    //   freqMap: new Map<TyMailDomain, number>([]),
+    // },
+    // frequencyBccAddressAndName: {
+    //   fileName: `${str_frequency}${str_Bcc}${str_AddressAndName}${dotCsv}`,
+    //   pathAbsOrRel: "" as string,
+    //   freqMap: new Map<string, number>([]),
+    // },
+  },
+} as const;
+
+type TyDoTheCheck1 = TyCheckThatTObjExtendsTSource<
+  TyOneFolderIndicator,
+  typeof resultsFolderForSpecificSenderCategory
+>;
+null as TyDoTheCheck1;
+
 // export const groundFolder: TyOneFolderIndicator
 export const groundFolder = {
   folderName: "groundFolder",
@@ -49,93 +136,30 @@ export const groundFolder = {
         },
       },
       innerFolders: {
-        results: {
-          folderName: "results",
-          pathAbsOrRel: "" as string,
-          innerFolders: {},
-          innerFiles: {
-            frequencySenderAddress: {
-              fileName: `${str_frequency}${str_Sender}${str_Address}${dotCsv}`,
-              pathAbsOrRel: "" as string,
-              freqMap: new Map<TyMailAddress, number>([]),
-            },
-            frequencySenderDomain: {
-              fileName: `${str_frequency}${str_Sender}${str_Domain}${dotCsv}`,
-              pathAbsOrRel: "" as string,
-              freqMap: new Map<TyMailDomain, number>([]),
-            },
-            frequencySenderAddressAndName: {
-              fileName: `${str_frequency}${str_Sender}${str_AddressAndName}${dotCsv}`,
-              pathAbsOrRel: "" as string,
-              freqMap: new Map<string, number>([]),
-            },
-
-            // not just first receiver, but includes all receivers. So, count of receivers can me more than count of senders
-
-            frequencyReceiverAddress: {
-              fileName: `${str_frequency}${str_Receiver}${str_Address}${dotCsv}`,
-              pathAbsOrRel: "" as string,
-              freqMap: new Map<TyMailAddress, number>([]),
-            },
-            // frequencyReceiverDomain: {
-            //   fileName: `${str_frequency}${str_Receiver}${str_Domain}${dotCsv}`,
-            //   pathAbsOrRel: "" as string,
-            //   freqMap: new Map<TyMailDomain, number>([]),
-            // },
-            // frequencyReceiverAddressAndName: {
-            //   fileName: `${str_frequency}${str_Receiver}${str_AddressAndName}${dotCsv}`,
-            //   pathAbsOrRel: "" as string,
-            //   freqMap: new Map<string, number>([]),
-            // },
-
-            // cc:
-
-            frequencyCcAddress: {
-              fileName: `${str_frequency}${str_Cc}${str_Address}${dotCsv}`,
-              pathAbsOrRel: "" as string,
-              freqMap: new Map<TyMailAddress, number>([]),
-            },
-            // frequencyCcDomain: {
-            //   fileName: `${str_frequency}${str_Cc}${str_Domain}${dotCsv}`,
-            //   pathAbsOrRel: "" as string,
-            //   freqMap: new Map<TyMailDomain, number>([]),
-            // },
-            // frequencyCcAddressAndName: {
-            //   fileName: `${str_frequency}${str_Cc}${str_AddressAndName}${dotCsv}`,
-            //   pathAbsOrRel: "" as string,
-            //   freqMap: new Map<string, number>([]),
-            // },
-
-            // bcc:
-
-            frequencyBccAddress: {
-              fileName: `${str_frequency}${str_Bcc}${str_Address}${dotCsv}`,
-              pathAbsOrRel: "" as string,
-              freqMap: new Map<TyMailAddress, number>([]),
-            },
-            // frequencyBccDomain: {
-            //   fileName: `${str_frequency}${str_Bcc}${str_Domain}${dotCsv}`,
-            //   pathAbsOrRel: "" as string,
-            //   freqMap: new Map<TyMailDomain, number>([]),
-            // },
-            // frequencyBccAddressAndName: {
-            //   fileName: `${str_frequency}${str_Bcc}${str_AddressAndName}${dotCsv}`,
-            //   pathAbsOrRel: "" as string,
-            //   freqMap: new Map<string, number>([]),
-            // },
-          },
-        },
+        resultsForMailsWithSenderAsMe: {
+          ...structuredClone(resultsFolderForSpecificSenderCategory),
+          folderName: "resultsForMailsWithSenderAsMe",
+        } as const,
+        resultsForMailsWithSenderAsNotMe: {
+          ...structuredClone(resultsFolderForSpecificSenderCategory),
+          folderName: "resultsForMailsWithSenderAsNotMe",
+        } as const,
       },
     },
   },
 } as const;
 
-type TyCheckThatTObjExtendsTSource<TSource, TObj extends TSource> = TObj &
-  never;
-export type TyDoTheCheck = TyCheckThatTObjExtendsTSource<
+export type TyResultsCategories =
+  typeof groundFolder.innerFolders.mboxStats.innerFolders;
+
+export type TyOneResultCategory =
+  TyResultsCategories[keyof TyResultsCategories];
+
+type TyDoTheCheck = TyCheckThatTObjExtendsTSource<
   TyOneFolderIndicator,
   typeof groundFolder
 >;
+null as TyDoTheCheck;
 
 export const getPrettyDateTime = (): string => {
   const newDate = new Date();
@@ -162,6 +186,60 @@ export const getPrettyDateTime = (): string => {
   const str = `${eachStr.year}-${eachStr.month}-${eachStr.monthDay}_${eachStr.hour}-${eachStr.minute}-${eachStr.seconds}`;
 
   return str;
+};
+
+export const prepareResultsFolderForSenderCategory = (
+  mboxStatsFolderPath: string,
+  folderOfSpecificSenderCategory: TyOneResultCategory,
+) => {
+  const resultsFolderPath = path.join(
+    mboxStatsFolderPath,
+    folderOfSpecificSenderCategory.folderName,
+  );
+
+  // create results Folder
+  try {
+    if (!existsSync(resultsFolderPath)) {
+      mkdirSync(resultsFolderPath);
+    }
+
+    folderOfSpecificSenderCategory[
+      // @ts-ignore
+      "pathAbsOrRel"
+    ] = resultsFolderPath;
+  } catch (err) {
+    console.error(err);
+  }
+
+  //===================================
+  //===================================
+  //===================================
+
+  const resultsFoldersInnerFiles = folderOfSpecificSenderCategory.innerFiles;
+
+  //
+
+  const arrOfObjKeysOfCandFiles = Object.keys(
+    resultsFoldersInnerFiles,
+  ) as (keyof typeof resultsFoldersInnerFiles)[];
+
+  // create results files:
+  for (const propName of arrOfObjKeysOfCandFiles) {
+    const thePath = path.join(
+      resultsFolderPath,
+      resultsFoldersInnerFiles[propName].fileName,
+    );
+    try {
+      writeFileSync(thePath, "");
+
+      resultsFoldersInnerFiles[propName][
+        // @ts-ignore
+        "pathAbsOrRel"
+      ] = thePath;
+    } catch (err) {
+      console.error(err);
+    }
+  }
 };
 
 export const prepareOutputFolderStructure = (mboxFilePath: string) => {
@@ -207,60 +285,25 @@ export const prepareOutputFolderStructure = (mboxFilePath: string) => {
     console.error(err);
   }
 
-  const resultsFolderPath = path.join(
-    mboxStatsFolderPath,
-    groundFolder.innerFolders.mboxStats.innerFolders.results.folderName,
-  );
-
-  // create results Folder
-  try {
-    if (!existsSync(resultsFolderPath)) {
-      mkdirSync(resultsFolderPath);
-    }
-
-    groundFolder.innerFolders.mboxStats.innerFolders.results[
-      // @ts-ignore
-      "pathAbsOrRel"
-    ] = resultsFolderPath;
-  } catch (err) {
-    console.error(err);
-  }
-
-  //===================================
-  //===================================
-  //===================================
-
-  const resultsFoldersInnerFiles =
-    groundFolder.innerFolders.mboxStats.innerFolders.results.innerFiles;
-
   //
 
-  const arrOfObjKeysOfCandFiles = Object.keys(
-    resultsFoldersInnerFiles,
-  ) as (keyof typeof resultsFoldersInnerFiles)[];
+  prepareResultsFolderForSenderCategory(
+    mboxStatsFolderPath,
+    groundFolder.innerFolders.mboxStats.innerFolders
+      .resultsForMailsWithSenderAsMe,
+  );
 
-  // create results files:
-  for (const propName of arrOfObjKeysOfCandFiles) {
-    const thePath = path.join(
-      resultsFolderPath,
-      resultsFoldersInnerFiles[propName].fileName,
-    );
-    try {
-      writeFileSync(thePath, "");
-
-      resultsFoldersInnerFiles[propName][
-        // @ts-ignore
-        "pathAbsOrRel"
-      ] = thePath;
-    } catch (err) {
-      console.error(err);
-    }
-  }
+  prepareResultsFolderForSenderCategory(
+    mboxStatsFolderPath,
+    groundFolder.innerFolders.mboxStats.innerFolders
+      .resultsForMailsWithSenderAsNotMe,
+  );
 };
 
-export const writeStatsIntoFiles = () => {
-  const theFilesObj =
-    groundFolder.innerFolders.mboxStats.innerFolders.results.innerFiles;
+export const writeStatsOfSpecificSenderCategoryIntoFiles = (
+  folderOfSpecificSenderCategory: TyOneResultCategory,
+) => {
+  const theFilesObj = folderOfSpecificSenderCategory.innerFiles;
 
   const theKeysOfFilesObj = Object.keys(
     theFilesObj,
@@ -303,4 +346,16 @@ export const writeStatsIntoFiles = () => {
       flag: "a+",
     });
   });
+};
+
+export const writeStatsIntoFiles = () => {
+  writeStatsOfSpecificSenderCategoryIntoFiles(
+    groundFolder.innerFolders.mboxStats.innerFolders
+      .resultsForMailsWithSenderAsMe,
+  );
+
+  writeStatsOfSpecificSenderCategoryIntoFiles(
+    groundFolder.innerFolders.mboxStats.innerFolders
+      .resultsForMailsWithSenderAsNotMe,
+  );
 };

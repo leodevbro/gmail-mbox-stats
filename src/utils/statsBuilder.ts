@@ -1,3 +1,4 @@
+import { myEmail } from "..";
 import {
   TyGmailMailHeadersAsObj,
   TyMailAddress,
@@ -60,8 +61,12 @@ export const getSearchableIdForToBeEasyToCopy = (nonCleanId: string) => {
 //   },
 // } as const;
 
-const resultsInnerFiles =
-  groundFolder.innerFolders.mboxStats.innerFolders.results.innerFiles;
+const msFolders = groundFolder.innerFolders.mboxStats.innerFolders;
+
+const resultsInnerFilesCategories = {
+  me: msFolders.resultsForMailsWithSenderAsMe.innerFiles,
+  notMe: msFolders.resultsForMailsWithSenderAsNotMe.innerFiles,
+} as const;
 
 export const isMaybeCorrectNotationOfAddress = (notation: string): boolean => {
   const indexOfTheAtSymbol = notation.indexOf("@");
@@ -144,13 +149,22 @@ export const addOneMailInfoToStats = (
   oneMail: TyZenMainInfoForMail,
   stepN: number,
 ): void => {
+  const currSenderAddress = oneMail.from[0].address; // assumes there will be always 1 sender, not less, not more.
+
+  const currSenderCategory: keyof typeof resultsInnerFilesCategories =
+    currSenderAddress === myEmail ? "me" : "notMe";
+
+  const innerFilesForThisCategory =
+    resultsInnerFilesCategories[currSenderCategory];
+
   // for sender
   handleParticipantIntoFreqMap({
     messageId: oneMail["message-id"],
     participantArr: oneMail.from,
-    mapForAddress: resultsInnerFiles.frequencySenderAddress.freqMap,
-    mapForDomain: resultsInnerFiles.frequencySenderDomain.freqMap,
-    mapForAANInfo: resultsInnerFiles.frequencySenderAddressAndName.freqMap,
+    mapForAddress: innerFilesForThisCategory.frequencySenderAddress.freqMap,
+    mapForDomain: innerFilesForThisCategory.frequencySenderDomain.freqMap,
+    mapForAANInfo:
+      innerFilesForThisCategory.frequencySenderAddressAndName.freqMap,
     participantRole: "from",
     stepN,
   });
@@ -159,7 +173,7 @@ export const addOneMailInfoToStats = (
   handleParticipantIntoFreqMap({
     messageId: oneMail["message-id"],
     participantArr: oneMail.zenTo,
-    mapForAddress: resultsInnerFiles.frequencyReceiverAddress.freqMap,
+    mapForAddress: innerFilesForThisCategory.frequencyReceiverAddress.freqMap,
     mapForDomain: null,
     mapForAANInfo: null,
     participantRole: "zenTo",
@@ -170,7 +184,7 @@ export const addOneMailInfoToStats = (
   handleParticipantIntoFreqMap({
     messageId: oneMail["message-id"],
     participantArr: oneMail.cc,
-    mapForAddress: resultsInnerFiles.frequencyCcAddress.freqMap,
+    mapForAddress: innerFilesForThisCategory.frequencyCcAddress.freqMap,
     mapForDomain: null,
     mapForAANInfo: null,
     participantRole: "cc",
@@ -181,7 +195,7 @@ export const addOneMailInfoToStats = (
   handleParticipantIntoFreqMap({
     messageId: oneMail["message-id"],
     participantArr: oneMail.bcc,
-    mapForAddress: resultsInnerFiles.frequencyBccAddress.freqMap,
+    mapForAddress: innerFilesForThisCategory.frequencyBccAddress.freqMap,
     mapForDomain: null,
     mapForAANInfo: null,
     participantRole: "bcc",

@@ -44,6 +44,8 @@ const allMailListFile =
 
 const argNameForMboxFilePath = "mboxpath"; // main input !!!
 
+export const myEmail = "leodevbro@gmail.com"; // TODO: env
+
 const mboxFilePath = getEnvItemValue(argNameForMboxFilePath);
 
 if (!mboxFilePath || typeof mboxFilePath !== "string") {
@@ -271,7 +273,11 @@ const analyzeMbox = () => {
   });
 
   mbox.on("finish", async function () {
-    console.log("Probably finished reading mbox file. Current count:", step.v);
+    console.log(
+      "Probably finished reading mbox file. Current count:",
+      step.v,
+      "Please wait.",
+    );
 
     await checkFullCount(step.v);
 
