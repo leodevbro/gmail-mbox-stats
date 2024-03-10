@@ -38,7 +38,7 @@ import {
   combineTwoFamiliesIntoZenArr,
   getZenParticipantsFromFamily,
 } from "./utils/sweetUtils";
-import { handleOneLineOfMailboxIndex } from "./utils/mailboxIndexMaker";
+// import { handleOneLineOfMailboxIndex } from "./utils/mailboxIndexMaker";
 
 const argNameForMyEmailAddress = "mymail"; // main input !!!
 const argNameForMboxFilePath = "mboxpath"; // main input !!!
@@ -91,7 +91,7 @@ export const step: {
 
 const checkFullCount = async (currCandidateCount: number): Promise<number> => {
   step.countOfFullCountCheck += 1;
-  await waitSomeSeconds(10);
+  await waitSomeSeconds(5);
 
   if (currCandidateCount === step.v) {
     console.log("Full count:", step.v);
@@ -199,10 +199,12 @@ const analyzeMbox = () => {
       };
 
       // TODO: maybe for future
+      /*
       handleOneLineOfMailboxIndex({
         stepV: step.v,
         zenMainInfoForThisMail,
       });
+      */
       //
 
       // maybe more logical for "addOneMailInfoToStats" to be here:
@@ -272,7 +274,7 @@ const analyzeMbox = () => {
 
     writeStatsIntoFiles();
 
-    console.log("\n\n");
+    console.log("\n");
     console.log(`Success. Full count: ${step.v}`);
     console.log(
       `Full count of mails where sender is me: ${step.countOfMailsWithSenderCategory.me}`,
@@ -342,6 +344,7 @@ console.log('haaaa_end', process.argv, process.env.npm_config_aaabbbrt); // npm 
 */
 
 export const logExecutionMessage = () => {
-  const executionMessage = "Started MBOX file analyzation v0.9.17";
+  const executionMessage =
+    "Started MBOX file analyzation by gmail-mbox-stats v1.0.0 - created by leodevbro (Levan Katsadze)";
   console.log(executionMessage);
 };

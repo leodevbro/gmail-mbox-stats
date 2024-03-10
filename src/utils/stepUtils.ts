@@ -7,7 +7,7 @@ import { step } from "..";
 
 const dotCsv = ".csv";
 
-const str_frequency = "frequency";
+const str_frequency = "Frequency";
 const str_Sender = "Sender";
 const str_Receiver = "Receiver";
 const str_Cc = "Cc";
@@ -279,12 +279,14 @@ export const prepareOutputFolderStructure = (mboxFilePath: string) => {
     console.error(err);
   }
 
+  // create main index csv file
+  // TODO: maybe for future
+  /*
   const allMailListFilePath = path.join(
     mboxStatsFolderPath,
     groundFolder.innerFolders.mboxStats.innerFiles.allMailList_csv.fileName,
   );
 
-  // create main list csv file
   try {
     writeFileSync(allMailListFilePath, "");
 
@@ -295,6 +297,7 @@ export const prepareOutputFolderStructure = (mboxFilePath: string) => {
   } catch (err) {
     console.error(err);
   }
+  */
 
   //
 
