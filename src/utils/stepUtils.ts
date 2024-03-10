@@ -36,89 +36,99 @@ export type TyOneFolderIndicator = {
 type TyCheckThatTObjExtendsTSource<TSource, TObj extends TSource> = TObj &
   never;
 
-// const resultsFolderForSpecificSenderCategory: TyOneFolderIndicator
-const resultsFolderForSpecificSenderCategory = {
-  folderName: "results",
-  pathAbsOrRel: "" as string,
-  innerFolders: {},
-  innerFiles: {
-    frequencySenderAddress: {
-      fileName: `${str_frequency}${str_Sender}${str_Address}${dotCsv}`,
-      pathAbsOrRel: "" as string,
-      freqMap: new Map<TyMailAddress, number>([]),
+export type TySenderCategory = "me" | "notMe";
+
+const createResultsObjForSpecificSenderCategory = (
+  category: TySenderCategory,
+) => {
+  const sCatStr = category === "me" ? "senderIsMe" : "senderIsNotMe";
+
+  // const resultsFolderForSpecificSenderCategory: TyOneFolderIndicator
+  const resultsFolderForSpecificSenderCategory = {
+    folderName: "results",
+    pathAbsOrRel: "" as string,
+    innerFolders: {},
+    innerFiles: {
+      frequencySenderAddress: {
+        fileName: `${sCatStr}${str_frequency}${str_Sender}${str_Address}${dotCsv}`,
+        pathAbsOrRel: "" as string,
+        freqMap: new Map<TyMailAddress, number>([]),
+      },
+      frequencySenderDomain: {
+        fileName: `${sCatStr}${str_frequency}${str_Sender}${str_Domain}${dotCsv}`,
+        pathAbsOrRel: "" as string,
+        freqMap: new Map<TyMailDomain, number>([]),
+      },
+      frequencySenderAddressAndName: {
+        fileName: `${sCatStr}${str_frequency}${str_Sender}${str_AddressAndName}${dotCsv}`,
+        pathAbsOrRel: "" as string,
+        freqMap: new Map<string, number>([]),
+      },
+
+      // not just first receiver, but includes all receivers. So, count of receivers can me more than count of senders
+
+      frequencyReceiverAddress: {
+        fileName: `${sCatStr}${str_frequency}${str_Receiver}${str_Address}${dotCsv}`,
+        pathAbsOrRel: "" as string,
+        freqMap: new Map<TyMailAddress, number>([]),
+      },
+      // frequencyReceiverDomain: {
+      //   fileName: `${sCatStr}${str_frequency}${str_Receiver}${str_Domain}${dotCsv}`,
+      //   pathAbsOrRel: "" as string,
+      //   freqMap: new Map<TyMailDomain, number>([]),
+      // },
+      // frequencyReceiverAddressAndName: {
+      //   fileName: `${sCatStr}${str_frequency}${str_Receiver}${str_AddressAndName}${dotCsv}`,
+      //   pathAbsOrRel: "" as string,
+      //   freqMap: new Map<string, number>([]),
+      // },
+
+      // cc:
+
+      frequencyCcAddress: {
+        fileName: `${sCatStr}${str_frequency}${str_Cc}${str_Address}${dotCsv}`,
+        pathAbsOrRel: "" as string,
+        freqMap: new Map<TyMailAddress, number>([]),
+      },
+      // frequencyCcDomain: {
+      //   fileName: `${sCatStr}${str_frequency}${str_Cc}${str_Domain}${dotCsv}`,
+      //   pathAbsOrRel: "" as string,
+      //   freqMap: new Map<TyMailDomain, number>([]),
+      // },
+      // frequencyCcAddressAndName: {
+      //   fileName: `${sCatStr}${str_frequency}${str_Cc}${str_AddressAndName}${dotCsv}`,
+      //   pathAbsOrRel: "" as string,
+      //   freqMap: new Map<string, number>([]),
+      // },
+
+      // bcc:
+
+      frequencyBccAddress: {
+        fileName: `${sCatStr}${str_frequency}${str_Bcc}${str_Address}${dotCsv}`,
+        pathAbsOrRel: "" as string,
+        freqMap: new Map<TyMailAddress, number>([]),
+      },
+      // frequencyBccDomain: {
+      //   fileName: `${sCatStr}${str_frequency}${str_Bcc}${str_Domain}${dotCsv}`,
+      //   pathAbsOrRel: "" as string,
+      //   freqMap: new Map<TyMailDomain, number>([]),
+      // },
+      // frequencyBccAddressAndName: {
+      //   fileName: `${sCatStr}${str_frequency}${str_Bcc}${str_AddressAndName}${dotCsv}`,
+      //   pathAbsOrRel: "" as string,
+      //   freqMap: new Map<string, number>([]),
+      // },
     },
-    frequencySenderDomain: {
-      fileName: `${str_frequency}${str_Sender}${str_Domain}${dotCsv}`,
-      pathAbsOrRel: "" as string,
-      freqMap: new Map<TyMailDomain, number>([]),
-    },
-    frequencySenderAddressAndName: {
-      fileName: `${str_frequency}${str_Sender}${str_AddressAndName}${dotCsv}`,
-      pathAbsOrRel: "" as string,
-      freqMap: new Map<string, number>([]),
-    },
+  } as const;
 
-    // not just first receiver, but includes all receivers. So, count of receivers can me more than count of senders
+  type TyDoTheCheck1 = TyCheckThatTObjExtendsTSource<
+    TyOneFolderIndicator,
+    typeof resultsFolderForSpecificSenderCategory
+  >;
+  null as TyDoTheCheck1;
 
-    frequencyReceiverAddress: {
-      fileName: `${str_frequency}${str_Receiver}${str_Address}${dotCsv}`,
-      pathAbsOrRel: "" as string,
-      freqMap: new Map<TyMailAddress, number>([]),
-    },
-    // frequencyReceiverDomain: {
-    //   fileName: `${str_frequency}${str_Receiver}${str_Domain}${dotCsv}`,
-    //   pathAbsOrRel: "" as string,
-    //   freqMap: new Map<TyMailDomain, number>([]),
-    // },
-    // frequencyReceiverAddressAndName: {
-    //   fileName: `${str_frequency}${str_Receiver}${str_AddressAndName}${dotCsv}`,
-    //   pathAbsOrRel: "" as string,
-    //   freqMap: new Map<string, number>([]),
-    // },
-
-    // cc:
-
-    frequencyCcAddress: {
-      fileName: `${str_frequency}${str_Cc}${str_Address}${dotCsv}`,
-      pathAbsOrRel: "" as string,
-      freqMap: new Map<TyMailAddress, number>([]),
-    },
-    // frequencyCcDomain: {
-    //   fileName: `${str_frequency}${str_Cc}${str_Domain}${dotCsv}`,
-    //   pathAbsOrRel: "" as string,
-    //   freqMap: new Map<TyMailDomain, number>([]),
-    // },
-    // frequencyCcAddressAndName: {
-    //   fileName: `${str_frequency}${str_Cc}${str_AddressAndName}${dotCsv}`,
-    //   pathAbsOrRel: "" as string,
-    //   freqMap: new Map<string, number>([]),
-    // },
-
-    // bcc:
-
-    frequencyBccAddress: {
-      fileName: `${str_frequency}${str_Bcc}${str_Address}${dotCsv}`,
-      pathAbsOrRel: "" as string,
-      freqMap: new Map<TyMailAddress, number>([]),
-    },
-    // frequencyBccDomain: {
-    //   fileName: `${str_frequency}${str_Bcc}${str_Domain}${dotCsv}`,
-    //   pathAbsOrRel: "" as string,
-    //   freqMap: new Map<TyMailDomain, number>([]),
-    // },
-    // frequencyBccAddressAndName: {
-    //   fileName: `${str_frequency}${str_Bcc}${str_AddressAndName}${dotCsv}`,
-    //   pathAbsOrRel: "" as string,
-    //   freqMap: new Map<string, number>([]),
-    // },
-  },
-} as const;
-
-type TyDoTheCheck1 = TyCheckThatTObjExtendsTSource<
-  TyOneFolderIndicator,
-  typeof resultsFolderForSpecificSenderCategory
->;
-null as TyDoTheCheck1;
+  return resultsFolderForSpecificSenderCategory;
+};
 
 // export const groundFolder: TyOneFolderIndicator
 export const groundFolder = {
@@ -138,11 +148,11 @@ export const groundFolder = {
       },
       innerFolders: {
         resultsForMailsWithSenderAsMe: {
-          ...structuredClone(resultsFolderForSpecificSenderCategory),
+          ...createResultsObjForSpecificSenderCategory("me"),
           folderName: "resultsForMailsWithSenderAsMe",
         } as const,
         resultsForMailsWithSenderAsNotMe: {
-          ...structuredClone(resultsFolderForSpecificSenderCategory),
+          ...createResultsObjForSpecificSenderCategory("notMe"),
           folderName: "resultsForMailsWithSenderAsNotMe",
         } as const,
       },

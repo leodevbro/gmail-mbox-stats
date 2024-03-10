@@ -6,21 +6,22 @@
 
 //
 //
-// listFile parter to be 500K lines. // TODO
+// TODO: listFile parter to be 500K lines. // TODO
 
 import nodeMbox from "node-mbox";
 
-import { createReadStream, writeFileSync } from "node:fs";
+import { createReadStream } from "node:fs";
 
-import { MailParser, Headers as TyMailparserHeaders } from "mailparser";
-
-import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
+import {
+  MailParser,
+  Headers as TyMailparserHeaders,
+  // simpleParser,
+} from "mailparser";
 
 // import { parse as parseCsvInto2dArr } from "csv-parse";
 
 import { getEnvItemValue, waitSomeSeconds } from "./utils/mainUtils";
 import {
-  groundFolder,
   prepareOutputFolderStructure,
   writeStatsIntoFiles,
 } from "./utils/stepUtils";
@@ -31,17 +32,13 @@ import {
 } from "./types/mailparserTypes";
 import {
   addOneMailInfoToStats,
-  generateSearchableIdOfMail,
   isMaybeCorrectNotationOfAddress,
 } from "./utils/statsBuilder";
 import {
   combineTwoFamiliesIntoZenArr,
   getZenParticipantsFromFamily,
-  prepareZenParticipantArrAsMainListItemStr,
 } from "./utils/sweetUtils";
-
-const allMailListFile =
-  groundFolder.innerFolders.mboxStats.innerFiles.allMailList_csv;
+import { handleOneLineOfMailboxIndex } from "./utils/mailboxIndexMaker";
 
 const argNameForMyEmailAddress = "mymail"; // main input !!!
 const argNameForMboxFilePath = "mboxpath"; // main input !!!
@@ -201,70 +198,12 @@ const analyzeMbox = () => {
         "message-id": initialMainInfoForThisMail["message-id"],
       };
 
-      const mainInfoForThisMail_asArr_forCsvLine = [
-        // sender
-        prepareZenParticipantArrAsMainListItemStr({
-          messageId: zenMainInfoForThisMail["message-id"],
-          ptcProp: "address",
-          step: step.v,
-          zenFamilyKind: "from",
-          zenParticipants: zenMainInfoForThisMail.from,
-        }),
-        prepareZenParticipantArrAsMainListItemStr({
-          messageId: zenMainInfoForThisMail["message-id"],
-          ptcProp: "name",
-          step: step.v,
-          zenFamilyKind: "from",
-          zenParticipants: zenMainInfoForThisMail.from,
-        }),
-
-        // receiver
-        prepareZenParticipantArrAsMainListItemStr({
-          messageId: zenMainInfoForThisMail["message-id"],
-          ptcProp: "address",
-          step: step.v,
-          zenFamilyKind: "zenTo",
-          zenParticipants: zenMainInfoForThisMail.zenTo,
-        }),
-
-        // cc
-        prepareZenParticipantArrAsMainListItemStr({
-          messageId: zenMainInfoForThisMail["message-id"],
-          ptcProp: "address",
-          step: step.v,
-          zenFamilyKind: "cc",
-          zenParticipants: zenMainInfoForThisMail.cc,
-        }),
-
-        // bcc
-        prepareZenParticipantArrAsMainListItemStr({
-          messageId: zenMainInfoForThisMail["message-id"],
-          ptcProp: "address",
-          step: step.v,
-          zenFamilyKind: "bcc",
-          zenParticipants: zenMainInfoForThisMail.bcc,
-        }),
-
-        //
-        zenMainInfoForThisMail.date?.toISOString() || "",
-        generateSearchableIdOfMail(zenMainInfoForThisMail["message-id"]),
-      ];
-
-      const csvCurrLineForAllMailListFile = stringify2dArrIntoCsv(
-        [mainInfoForThisMail_asArr_forCsvLine],
-        {
-          header: false,
-          columns: undefined,
-        },
-      );
-
-      writeFileSync(
-        allMailListFile.pathAbsOrRel,
-        csvCurrLineForAllMailListFile,
-        {
-          flag: "a+",
-        },
-      );
+      // TODO: maybe for future
+      handleOneLineOfMailboxIndex({
+        stepV: step.v,
+        zenMainInfoForThisMail,
+      });
+      //
 
       // maybe more logical for "addOneMailInfoToStats" to be here:
       addOneMailInfoToStats(zenMainInfoForThisMail, step.v);
@@ -284,6 +223,29 @@ const analyzeMbox = () => {
 
   mbox.on("data", function (msg) {
     // parse message using MailParser
+
+    // TODO: maybe for future
+    /*
+    simpleParser(msg, {
+      //
+    }).then((parsed) => {
+      const attt = parsed.attachments;
+      const fullSize = attt.reduce<number>((accu, item) => {
+        return accu + item.size;
+      }, 0);
+      if (fullSize === 0) {
+        return;
+      }
+      console.log(
+        "sttt:",
+        step.v,
+        "size:",
+        fullSize,
+        "id",
+        parsed.headers.get("message-id"),
+      );
+    });
+    */
 
     const mailparser = new MailParser({
       // streamAttachments: true
@@ -306,7 +268,7 @@ const analyzeMbox = () => {
 
     console.log("Please wait several seconds more to generate stats files.");
 
-    waitSomeSeconds(5);
+    await waitSomeSeconds(3);
 
     writeStatsIntoFiles();
 
@@ -328,31 +290,6 @@ const analyzeMbox = () => {
         `Strange - Some kind of error of counting --- "me" (${step.countOfMailsWithSenderCategory.me}) + "notMe" (${step.countOfMailsWithSenderCategory.notMe}) should be totalCount (${step.v}), but the sum is ${mePlusNotMe}`,
       );
     }
-
-    // setTimeout(() => {
-    //   const currCount = step.v;
-    //   console.log("dfin-------le", currCount);
-
-    //   setTimeout(() => {
-    //     if (currCount === step.v) {
-    //       console.log("success");
-    //     } else {
-    //       console.log("Warning: Maybe count is incorrect:", step.v);
-
-    //       const theMapMap =
-    //         groundFolder.innerFolders.mboxStats.innerFolders.results.innerFiles
-    //           .frequencySenderAddress.freqMap;
-
-    //       const asSortedArr = [...theMapMap].sort((a, b) => b[1] - a[1]);
-
-    //       console.log(
-    //         theMapMap.size,
-    //         asSortedArr.length,
-    //         JSON.stringify(asSortedArr.slice(0, 10)),
-    //       );
-    //     }
-    //   }, 7000);
-    // }, 2);
   });
 };
 
@@ -405,6 +342,6 @@ console.log('haaaa_end', process.argv, process.env.npm_config_aaabbbrt); // npm 
 */
 
 export const logExecutionMessage = () => {
-  const executionMessage = "Started MBOX file analyzation v0.9.16";
+  const executionMessage = "Started MBOX file analyzation v0.9.17";
   console.log(executionMessage);
 };
