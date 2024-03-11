@@ -1,6 +1,6 @@
 # gmail-mbox-stats
 
-gmail-mbox-stats is a very simple tool to analyze your Gmail mailbox.
+`gmail-mbox-stats` is a very simple tool to analyze your Gmail mailbox.
 
 - Find the sender which sent most mails.
 - Find the receiever where you sent most mails.
@@ -16,6 +16,9 @@ gmail-mbox-stats is a very simple tool to analyze your Gmail mailbox.
 ## Video instruction:
 
 Coming soon...
+
+<br />
+<br />
 
 ## Textual instruction:
 
