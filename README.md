@@ -63,6 +63,7 @@ Full count of mails where sender is not me: 14152
   In both folders, there will be `.csv` files of stats. These are very simple csv files, so you can open them in any text editor (Notepad, Sublime), or Google Sheets, or Microsoft Excel.
 
 Here is what the full folder structure looks like:
+
 ```
 All mail Including Spam and Trash.mbox
 
@@ -83,6 +84,27 @@ mboxStats_2024-03-10_16-52-06
         senderIsNotMeFrequencySenderAddressAndName.csv
         senderIsNotMeFrequencySenderDomain.csv
 
+```
+
+Now, for example, let's see what's inside the file `senderIsNotMeFrequencySenderAddress.csv`
+
+```
+notifications@github.com,1011,7.14%,14152 --- first line has also the sum-count (14152) which is the sum of all counts: 1011, 895, 443 and so on.
+jobalerts-noreply@linkedin.com,895,6.32%,
+noreply@medium.com,443,3.13%,
+admin@crypto-careers.com,325,2.30%,
+no-reply@reply.experteer.co.uk,263,1.86%,
+noreply@glassdoor.com,247,1.75%,
+english-personalized-digest@quora.com,233,1.65%,
+news@email.experteer.com,221,1.56%,
+hello@digest.producthunt.com,218,1.54%,
+tbcconcept@tbc.ge,181,1.28%,
+vsmarketplace@microsoft.com,179,1.26%,
+...
+...
+...
+...
+All files have the same structure like this file.
 ```
 
 Thank you.
