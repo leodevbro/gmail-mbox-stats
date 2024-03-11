@@ -349,7 +349,18 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
     }
 
     const final2dArr = freqDataAsSortedArr.map((line, lineIndex) => {
-      const coolLine = [...line, lineIndex === 0 ? fullSumOfNumbers : ""];
+      const freq = line[1];
+      const percentage = (100 * freq) / fullSumOfNumbers;
+
+      const fixedStr =
+        percentage >= 0.02 ? percentage.toFixed(2) : percentage.toFixed(5);
+
+      const percentageStr = `${fixedStr}%`;
+      const coolLine = [
+        ...line,
+        percentageStr,
+        lineIndex === 0 ? fullSumOfNumbers : "",
+      ];
       return coolLine;
     });
 
