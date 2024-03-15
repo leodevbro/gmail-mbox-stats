@@ -1,17 +1,26 @@
 # gmail-mbox-stats
 
+[![npm version](https://img.shields.io/npm/v/gmail-mbox-stats.svg?style=flat)](https://www.npmjs.com/package/gmail-mbox-stats)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/leodevbro/gmail-mbox-stats)
+
 `gmail-mbox-stats` is a very simple tool to analyze your Gmail mailbox.
 
 - Find the sender which sent most mails.
 - Find the receiever where you sent most mails.
-
+  <br />
+  <br />
 - Find the address which is most often placed in CC by you.
 - Find the address which is most often placed in CC by others.
-
+  <br />
+  <br />
 - Find the address which is most often placed in BCC by you.
 - Find the address which is most often placed in BCC by others.
-
+  <br />
+  <br />
 - And more.
+  <br />
+  <br />
+  <br />
 
 ## Video instruction:
 
@@ -22,9 +31,11 @@ Coming soon...
 
 ## Textual instruction:
 
-- Download Gmail data from Google Takeout (Preferably select 'Include all messages in Mail', it will include all mail, not just inbox or just outbox/spam/archive). If your mailbox has 100K mails, the downloaded data can be 10 GB or more. So, be ready to deal with a large file. If it is too large, it may not be a single archive file, but multipart archive files, like split-files of ZIP.
+- Download Gmail data from <a href="https://takeout.google.com/" target="_blank">Google Takeout</a> (Preferably select 'Include all messages in Mail', it will include all mail, not just inbox or just outbox/spam/archive). If your mailbox has 100K mails, the downloaded data can be 10 GB or more. So, be ready to deal with a large file. If it is too large, it may not be a single archive file, but multipart archive files, like split-files of ZIP.
 
 - Extract MBOX file from the Gmail data archive.
+
+- Make sure you have installed <a href="https://nodejs.org/" target="_blank">NodeJS</a>. It is available for Windows, Mac and also Linux.
 
 - Open terminal (preferably in the same folder where MBOX file is located) and run the command with this syntax:<br />
   `npx gmail-mbox-stats mymail="<your email address>" mboxpath="<mbox file path>"`
@@ -46,7 +57,8 @@ Coming soon...
   <br />
 
   It will take probably 5-10-15 seconds to analyze 1000 mails,<br />
-  about 100 seconds for 10K mails and so on.<br />
+  about 100 seconds for 10K mails,<br />
+  about 1000 seconds (about 17 minutes) for 100K mails and so on.<br />
 
 - When it finishes, the terminal will log initial information like this:
 
@@ -111,3 +123,21 @@ All files have the same structure like this file.
 ```
 
 Thank you.
+
+<p>My name is <a href="https://leodevbro.github.io">Levan Katsadze (ლევან კაცაძე)</a>, 1995-03-03, from Tbilisi, <a href="https://en.wikipedia.org/wiki/Georgia_(country)">Georgia (Not USA)</a>.</p>
+
+<p float="left">
+  <a style="margin-right: 12px;" href="https://www.facebook.com/leodevbropage" target="_blank"><img src="https://raw.githubusercontent.com/leodevbro/vscode-blockman/main/demo-media/still-image/social/fb-logo2.png" alt="facebook logo" style="height: 44px !important; width: auto !important;" /></a>
+  <a style="margin-right: 12px;" href="https://www.youtube.com/@leodevbro" target="_blank"><img src="https://raw.githubusercontent.com/leodevbro/vscode-blockman/main/demo-media/still-image/social/yt-logo3.png" alt="youtube logo" style="height: 44px !important; width: auto !important;" /></a>
+</p>
+
+If you feel like donating:
+
+<p float="left">
+  <a style="float: left; margin-right: 12px;" href="https://www.buymeacoffee.com/leodevbro" target="_blank"><img src="https://raw.githubusercontent.com/leodevbro/vscode-blockman/main/demo-media/still-image/donation/buy-me-a-coffee_2.png" alt="Buy Me A Coffee" style="height: 44px !important; width: auto !important;" /></a>
+  <a style="margin-right: 12px;" href="https://ko-fi.com/leodevbro" target="_blank"><img src="https://raw.githubusercontent.com/leodevbro/vscode-blockman/main/demo-media/still-image/donation/ko-fi_2.png" alt="ko-fi" style="height: 44px !important; width: auto !important;" /></a>
+</p>
+
+<br />
+<br />
+<br />

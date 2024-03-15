@@ -159,7 +159,7 @@ export const getZenParticipantsFromFamily = ({
     const zenPtc: TyZenParticipant = {
       address: ptc.address
         ? isMaybeCorrectNotationOfAddress(ptc.address)
-          ? ptc.address
+          ? ptc.address.toLowerCase()
           : `${str_STRANGE}${ptc.address}`
         : str_EMPTY,
       name: ptc.name || str_EMPTY,
