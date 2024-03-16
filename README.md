@@ -104,7 +104,7 @@ mboxStats_2024-03-10_16-52-06
 Now, for example, let's see what's inside the file `senderIsNotMeFrequencySenderAddress.csv`
 
 ```
-notifications@github.com,1011,7.14%,14152 --- first line has also the sum-count (14152) which is the sum of all counts: 1011, 895, 443 and so on.
+notifications@github.com,1011,7.14%,14152,senderIsNotMeFrequencySenderAddress --- here, first line has also the sum-count (14152) which is the sum of all counts: 1011, 895, 443 and so on. Also, you can see the name of the file.
 jobalerts-noreply@linkedin.com,895,6.32%,
 noreply@medium.com,443,3.13%,
 admin@crypto-careers.com,325,2.30%,

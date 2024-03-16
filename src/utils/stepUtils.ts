@@ -359,7 +359,12 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
       const coolLine = [
         ...line,
         percentageStr,
-        lineIndex === 0 ? fullSumOfNumbers : "",
+        ...(lineIndex === 0
+          ? [
+              fullSumOfNumbers,
+              currFile.fileName.slice(0, currFile.fileName.length - 4),
+            ]
+          : []),
       ];
       return coolLine;
     });
