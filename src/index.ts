@@ -10,7 +10,7 @@
 
 import nodeMbox from "node-mbox";
 
-import { createReadStream } from "node:fs";
+import { createReadStream, writeFileSync } from "node:fs";
 
 import {
   MailParser,
@@ -22,6 +22,7 @@ import {
 
 import { getEnvItemValue, waitSomeSeconds } from "./utils/mainUtils";
 import {
+  groundFolder,
   prepareOutputFolderStructure,
   writeStatsIntoFiles,
 } from "./utils/stepUtils";
@@ -287,26 +288,44 @@ const analyzeMbox = () => {
 
     await waitSomeSeconds(3);
 
-    writeStatsIntoFiles();
+    writeStatsIntoFiles(); // this does not include generalStats,
+    //                        because generalStats needs writeStatsIntoFiles function to execute first to calculate general stats.
+    //                        So, The generalStats will be handled down below.
+
+    const linesOfGeneralStats: string[] = [];
 
     console.log("\n");
-    console.log(`Success. Full count: ${step.v}`);
-    console.log(
-      `Full count of mails where sender is me: ${step.countOfMailsWithSenderCategory.me}`,
-    );
-    console.log(
-      `Full count of mails where sender is not me: ${step.countOfMailsWithSenderCategory.notMe}`,
-    );
-
+    //
+    const line_success = `Success. Full count: ${step.v}`;
+    console.log(line_success);
+    linesOfGeneralStats.push(line_success);
+    //
+    const line_fullCountAsMe = `Full count of mails where sender is me: ${step.countOfMailsWithSenderCategory.me}`;
+    console.log(line_fullCountAsMe);
+    linesOfGeneralStats.push(line_fullCountAsMe);
+    //
+    const line_fullCountAsNotMe = `Full count of mails where sender is not me: ${step.countOfMailsWithSenderCategory.notMe}`;
+    console.log(line_fullCountAsNotMe);
+    linesOfGeneralStats.push(line_fullCountAsNotMe);
+    //
     const mePlusNotMe =
       step.countOfMailsWithSenderCategory.me +
       step.countOfMailsWithSenderCategory.notMe;
 
     if (mePlusNotMe !== step.v) {
-      console.log(
-        `Strange - Some kind of error of counting --- "me" (${step.countOfMailsWithSenderCategory.me}) + "notMe" (${step.countOfMailsWithSenderCategory.notMe}) should be totalCount (${step.v}), but the sum is ${mePlusNotMe}`,
-      );
+      const line_countingError = `Strange - Some kind of error of counting --- "me" (${step.countOfMailsWithSenderCategory.me}) + "notMe" (${step.countOfMailsWithSenderCategory.notMe}) should be totalCount (${step.v}), but the sum is ${mePlusNotMe}`;
+      console.log(line_countingError);
+      linesOfGeneralStats.push(line_countingError);
     }
+
+    const generalStatsPath =
+      groundFolder.innerFolders.mboxStats.innerFiles.generalStats.pathAbsOrRel;
+
+    const finalDataStringOfGeneralStats = linesOfGeneralStats.join(`\n`) + "\n";
+
+    writeFileSync(generalStatsPath, finalDataStringOfGeneralStats, {
+      flag: "a+",
+    });
   });
 };
 
@@ -359,6 +378,9 @@ console.log('haaaa_end', process.argv, process.env.npm_config_aaabbbrt); // npm 
 */
 
 export const logExecutionMessage = () => {
+  console.log("\n");
+  console.log("\n");
+
   const executionMessage =
     "Started MBOX file analyzation by gmail-mbox-stats v1.0.6 - created by leodevbro (Levan Katsadze)";
   console.log(executionMessage);

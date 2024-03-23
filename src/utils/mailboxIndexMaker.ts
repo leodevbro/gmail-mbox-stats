@@ -1,3 +1,4 @@
+/*
 import { TyZenMainInfoForMail } from "../types/mailparserTypes";
 import { generateSearchableIdOfMail } from "./statsBuilder";
 import { groundFolder } from "./stepUtils";
@@ -7,7 +8,10 @@ import { writeFileSync } from "node:fs";
 
 const allMailboxIndexFile =
   groundFolder.innerFolders.mboxStats.innerFiles.allMailList_csv;
+*/
 
+// maybe not needed, currently not used.
+/*
 export const handleOneLineOfMailboxIndex = ({
   zenMainInfoForThisMail,
   stepV,
@@ -81,3 +85,6 @@ export const handleOneLineOfMailboxIndex = ({
     },
   );
 };
+*/
+
+export const abc = {};

@@ -6,6 +6,7 @@ import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
 import { step } from "..";
 
 const dotCsv = ".csv";
+const dotTxt = ".txt";
 
 const str_frequency = "Frequency";
 const str_Sender = "Sender";
@@ -17,7 +18,7 @@ const str_Domain = "Domain";
 const str_AddressAndName = "AddressAndName";
 
 export type TyOneFileIndicator = {
-  fileName: `${string}.csv`;
+  fileName: `${string}${typeof dotCsv | typeof dotTxt}`;
   pathAbsOrRel: string;
   freqMap: Map<string, number>;
 };
@@ -45,7 +46,7 @@ const createResultsObjForSpecificSenderCategory = (
 
   // const resultsFolderForSpecificSenderCategory: TyOneFolderIndicator
   const resultsFolderForSpecificSenderCategory = {
-    folderName: "results",
+    folderName: "results", // will become "resultsForMailsWithSenderAsMe" or "resultsForMailsWithSenderAsNotMe"
     pathAbsOrRel: "" as string,
     innerFolders: {},
     innerFiles: {
@@ -144,6 +145,11 @@ export const groundFolder = {
           fileName: `index__sender-senderName-receiver-cc-bcc-time-id${dotCsv}`,
           pathAbsOrRel: "" as string,
           freqMap: new Map<string, number>([]),
+        },
+        generalStats: {
+          fileName: `generalStats${dotTxt}`,
+          pathAbsOrRel: "" as string,
+          freqMap: new Map<string, number>([]), // maybe not needed
         },
       },
       innerFolders: {
@@ -275,6 +281,23 @@ export const prepareOutputFolderStructure = (mboxFilePath: string) => {
       // @ts-ignore
       "pathAbsOrRel"
     ] = mboxStatsFolderPath;
+  } catch (err) {
+    console.error(err);
+  }
+
+  // create generalStats file (empty now)
+  const generalStatsFilePath = path.join(
+    mboxStatsFolderPath,
+    groundFolder.innerFolders.mboxStats.innerFiles.generalStats.fileName,
+  );
+
+  try {
+    writeFileSync(generalStatsFilePath, "");
+
+    groundFolder.innerFolders.mboxStats.innerFiles.generalStats[
+      // @ts-ignore
+      "pathAbsOrRel"
+    ] = generalStatsFilePath;
   } catch (err) {
     console.error(err);
   }
