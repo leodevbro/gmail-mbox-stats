@@ -352,8 +352,10 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
       const freq = line[1];
       const percentage = (100 * freq) / fullSumOfNumbers;
 
-      const fixedStr =
-        percentage >= 0.02 ? percentage.toFixed(2) : percentage.toFixed(5);
+      // const fixedStr =
+      //   percentage >= 0.02 ? percentage.toFixed(2) : percentage.toFixed(5);
+
+      const fixedStr = percentage.toFixed(12);
 
       const percentageStr = `${fixedStr}%`;
       const coolLine = [

@@ -8,7 +8,10 @@ import {
   TyZenParticipant,
 } from "../types/mailparserTypes";
 import { groundFolder } from "./stepUtils";
-import { combineAddressAndName, str_EMPTY } from "./sweetUtils";
+import {
+  combineAddressAndName,
+  // str_EMPTY
+} from "./sweetUtils";
 
 // export type TyParticipantRole = "sender" | "receiver" | "cc" | "bcc";
 
@@ -83,8 +86,16 @@ export const isMaybeCorrectNotationOfAddress = (notation: string): boolean => {
 const incrementInMap = <TKey extends string, TMap extends Map<TKey, number>>(
   theMap: TMap,
   key: TKey,
+  stepN: number,
+  participantRole: TyZenFamilyKind,
 ) => {
-  if (!key || key === str_EMPTY) {
+  if (
+    !key
+    // || key === str_EMPTY
+  ) {
+    console.log(
+      `${stepN} - here (${participantRole}): maybe error, value is somehow nullish: ${key}, type is: ${typeof key}`,
+    );
     return;
   }
   const outdatedVal = theMap.get(key) || 0;
@@ -97,9 +108,9 @@ const handleParticipantIntoFreqMap = ({
   mapForAddress,
   mapForDomain,
   mapForAANInfo, // AAN -> Address and Name
-}: // participantRole,
-// stepN,
-{
+  stepN,
+  participantRole,
+}: {
   messageId: TyGmailMailHeadersAsObj["message-id"];
   participantArr: TyZenParticipant[];
   mapForAddress: Map<TyMailAddress, number>;
@@ -123,15 +134,15 @@ const handleParticipantIntoFreqMap = ({
 
   // Address and domain
   participantArr.forEach((prtc) => {
-    incrementInMap(mapForAddress, prtc.address);
+    incrementInMap(mapForAddress, prtc.address, stepN, participantRole);
 
     if (mapForDomain) {
       if (isMaybeCorrectNotationOfAddress(prtc.address)) {
         const indexOfTheAtSymbol = prtc.address.indexOf("@");
         const domain = prtc.address.slice(indexOfTheAtSymbol) as TyMailDomain;
-        incrementInMap(mapForDomain, domain);
+        incrementInMap(mapForDomain, domain, stepN, participantRole);
       } else {
-        incrementInMap(mapForDomain, prtc.address);
+        incrementInMap(mapForDomain, prtc.address, stepN, participantRole);
       }
     }
 
@@ -140,6 +151,8 @@ const handleParticipantIntoFreqMap = ({
       incrementInMap(
         mapForAANInfo,
         combineAddressAndName(prtc.address, prtc.name),
+        stepN,
+        participantRole,
       );
     }
   });

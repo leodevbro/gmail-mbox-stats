@@ -35,7 +35,7 @@ import {
   isMaybeCorrectNotationOfAddress,
 } from "./utils/statsBuilder";
 import {
-  combineTwoFamiliesIntoZenArr,
+  // combineTwoFamiliesIntoZenArr,
   getZenParticipantsFromFamily,
 } from "./utils/sweetUtils";
 // import { handleOneLineOfMailboxIndex } from "./utils/mailboxIndexMaker";
@@ -73,7 +73,7 @@ const mbox = nodeMbox.MboxStream(mailbox, {
 
 export const step: {
   v: number;
-  countOfFullCountCheck: number;
+  countOfFullCountCheckForTimer: number;
   //
   countOfMailsWithSenderCategory: {
     me: number;
@@ -81,7 +81,7 @@ export const step: {
   };
 } = {
   v: 0,
-  countOfFullCountCheck: 0,
+  countOfFullCountCheckForTimer: 0,
   //
   countOfMailsWithSenderCategory: {
     me: 0,
@@ -90,14 +90,14 @@ export const step: {
 };
 
 const checkFullCount = async (currCandidateCount: number): Promise<number> => {
-  step.countOfFullCountCheck += 1;
+  step.countOfFullCountCheckForTimer += 1;
   await waitSomeSeconds(5);
 
   if (currCandidateCount === step.v) {
     console.log("Full count:", step.v);
     return step.v;
   } else {
-    if (step.countOfFullCountCheck >= 5) {
+    if (step.countOfFullCountCheckForTimer >= 5) {
       console.log(
         `Something's wrong --- could not determine full count of mails (messages), current count is: ${step.v}`,
       );
@@ -121,6 +121,14 @@ const analyzeMbox = () => {
       //
       const init_date = headers.get("date");
       const init_messageId = headers.get("message-id");
+
+      // if ([7].includes(step.v)) {
+      //   init_From?.value?.forEach((val) => {
+      //     val.address = undefined;
+      //   });
+
+      //   console.log(JSON.stringify(init_bcc));
+      // }
 
       // if (
       //   init_messageId ===
@@ -165,19 +173,26 @@ const analyzeMbox = () => {
           messageId: initialMainInfoForThisMail["message-id"],
           fromCombiner: false,
         }),
-        zenTo: combineTwoFamiliesIntoZenArr({
+        // zenTo: combineTwoFamiliesIntoZenArr({
+        //   step: step.v,
+        //   messageId: initialMainInfoForThisMail["message-id"],
+        //   twoFamilies: [
+        //     {
+        //       familyKind: "to",
+        //       participationInfo: initialMainInfoForThisMail.to,
+        //     },
+        //     {
+        //       familyKind: "delivered-to",
+        //       participationInfo: initialMainInfoForThisMail["delivered-to"],
+        //     },
+        //   ],
+        // }),
+        zenTo: getZenParticipantsFromFamily({
+          family: initialMainInfoForThisMail.to,
           step: step.v,
+          familyKind: "to",
           messageId: initialMainInfoForThisMail["message-id"],
-          twoFamilies: [
-            {
-              familyKind: "to",
-              participationInfo: initialMainInfoForThisMail.to,
-            },
-            {
-              familyKind: "delivered-to",
-              participationInfo: initialMainInfoForThisMail["delivered-to"],
-            },
-          ],
+          fromCombiner: false,
         }),
         cc: getZenParticipantsFromFamily({
           family: initialMainInfoForThisMail.cc,
@@ -345,7 +360,7 @@ console.log('haaaa_end', process.argv, process.env.npm_config_aaabbbrt); // npm 
 
 export const logExecutionMessage = () => {
   const executionMessage =
-    "Started MBOX file analyzation by gmail-mbox-stats v1.0.5 - created by leodevbro (Levan Katsadze)";
+    "Started MBOX file analyzation by gmail-mbox-stats v1.0.6 - created by leodevbro (Levan Katsadze)";
   console.log(executionMessage);
   console.log("Relax a bit, here you can see the progress:");
 };

@@ -10,10 +10,10 @@ import {
   isMaybeCorrectNotationOfAddress,
 } from "./statsBuilder";
 
-type TyFamilyMeta = {
-  familyKind: TyFamilyKind;
-  participationInfo?: TyParticipationFamilyInfo;
-};
+// type TyFamilyMeta = {
+//   familyKind: TyFamilyKind;
+//   participationInfo?: TyParticipationFamilyInfo;
+// };
 
 // export const getAddressesFromFamily = (
 //   family?: TyParticipationFamilyInfo,
@@ -115,9 +115,11 @@ export const getZenParticipantsFromFamily = ({
   messageId: TyGmailMailHeadersAsObj["message-id"];
   fromCombiner: boolean;
 }): TyZenParticipant[] => {
+  const majorKindsOfFamily: TyFamilyKind[] = ["from", "to"];
+
   if (!family) {
     if (!fromCombiner) {
-      if (familyKind === "from") {
+      if (majorKindsOfFamily.includes(familyKind)) {
         console.log(
           `${step} - here: '${familyKind}' participant not found  - ${getSearchableIdForToBeEasyToCopy(
             messageId,
@@ -131,7 +133,7 @@ export const getZenParticipantsFromFamily = ({
 
   if (!family.value) {
     if (!fromCombiner) {
-      if (familyKind === "from") {
+      if (majorKindsOfFamily.includes(familyKind)) {
         console.log(
           `${step} - here: '${familyKind}' participant not found  - ${getSearchableIdForToBeEasyToCopy(
             messageId,
@@ -144,7 +146,7 @@ export const getZenParticipantsFromFamily = ({
 
   if (family.value.length === 0) {
     if (!fromCombiner) {
-      if (familyKind === "from") {
+      if (majorKindsOfFamily.includes(familyKind)) {
         console.log(
           `${step} - here: '${familyKind}' participant not found  - ${getSearchableIdForToBeEasyToCopy(
             messageId,
@@ -199,6 +201,7 @@ export const getZenParticipantsFromFamily = ({
   return final;
 };
 
+/*
 export const combineTwoFamiliesIntoZenArr = ({
   twoFamilies,
   step,
@@ -282,6 +285,7 @@ export const combineTwoFamiliesIntoZenArr = ({
 
   return final;
 };
+*/
 
 export const combineAddressAndName = (address: string, name: string) => {
   return `${address} --- ${name}`;
