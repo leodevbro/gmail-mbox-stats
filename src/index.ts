@@ -382,7 +382,7 @@ export const logExecutionMessage = () => {
   console.log("\n");
 
   const executionMessage =
-    "Started MBOX file analyzation by gmail-mbox-stats v1.0.6 - created by leodevbro (Levan Katsadze)";
+    "Started MBOX file analyzation by gmail-mbox-stats v1.0.7 - created by leodevbro (Levan Katsadze)";
   console.log(executionMessage);
   console.log("Relax a bit, here you can see the progress:");
 };

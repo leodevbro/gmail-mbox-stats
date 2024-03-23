@@ -126,7 +126,15 @@ gitpod@noreply.github.com,174,1.23%
 ...
 ...
 ```
+<br />
+If you import this file in Google Sheets, it will look like this:
+<br />
+<br />
 
+![Example Result CSV In Google Sheets](./exampleResultCsv.png "Example Result CSV In Google Sheets")
+
+<br />
+<br />
 Thank you.
 
 <p>My name is <a href="https://leodevbro.github.io">Levan Katsadze (ლევან კაცაძე)</a>, 1995-03-03, from Tbilisi, <a href="https://en.wikipedia.org/wiki/Georgia_(country)">Georgia (Not USA)</a>.</p>
