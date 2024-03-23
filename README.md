@@ -131,7 +131,7 @@ If you import this file in Google Sheets, it will look like this:
 <br />
 <br />
 
-![Example Result CSV In Google Sheets](./exampleResultCsv.png "Example Result CSV In Google Sheets")
+![Example Result CSV In Google Sheets](https://raw.githubusercontent.com/leodevbro/gmail-mbox-stats/main/exampleResultCsv.png "Example Result CSV In Google Sheets")
 
 <br />
 <br />
