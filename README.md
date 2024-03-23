@@ -6,7 +6,11 @@
 `gmail-mbox-stats` is a very simple tool to analyze your Gmail mailbox.
 
 - Find the sender which sent most mails.
-- Find the receiever where you sent most mails.
+- Find the receiver where you sent most mails.
+  <br />
+  <br />
+- Find the domain (@gmail.com, @live.com ...) which appears mostly in sender address.
+- Find the receiver where other senders (where sender is not you) sent most mails.
   <br />
   <br />
 - Find the address which is most often placed in CC by you.
@@ -86,7 +90,7 @@ mboxStats_2024-03-10_16-52-06
     resultsForMailsWithSenderAsMe
         senderIsMeFrequencyBccAddress.csv
         senderIsMeFrequencyCcAddress.csv
-        senderIsMeFrequencyReceiverAddress.csv --- Here you can find the receiever where you sent most mails
+        senderIsMeFrequencyReceiverAddress.csv --- Here you can find the receiver where you sent most mails
         senderIsMeFrequencySenderAddress.csv
         senderIsMeFrequencySenderAddressAndName.csv
         senderIsMeFrequencySenderDomain.csv
@@ -115,11 +119,12 @@ news@email.experteer.com,221,1.56%,
 hello@digest.producthunt.com,218,1.54%,
 tbcconcept@tbc.ge,181,1.28%,
 vsmarketplace@microsoft.com,179,1.26%,
+(-),178,1.26% --- here, "(-)" means an empty address. Yeah, sometimes for some specific reason, mail sender and/or receiver address is empty.
+gitpod@noreply.github.com,174,1.23%
 ...
 ...
 ...
 ...
-All files have the same structure like this file.
 ```
 
 Thank you.
