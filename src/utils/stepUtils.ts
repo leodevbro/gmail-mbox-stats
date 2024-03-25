@@ -8,14 +8,14 @@ import { step } from "..";
 const dotCsv = ".csv";
 // const dotTxt = ".txt";
 
-const str_frequency = "Frequency";
+const str_frequency = "_freq";
 const str_Sender = "Sender";
 const str_Receiver = "Receiver";
 const str_Cc = "Cc";
 const str_Bcc = "Bcc";
-const str_Address = "Address";
+// const str_Address = "Address";
 const str_Domain = "Domain";
-const str_AddressAndName = "AddressAndName";
+const str_AddressAndName = "PlusName";
 
 export type TyOneFileIndicator = {
   fileName: `${string}${typeof dotCsv}`;
@@ -51,7 +51,7 @@ const createResultsObjForSpecificSenderCategory = (
     innerFolders: {},
     innerFiles: {
       frequencySenderAddress: {
-        fileName: `${sCatStr}${str_frequency}${str_Sender}${str_Address}${dotCsv}`,
+        fileName: `${sCatStr}${str_frequency}${str_Sender}${dotCsv}`,
         pathAbsOrRel: "" as string,
         freqMap: new Map<TyMailAddress, number>([]),
       },
@@ -69,7 +69,7 @@ const createResultsObjForSpecificSenderCategory = (
       // not just first receiver, but includes all receivers. So, count of receivers can me more than count of senders
 
       frequencyReceiverAddress: {
-        fileName: `${sCatStr}${str_frequency}${str_Receiver}${str_Address}${dotCsv}`,
+        fileName: `${sCatStr}${str_frequency}${str_Receiver}${dotCsv}`,
         pathAbsOrRel: "" as string,
         freqMap: new Map<TyMailAddress, number>([]),
       },
@@ -87,7 +87,7 @@ const createResultsObjForSpecificSenderCategory = (
       // cc:
 
       frequencyCcAddress: {
-        fileName: `${sCatStr}${str_frequency}${str_Cc}${str_Address}${dotCsv}`,
+        fileName: `${sCatStr}${str_frequency}${str_Cc}${dotCsv}`,
         pathAbsOrRel: "" as string,
         freqMap: new Map<TyMailAddress, number>([]),
       },
@@ -105,7 +105,7 @@ const createResultsObjForSpecificSenderCategory = (
       // bcc:
 
       frequencyBccAddress: {
-        fileName: `${sCatStr}${str_frequency}${str_Bcc}${str_Address}${dotCsv}`,
+        fileName: `${sCatStr}${str_frequency}${str_Bcc}${dotCsv}`,
         pathAbsOrRel: "" as string,
         freqMap: new Map<TyMailAddress, number>([]),
       },
