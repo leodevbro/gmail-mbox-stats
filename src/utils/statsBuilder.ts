@@ -67,8 +67,8 @@ export const getSearchableIdForToBeEasyToCopy = (nonCleanId: string) => {
 const msFolders = groundFolder.innerFolders.mboxStats.innerFolders;
 
 const resultsInnerFilesCategories = {
-  me: msFolders.resultsForMailsWithSenderAsMe.innerFiles,
-  notMe: msFolders.resultsForMailsWithSenderAsNotMe.innerFiles,
+  me: msFolders.forMailsWhereSenderIsMe.innerFiles,
+  notMe: msFolders.forMailsWhereSenderIsNotMe.innerFiles,
 } as const;
 
 export const isMaybeCorrectNotationOfAddress = (notation: string): boolean => {

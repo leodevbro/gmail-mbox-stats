@@ -6,7 +6,7 @@ import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
 import { step } from "..";
 
 const dotCsv = ".csv";
-const dotTxt = ".txt";
+// const dotTxt = ".txt";
 
 const str_frequency = "Frequency";
 const str_Sender = "Sender";
@@ -18,7 +18,7 @@ const str_Domain = "Domain";
 const str_AddressAndName = "AddressAndName";
 
 export type TyOneFileIndicator = {
-  fileName: `${string}${typeof dotCsv | typeof dotTxt}`;
+  fileName: `${string}${typeof dotCsv}`;
   pathAbsOrRel: string;
   freqMap: Map<string, number>;
 };
@@ -46,7 +46,7 @@ const createResultsObjForSpecificSenderCategory = (
 
   // const resultsFolderForSpecificSenderCategory: TyOneFolderIndicator
   const resultsFolderForSpecificSenderCategory = {
-    folderName: "results", // will become "resultsForMailsWithSenderAsMe" or "resultsForMailsWithSenderAsNotMe"
+    folderName: "results", // will become "forMailsWhereSenderIsMe" or "forMailsWhereSenderIsNotMe"
     pathAbsOrRel: "" as string,
     innerFolders: {},
     innerFiles: {
@@ -147,19 +147,19 @@ export const groundFolder = {
           freqMap: new Map<string, number>([]),
         },
         generalStats: {
-          fileName: `generalStats${dotTxt}`,
+          fileName: `generalStats${dotCsv}`,
           pathAbsOrRel: "" as string,
           freqMap: new Map<string, number>([]), // maybe not needed
         },
       },
       innerFolders: {
-        resultsForMailsWithSenderAsMe: {
+        forMailsWhereSenderIsMe: {
           ...createResultsObjForSpecificSenderCategory("me"),
-          folderName: "resultsForMailsWithSenderAsMe",
+          folderName: "forMailsWhereSenderIsMe",
         } as const,
-        resultsForMailsWithSenderAsNotMe: {
+        forMailsWhereSenderIsNotMe: {
           ...createResultsObjForSpecificSenderCategory("notMe"),
-          folderName: "resultsForMailsWithSenderAsNotMe",
+          folderName: "forMailsWhereSenderIsNotMe",
         } as const,
       },
     },
@@ -326,14 +326,12 @@ export const prepareOutputFolderStructure = (mboxFilePath: string) => {
 
   prepareResultsFolderForSenderCategory(
     mboxStatsFolderPath,
-    groundFolder.innerFolders.mboxStats.innerFolders
-      .resultsForMailsWithSenderAsMe,
+    groundFolder.innerFolders.mboxStats.innerFolders.forMailsWhereSenderIsMe,
   );
 
   prepareResultsFolderForSenderCategory(
     mboxStatsFolderPath,
-    groundFolder.innerFolders.mboxStats.innerFolders
-      .resultsForMailsWithSenderAsNotMe,
+    groundFolder.innerFolders.mboxStats.innerFolders.forMailsWhereSenderIsNotMe,
   );
 };
 
@@ -410,14 +408,12 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
 
 export const writeStatsIntoFiles = () => {
   writeStatsOfSpecificSenderCategoryIntoFiles(
-    groundFolder.innerFolders.mboxStats.innerFolders
-      .resultsForMailsWithSenderAsMe,
+    groundFolder.innerFolders.mboxStats.innerFolders.forMailsWhereSenderIsMe,
     "me",
   );
 
   writeStatsOfSpecificSenderCategoryIntoFiles(
-    groundFolder.innerFolders.mboxStats.innerFolders
-      .resultsForMailsWithSenderAsNotMe,
+    groundFolder.innerFolders.mboxStats.innerFolders.forMailsWhereSenderIsNotMe,
     "notMe",
   );
 };
