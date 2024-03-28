@@ -4,6 +4,7 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { TyMailAddress, TyMailDomain } from "../types/mailparserTypes";
 import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
 import { step } from "..";
+import { str } from "../constants";
 
 const dotCsv = ".csv";
 // const dotTxt = ".txt";
@@ -21,6 +22,10 @@ export type TyOneFileIndicator = {
   fileName: `${string}${typeof dotCsv}`;
   pathAbsOrRel: string;
   freqMap: Map<string, number>;
+  messagesWhereRelevantValuesFound: number;
+  legitCount: number;
+  hiddenCount: number;
+  emptyCount: number;
 };
 
 export type TyOneFolderIndicator = {
@@ -39,6 +44,21 @@ type TyCheckThatTObjExtendsTSource<TSource, TObj extends TSource> = TObj &
 
 export type TySenderCategory = "me" | "notMe";
 
+const commonInitialPropsOfFile = {
+  pathAbsOrRel: "" as string,
+  freqMap: new Map<TyMailAddress, number>([]),
+  messagesWhereRelevantValuesFound: 0 as number,
+  legitCount: 0 as number,
+  hiddenCount: 0 as number,
+  emptyCount: 0 as number,
+} as const;
+
+type TyDoTheCheck0 = TyCheckThatTObjExtendsTSource<
+  Omit<TyOneFileIndicator, "fileName">,
+  typeof commonInitialPropsOfFile
+>;
+null as TyDoTheCheck0;
+
 const createResultsObjForSpecificSenderCategory = (
   category: TySenderCategory,
 ) => {
@@ -52,17 +72,16 @@ const createResultsObjForSpecificSenderCategory = (
     innerFiles: {
       frequencySenderAddress: {
         fileName: `${sCatStr}${str_frequency}${str_Sender}${dotCsv}`,
-        pathAbsOrRel: "" as string,
-        freqMap: new Map<TyMailAddress, number>([]),
+        ...commonInitialPropsOfFile,
       },
       frequencySenderDomain: {
         fileName: `${sCatStr}${str_frequency}${str_Sender}${str_Domain}${dotCsv}`,
-        pathAbsOrRel: "" as string,
+        ...commonInitialPropsOfFile,
         freqMap: new Map<TyMailDomain, number>([]),
       },
       frequencySenderAddressAndName: {
         fileName: `${sCatStr}${str_frequency}${str_Sender}${str_AddressAndName}${dotCsv}`,
-        pathAbsOrRel: "" as string,
+        ...commonInitialPropsOfFile,
         freqMap: new Map<string, number>([]),
       },
 
@@ -70,8 +89,7 @@ const createResultsObjForSpecificSenderCategory = (
 
       frequencyReceiverAddress: {
         fileName: `${sCatStr}${str_frequency}${str_Receiver}${dotCsv}`,
-        pathAbsOrRel: "" as string,
-        freqMap: new Map<TyMailAddress, number>([]),
+        ...commonInitialPropsOfFile,
       },
       // frequencyReceiverDomain: {
       //   fileName: `${sCatStr}${str_frequency}${str_Receiver}${str_Domain}${dotCsv}`,
@@ -88,8 +106,7 @@ const createResultsObjForSpecificSenderCategory = (
 
       frequencyCcAddress: {
         fileName: `${sCatStr}${str_frequency}${str_Cc}${dotCsv}`,
-        pathAbsOrRel: "" as string,
-        freqMap: new Map<TyMailAddress, number>([]),
+        ...commonInitialPropsOfFile,
       },
       // frequencyCcDomain: {
       //   fileName: `${sCatStr}${str_frequency}${str_Cc}${str_Domain}${dotCsv}`,
@@ -106,8 +123,7 @@ const createResultsObjForSpecificSenderCategory = (
 
       frequencyBccAddress: {
         fileName: `${sCatStr}${str_frequency}${str_Bcc}${dotCsv}`,
-        pathAbsOrRel: "" as string,
-        freqMap: new Map<TyMailAddress, number>([]),
+        ...commonInitialPropsOfFile,
       },
       // frequencyBccDomain: {
       //   fileName: `${sCatStr}${str_frequency}${str_Bcc}${str_Domain}${dotCsv}`,
@@ -141,15 +157,15 @@ export const groundFolder = {
       folderName: "mboxStats",
       pathAbsOrRel: "" as string,
       innerFiles: {
+        // not yet used in prod
         allMailList_csv: {
           fileName: `index__sender-senderName-receiver-cc-bcc-time-id${dotCsv}`,
-          pathAbsOrRel: "" as string,
-          freqMap: new Map<string, number>([]),
+          ...commonInitialPropsOfFile, // maybe only 'pathAbsOrRel' is applicable here.
         },
+
         generalStats: {
           fileName: `generalStats${dotCsv}`,
-          pathAbsOrRel: "" as string,
-          freqMap: new Map<string, number>([]), // maybe not needed
+          ...commonInitialPropsOfFile, // maybe only 'pathAbsOrRel' is applicable here.
         },
       },
       innerFolders: {
@@ -337,22 +353,14 @@ export const prepareOutputFolderStructure = (mboxFilePath: string) => {
 
 export const writeStatsOfSpecificSenderCategoryIntoFiles = (
   folderOfSpecificSenderCategory: TyOneResultCategory,
-  senderCategory: keyof typeof step.countOfMailsWithSenderCategory,
+  senderCategory: "me" | "notMeOrUnknown",
 ) => {
   const theFilesObj = folderOfSpecificSenderCategory.innerFiles;
 
-  const theKeysOfFilesObj = Object.keys(
-    theFilesObj,
-  ) as (keyof typeof theFilesObj)[];
+  //
 
-  theKeysOfFilesObj.forEach((propName) => {
+  const generateCoolCounts = (propName: keyof typeof theFilesObj) => {
     const currFile = theFilesObj[propName];
-    if (!currFile.pathAbsOrRel) {
-      console.log(
-        `Something's wrong --- path of ${currFile.fileName} not found`,
-      );
-      return;
-    }
 
     const freqDataAsSortedArr = [...currFile.freqMap].sort(
       (a, b) => b[1] - a[1],
@@ -365,11 +373,123 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
       0,
     );
 
-    if (currFile.fileName === theFilesObj.frequencySenderAddress.fileName) {
-      step.countOfMailsWithSenderCategory[senderCategory] = fullSumOfNumbers;
-    }
+    //
 
-    const final2dArr = freqDataAsSortedArr.map((line, lineIndex) => {
+    const countOfEmptyValues = currFile.freqMap.get(str.EMPTY as any) || 0;
+
+    const countOfHiddenValues = freqDataAsSortedArr.reduce<number>(
+      (accu, item) => {
+        const [currItemKey, currItemFreqNumber] = item;
+
+        if (currItemKey.includes(str.STRANGE)) {
+          return accu + currItemFreqNumber;
+        }
+
+        return accu;
+      },
+      0,
+    );
+
+    const countOfLegitValues =
+      fullSumOfNumbers - (countOfEmptyValues + countOfHiddenValues);
+
+    const outObj = {
+      fullSumOfNumbers,
+      countOfLegitValues,
+      countOfEmptyValues,
+      countOfHiddenValues,
+    };
+
+    return outObj;
+  };
+
+  const recordMajorCounts = () => {
+    // frequencySenderAddress
+
+    // We count messages (where sender is me or not me) with sender address,
+    // because sender is most likely just one for each message.
+
+    const {
+      fullSumOfNumbers,
+      countOfEmptyValues,
+      countOfHiddenValues,
+      countOfLegitValues,
+    } = generateCoolCounts("frequencySenderAddress");
+
+    if (senderCategory === "me") {
+      // here, guarateed that fullSumOfNumbers equals countOfLegitValues
+      // because, in "me" category, sender addresses are known as just my address.
+      step.countOfMessagesWithSenderCategory[senderCategory] = fullSumOfNumbers;
+    } else {
+      // senderCategory === "notMe" ---> or unknown (strange/hidden/empty)
+
+      // Only Senders, not other things.
+
+      step.countOfMessagesWithSenderCategory["empty"] = countOfEmptyValues;
+      step.countOfMessagesWithSenderCategory["hidden"] = countOfHiddenValues;
+
+      step.countOfMessagesWithSenderCategory["notMe"] = countOfLegitValues;
+    }
+  };
+
+  recordMajorCounts();
+
+  //
+
+  const theKeysOfFilesObj = Object.keys(
+    theFilesObj,
+  ) as (keyof typeof theFilesObj)[];
+
+  theKeysOfFilesObj.forEach((propName) => {
+    const currFile = theFilesObj[propName];
+
+    const {
+      fullSumOfNumbers,
+      countOfEmptyValues,
+      countOfHiddenValues,
+      countOfLegitValues,
+    } = generateCoolCounts(propName);
+
+    currFile[
+      // @ts-ignore
+      "legitCount"
+    ] = countOfLegitValues;
+
+    currFile[
+      // @ts-ignore
+      "hiddenCount"
+    ] = countOfHiddenValues;
+
+    currFile[
+      // @ts-ignore
+      "emptyCount"
+    ] = countOfEmptyValues;
+
+    const messagesWhereWeSearched =
+      senderCategory === "me"
+        ? step.countOfMessagesWithSenderCategory["me"]
+        : step.v - step.countOfMessagesWithSenderCategory["me"];
+
+    const sideArr = [
+      ["File name:", currFile.fileName.slice(0, currFile.fileName.length - 4)],
+      ["100% (All Occurrences):", fullSumOfNumbers],
+      ["Legit Occurrences:", countOfLegitValues],
+      ["Empty:", countOfEmptyValues],
+      ["Hidden:", countOfHiddenValues],
+      ["Unique Count:", currFile.freqMap.size],
+      ["Messages Where We Searched:", messagesWhereWeSearched],
+      ["Messages Where Found:", currFile.messagesWhereRelevantValuesFound],
+      [
+        "Messages Where Not Found:",
+        messagesWhereWeSearched - currFile.messagesWhereRelevantValuesFound,
+      ],
+    ];
+
+    const freqDataAsSortedArr = [...currFile.freqMap].sort(
+      (a, b) => b[1] - a[1],
+    );
+
+    const final2dArr = freqDataAsSortedArr.map((line) => {
       const freq = line[1];
       const percentage = (100 * freq) / fullSumOfNumbers;
 
@@ -379,17 +499,22 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
       const fixedStr = percentage.toFixed(12);
 
       const percentageStr = `${fixedStr}%`;
-      const coolLine = [
-        ...line,
-        percentageStr,
-        ...(lineIndex === 0
-          ? [
-              fullSumOfNumbers,
-              currFile.fileName.slice(0, currFile.fileName.length - 4),
-            ]
-          : []),
-      ];
+      const coolLine = [...line, percentageStr];
       return coolLine;
+    });
+
+    const deltaheight = sideArr.length - final2dArr.length;
+
+    if (deltaheight >= 1) {
+      Array(deltaheight)
+        .fill("-")
+        .forEach(() => {
+          final2dArr.push(["", "", ""]); // to fill left area
+        });
+    }
+
+    sideArr.forEach((tupleItem, index) => {
+      final2dArr[index].push("", ...tupleItem);
     });
 
     //
@@ -399,6 +524,13 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
       header: false,
       columns: undefined,
     });
+
+    if (!currFile.pathAbsOrRel) {
+      console.log(
+        `Something's wrong --- path of ${currFile.fileName} not found`,
+      );
+      return;
+    }
 
     writeFileSync(currFile.pathAbsOrRel, csvStringBy2dArr, {
       flag: "a+",
@@ -414,6 +546,6 @@ export const writeStatsIntoFiles = () => {
 
   writeStatsOfSpecificSenderCategoryIntoFiles(
     groundFolder.innerFolders.mboxStats.innerFolders.forMailsWhereSenderIsNotMe,
-    "notMe",
+    "notMeOrUnknown",
   );
 };
