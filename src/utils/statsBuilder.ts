@@ -119,6 +119,10 @@ const handleParticipantIntoFreqMap = ({
   participantRole: TyZenFamilyKind;
   stepN: number;
 }): void => {
+  const majorRoles: string[] = ["from", "to", "zenTo"];
+
+  const isMajorRole = majorRoles.includes(participantRole);
+
   if (!participantArr) {
     // console.log(
     //   `${stepN} - here: ${participantRole} not found - ${getSearchableIdForToBeEasyToCopy(
@@ -128,7 +132,7 @@ const handleParticipantIntoFreqMap = ({
     throw new Error("participantArr is falsy --- handleParticipantIntoFreqMap");
   }
 
-  if (!participantArr.length) {
+  if (!participantArr.length && isMajorRole) {
     throw new Error("participantArr is empty --- handleParticipantIntoFreqMap");
   }
 
@@ -170,6 +174,23 @@ export const addOneMailInfoToStats = (
   const innerFilesForThisCategory =
     resultsInnerFilesCategories[currSenderCategory];
 
+  const key_messagesCount = "messagesWhereRelevantValuesFound";
+
+  if (oneMail.from.length >= 1) {
+    // @ts-ignore
+    innerFilesForThisCategory.frequencySenderAddress[key_messagesCount] += 1;
+    // @ts-ignore
+    innerFilesForThisCategory.frequencySenderDomain[key_messagesCount] += 1;
+
+    (innerFilesForThisCategory.frequencySenderAddressAndName as any)[
+      key_messagesCount
+    ] += 1;
+  } else {
+    throw new Error(
+      `oneMail.from.length is less than 1. It should be 1 or more.`,
+    );
+  }
+
   // for sender
   handleParticipantIntoFreqMap({
     messageId: oneMail["message-id"],
@@ -182,6 +203,17 @@ export const addOneMailInfoToStats = (
     stepN,
   });
 
+  //
+
+  if (oneMail.zenTo.length >= 1) {
+    // @ts-ignore
+    innerFilesForThisCategory.frequencyReceiverAddress[key_messagesCount] += 1;
+  } else {
+    throw new Error(
+      `oneMail.zenTo.length is less than 1. It should be 1 or more.`,
+    );
+  }
+
   // for receiver
   handleParticipantIntoFreqMap({
     messageId: oneMail["message-id"],
@@ -193,6 +225,13 @@ export const addOneMailInfoToStats = (
     stepN,
   });
 
+  //
+
+  if (oneMail.cc.length >= 1) {
+    // @ts-ignore
+    innerFilesForThisCategory.frequencyCcAddress[key_messagesCount] += 1;
+  }
+
   // for cc
   handleParticipantIntoFreqMap({
     messageId: oneMail["message-id"],
@@ -203,6 +242,11 @@ export const addOneMailInfoToStats = (
     participantRole: "cc",
     stepN,
   });
+
+  if (oneMail.bcc.length >= 1) {
+    // @ts-ignore
+    innerFilesForThisCategory.frequencyBccAddress[key_messagesCount] += 1;
+  }
 
   // for bcc
   handleParticipantIntoFreqMap({
