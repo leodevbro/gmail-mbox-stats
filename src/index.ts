@@ -9,6 +9,7 @@
 // TODO: listFile parter to be 500K lines. // TODO
 
 import nodeMbox from "node-mbox";
+import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
 
 import { createReadStream, writeFileSync } from "node:fs";
 
@@ -41,14 +42,18 @@ import {
 } from "./utils/sweetUtils";
 // import { handleOneLineOfMailboxIndex } from "./utils/mailboxIndexMaker";
 
+const startDateTimeStr = `Start datetime: ${new Date().toLocaleString()}`;
+
+console.log("\n");
+console.time("Full Execution Time");
+console.log(startDateTimeStr);
+
 const argNameForMyEmailAddress = "mymail"; // main input !!!
 const argNameForMboxFilePath = "mboxpath"; // main input !!!
 
 // export const myEmail = "leodevbro@gmail.com";
 
-export const myEmailRaw: string = getEnvItemValue(
-  argNameForMyEmailAddress,
-) as string;
+const myEmailRaw: string = getEnvItemValue(argNameForMyEmailAddress) as string;
 if (
   !myEmailRaw ||
   typeof myEmailRaw !== "string" ||
@@ -76,17 +81,21 @@ export const step: {
   v: number;
   countOfFullCountCheckForTimer: number;
   //
-  countOfMailsWithSenderCategory: {
+  countOfMessagesWithSenderCategory: {
     me: number;
     notMe: number;
+    empty: number;
+    hidden: number;
   };
 } = {
   v: 0,
   countOfFullCountCheckForTimer: 0,
   //
-  countOfMailsWithSenderCategory: {
+  countOfMessagesWithSenderCategory: {
     me: 0,
     notMe: 0,
+    empty: 0,
+    hidden: 0,
   },
 };
 
@@ -100,7 +109,7 @@ const checkFullCount = async (currCandidateCount: number): Promise<number> => {
   } else {
     if (step.countOfFullCountCheckForTimer >= 5) {
       console.log(
-        `Something's wrong --- could not determine full count of mails (messages), current count is: ${step.v}`,
+        `Something's wrong --- could not determine full count of messages, current count is: ${step.v}`,
       );
       return step.v;
     }
@@ -116,7 +125,7 @@ const analyzeMbox = () => {
     try {
       const init_From = headers.get("from");
       const init_To = headers.get("to");
-      const init_deliveredTo = headers.get("delivered-to");
+      // const init_deliveredTo = headers.get("delivered-to");
       const init_cc = headers.get("cc");
       const init_bcc = headers.get("bcc");
       //
@@ -141,7 +150,7 @@ const analyzeMbox = () => {
       const initialMainInfoForThisMail: TyMainInfoForMail = {
         from: init_From,
         to: init_To,
-        "delivered-to": init_deliveredTo,
+        // "delivered-to": init_deliveredTo,
         cc: init_cc,
         bcc: init_bcc,
         //
@@ -292,40 +301,192 @@ const analyzeMbox = () => {
     //                        because generalStats needs writeStatsIntoFiles function to execute first to calculate general stats.
     //                        So, The generalStats will be handled down below.
 
-    const linesOfGeneralStats: string[] = [];
-
     console.log("\n");
     //
-    const line_success = `Success. Full count: ${step.v}`;
+    const line_success = `Success. Full count of messages: ${step.v}`;
     console.log(line_success);
-    linesOfGeneralStats.push(line_success);
     //
-    const line_fullCountAsMe = `Full count of mails where sender is me: ${step.countOfMailsWithSenderCategory.me}`;
+    const line_fullCountAsMe = `Messages where sender is me: ${step.countOfMessagesWithSenderCategory.me}`;
     console.log(line_fullCountAsMe);
-    linesOfGeneralStats.push(line_fullCountAsMe);
     //
-    const line_fullCountAsNotMe = `Full count of mails where sender is not me: ${step.countOfMailsWithSenderCategory.notMe}`;
-    console.log(line_fullCountAsNotMe);
-    linesOfGeneralStats.push(line_fullCountAsNotMe);
-    //
-    const mePlusNotMe =
-      step.countOfMailsWithSenderCategory.me +
-      step.countOfMailsWithSenderCategory.notMe;
+    const line_countAsLegitNotMe = `Messages where sender is not me: ${step.countOfMessagesWithSenderCategory.notMe}`;
+    console.log(line_countAsLegitNotMe);
 
-    if (mePlusNotMe !== step.v) {
-      const line_countingError = `Strange - Some kind of error of counting --- "me" (${step.countOfMailsWithSenderCategory.me}) + "notMe" (${step.countOfMailsWithSenderCategory.notMe}) should be totalCount (${step.v}), but the sum is ${mePlusNotMe}`;
-      console.log(line_countingError);
-      linesOfGeneralStats.push(line_countingError);
-    }
+    const line_countAsHidden = `Messages where sender is hidden: ${step.countOfMessagesWithSenderCategory.hidden}`;
+    console.log(line_countAsHidden);
+
+    const line_countAsEmpty = `Messages where sender is empty: ${step.countOfMessagesWithSenderCategory.empty}`;
+    console.log(line_countAsEmpty);
+
+    const generalStats2dArrNotation: (string | number)[][] = [
+      [
+        "MBOX file name:",
+        (() => {
+          const nameWithFormat = mboxFilePath.split(/[/\\]/).at(-1);
+          if (!nameWithFormat) {
+            return mboxFilePath;
+          }
+
+          return nameWithFormat;
+        })(),
+      ],
+      ["My mail:", myEmail],
+      ["Full count of messages:", step.v],
+      [
+        "Messages where sender is me:",
+        step.countOfMessagesWithSenderCategory.me,
+      ],
+      [
+        "Messages where sender is not me:",
+        step.countOfMessagesWithSenderCategory.notMe,
+      ],
+      [
+        "Messages where sender is empty:",
+        step.countOfMessagesWithSenderCategory.empty,
+      ],
+      [
+        "Messages where sender is hidden:",
+        step.countOfMessagesWithSenderCategory.hidden,
+      ],
+    ];
+
+    //
+    // const mePlusNotMe =
+    //   step.countOfMessagesWithSenderCategory.me +
+    //   step.countOfMessagesWithSenderCategory.notMe;
+
+    // if (mePlusNotMe !== step.v) {
+    //   const line_countingError = `Strange - Some kind of error of counting --- "me" (${step.countOfMessagesWithSenderCategory.me}) + "notMe" (${step.countOfMessagesWithSenderCategory.notMe}) should be totalCount (${step.v}), but the sum is ${mePlusNotMe}`;
+    //   console.log(line_countingError);
+    //   // linesOfGeneralStats.push(line_countingError);
+    //   generalStats2dArrNotation.push(["Error:", line_countingError]);
+    // }
+
+    type TyUniAndFull = [
+      unique: number,
+      fullLegit: number,
+      hidden: number,
+      empty: number,
+      messagesWhereFound: number,
+    ];
+
+    type TyInpStats = {
+      senderAddresses: TyUniAndFull;
+      senderDomains: TyUniAndFull;
+      senderPlusNames: TyUniAndFull;
+      receiverAddresses: TyUniAndFull;
+      ccAddresses: TyUniAndFull;
+      BccAddresses: TyUniAndFull;
+    };
+
+    const generateSideStatsForOneCategory = (
+      category: "me" | "not me",
+      stats: TyInpStats,
+    ) => {
+      const arr = [
+        ["", ""],
+        [`For messages where sender is ${category}`],
+        [
+          "Description",
+
+          // like TyUniAndFull
+          "Unique count",
+          "Legit Count",
+          "Hidden",
+          "Empty",
+          "Messages Where Found",
+        ],
+        //
+        ["Sender addresses", ...stats.senderAddresses],
+        ["Sender domains", ...stats.senderDomains],
+        ["SenderPlusNames", ...stats.senderPlusNames],
+        ["Receiver addresses", ...stats.receiverAddresses],
+        ["CC addresses", ...stats.ccAddresses],
+        ["BCC addresses", ...stats.BccAddresses],
+        //
+        ["", ""],
+      ];
+
+      return arr;
+    };
+
+    const folder_me =
+      groundFolder.innerFolders.mboxStats.innerFolders.forMailsWhereSenderIsMe
+        .innerFiles;
+
+    const folder_notMe =
+      groundFolder.innerFolders.mboxStats.innerFolders
+        .forMailsWhereSenderIsNotMe.innerFiles;
+
+    const fol = {
+      me: folder_me,
+      notMe: folder_notMe,
+    };
+
+    const generateStatsObj = (meOrNotMe: keyof typeof fol): TyInpStats => {
+      const currFolder = fol[meOrNotMe];
+
+      const sculptOneFileStat = (fileKey: keyof typeof currFolder) => {
+        const arr: TyUniAndFull = [
+          currFolder[fileKey].freqMap.size,
+          currFolder[fileKey].legitCount,
+          currFolder[fileKey].hiddenCount,
+          currFolder[fileKey].emptyCount,
+          currFolder[fileKey].messagesWhereRelevantValuesFound,
+        ];
+        return arr;
+      };
+
+      const obj: TyInpStats = {
+        senderAddresses: sculptOneFileStat("frequencySenderAddress"),
+        senderDomains: sculptOneFileStat("frequencySenderDomain"),
+        senderPlusNames: sculptOneFileStat("frequencySenderAddressAndName"),
+        receiverAddresses: sculptOneFileStat("frequencyReceiverAddress"),
+        ccAddresses: sculptOneFileStat("frequencyCcAddress"),
+        BccAddresses: sculptOneFileStat("frequencyBccAddress"),
+      };
+
+      return obj;
+    };
+
+    generalStats2dArrNotation.push(
+      ...[
+        ["", ""],
+        [`Let's count unique things for messages`],
+        [
+          "(Will include hidden addresses as one unique address and also empty addresses as one unique address)",
+        ],
+        ["Hidden address --- non-empty text but not valid email address"],
+        [
+          "Empty address --- empty text in a participant (Sender/Receiver, maybe never for CC/BCC) address value.",
+        ],
+      ],
+      ...generateSideStatsForOneCategory("me", generateStatsObj("me")),
+      ...generateSideStatsForOneCategory("not me", generateStatsObj("notMe")),
+    );
 
     const generalStatsPath =
       groundFolder.innerFolders.mboxStats.innerFiles.generalStats.pathAbsOrRel;
 
-    const finalDataStringOfGeneralStats = linesOfGeneralStats.join(`\n`) + "\n";
+    const finalDataStringOfGeneralStats = stringify2dArrIntoCsv(
+      generalStats2dArrNotation,
+      {
+        header: false,
+        columns: undefined,
+      },
+    );
 
     writeFileSync(generalStatsPath, finalDataStringOfGeneralStats, {
       flag: "a+",
     });
+
+    console.log("\n");
+    console.log(startDateTimeStr);
+    console.log(`- End datetime: ${new Date().toLocaleString()}`);
+    console.log("\n");
+    console.timeEnd("Full Execution Time");
+    console.log("\n");
+    console.log("\n");
   });
 };
 
@@ -379,10 +540,9 @@ console.log('haaaa_end', process.argv, process.env.npm_config_aaabbbrt); // npm 
 
 export const logExecutionMessage = () => {
   console.log("\n");
-  console.log("\n");
 
   const executionMessage =
-    "Started MBOX file analyzation by gmail-mbox-stats v1.0.7 - created by leodevbro (Levan Katsadze)";
+    "Started MBOX file analyzation by gmail-mbox-stats v1.0.8 - created by leodevbro (Levan Katsadze)";
   console.log(executionMessage);
   console.log("Relax a bit, here you can see the progress:");
 };
