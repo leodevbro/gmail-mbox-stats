@@ -351,88 +351,91 @@ export const prepareOutputFolderStructure = (mboxFilePath: string) => {
   );
 };
 
+type TySenderCategoryBig = "me" | "notMeOrUnknown";
+
+const generateCoolCounts = (
+  propName: keyof typeof theFilesObj,
+  theFilesObj: TyOneResultCategory["innerFiles"],
+) => {
+  const currFile = theFilesObj[propName];
+
+  const freqDataAsSortedArr = [...currFile.freqMap].sort((a, b) => b[1] - a[1]);
+  const fullSumOfNumbers = freqDataAsSortedArr.reduce<number>((accu, item) => {
+    const currItemFreqNumber = item[1];
+    return accu + currItemFreqNumber;
+  }, 0);
+
+  //
+
+  const countOfEmptyValues = currFile.freqMap.get(str.EMPTY as any) || 0;
+
+  const countOfHiddenValues = freqDataAsSortedArr.reduce<number>(
+    (accu, item) => {
+      const [currItemKey, currItemFreqNumber] = item;
+
+      if (currItemKey.includes(str.STRANGE)) {
+        return accu + currItemFreqNumber;
+      }
+
+      return accu;
+    },
+    0,
+  );
+
+  const countOfLegitValues =
+    fullSumOfNumbers - (countOfEmptyValues + countOfHiddenValues);
+
+  const outObj = {
+    fullSumOfNumbers,
+    countOfLegitValues,
+    countOfEmptyValues,
+    countOfHiddenValues,
+  };
+
+  return outObj;
+};
+
+const recordMajorCounts = (
+  theFilesObj: TyOneResultCategory["innerFiles"],
+  senderCategory: TySenderCategoryBig,
+) => {
+  // frequencySenderAddress
+
+  // We count messages (where sender is me or not me) with sender address,
+  // because sender is most likely just one for each message.
+
+  const {
+    fullSumOfNumbers,
+    countOfEmptyValues,
+    countOfHiddenValues,
+    countOfLegitValues,
+  } = generateCoolCounts("frequencySenderAddress", theFilesObj);
+
+  if (senderCategory === "me") {
+    // here, guarateed that fullSumOfNumbers equals countOfLegitValues
+    // because, in "me" category, sender addresses are known as just my address.
+    step.countOfMessagesWithSenderCategory[senderCategory] = fullSumOfNumbers;
+  } else {
+    // senderCategory === "notMe" ---> or unknown (strange/hidden/empty)
+
+    // Only Senders, not other things.
+
+    step.countOfMessagesWithSenderCategory["empty"] = countOfEmptyValues;
+    step.countOfMessagesWithSenderCategory["hidden"] = countOfHiddenValues;
+
+    step.countOfMessagesWithSenderCategory["notMe"] = countOfLegitValues;
+  }
+};
+
 export const writeStatsOfSpecificSenderCategoryIntoFiles = (
   folderOfSpecificSenderCategory: TyOneResultCategory,
-  senderCategory: "me" | "notMeOrUnknown",
+  senderCategory: TySenderCategoryBig,
 ) => {
   const theFilesObj = folderOfSpecificSenderCategory.innerFiles;
 
   //
 
-  const generateCoolCounts = (propName: keyof typeof theFilesObj) => {
-    const currFile = theFilesObj[propName];
-
-    const freqDataAsSortedArr = [...currFile.freqMap].sort(
-      (a, b) => b[1] - a[1],
-    );
-    const fullSumOfNumbers = freqDataAsSortedArr.reduce<number>(
-      (accu, item) => {
-        const currItemFreqNumber = item[1];
-        return accu + currItemFreqNumber;
-      },
-      0,
-    );
-
-    //
-
-    const countOfEmptyValues = currFile.freqMap.get(str.EMPTY as any) || 0;
-
-    const countOfHiddenValues = freqDataAsSortedArr.reduce<number>(
-      (accu, item) => {
-        const [currItemKey, currItemFreqNumber] = item;
-
-        if (currItemKey.includes(str.STRANGE)) {
-          return accu + currItemFreqNumber;
-        }
-
-        return accu;
-      },
-      0,
-    );
-
-    const countOfLegitValues =
-      fullSumOfNumbers - (countOfEmptyValues + countOfHiddenValues);
-
-    const outObj = {
-      fullSumOfNumbers,
-      countOfLegitValues,
-      countOfEmptyValues,
-      countOfHiddenValues,
-    };
-
-    return outObj;
-  };
-
-  const recordMajorCounts = () => {
-    // frequencySenderAddress
-
-    // We count messages (where sender is me or not me) with sender address,
-    // because sender is most likely just one for each message.
-
-    const {
-      fullSumOfNumbers,
-      countOfEmptyValues,
-      countOfHiddenValues,
-      countOfLegitValues,
-    } = generateCoolCounts("frequencySenderAddress");
-
-    if (senderCategory === "me") {
-      // here, guarateed that fullSumOfNumbers equals countOfLegitValues
-      // because, in "me" category, sender addresses are known as just my address.
-      step.countOfMessagesWithSenderCategory[senderCategory] = fullSumOfNumbers;
-    } else {
-      // senderCategory === "notMe" ---> or unknown (strange/hidden/empty)
-
-      // Only Senders, not other things.
-
-      step.countOfMessagesWithSenderCategory["empty"] = countOfEmptyValues;
-      step.countOfMessagesWithSenderCategory["hidden"] = countOfHiddenValues;
-
-      step.countOfMessagesWithSenderCategory["notMe"] = countOfLegitValues;
-    }
-  };
-
-  recordMajorCounts();
+  recordMajorCounts(theFilesObj, senderCategory);
 
   //
 
@@ -448,7 +451,7 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
       countOfEmptyValues,
       countOfHiddenValues,
       countOfLegitValues,
-    } = generateCoolCounts(propName);
+    } = generateCoolCounts(propName, theFilesObj);
 
     currFile[
       // @ts-ignore
