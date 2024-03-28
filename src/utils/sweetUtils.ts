@@ -1,3 +1,4 @@
+import { str } from "../constants";
 import {
   TyFamilyKind,
   TyGmailMailHeadersAsObj,
@@ -89,12 +90,9 @@ import {
 //   return withOnlyUniqueValues;
 // };
 
-export const str_EMPTY = "(-)";
-export const str_STRANGE = "STRANGE-->";
-
 const emptyZenParticipant: TyZenParticipant = {
-  address: str_EMPTY,
-  name: str_EMPTY,
+  address: str.EMPTY,
+  name: str.EMPTY,
 } as const;
 
 const sculptEmptyZenParticipant = (): TyZenParticipant => {
@@ -117,44 +115,46 @@ export const getZenParticipantsFromFamily = ({
 }): TyZenParticipant[] => {
   const majorKindsOfFamily: TyFamilyKind[] = ["from", "to"];
 
+  const isMajorFamily = majorKindsOfFamily.includes(familyKind);
+
   if (!family) {
     if (!fromCombiner) {
-      if (majorKindsOfFamily.includes(familyKind)) {
+      if (isMajorFamily) {
         console.log(
-          `${step} - here: '${familyKind}' participant not found  - ${getSearchableIdForToBeEasyToCopy(
+          `${step} - here: '${familyKind}' participant not found - ${getSearchableIdForToBeEasyToCopy(
             messageId,
           )} '!family'`,
         );
       }
     }
 
-    return [sculptEmptyZenParticipant()];
+    return isMajorFamily ? [sculptEmptyZenParticipant()] : [];
   }
 
   if (!family.value) {
     if (!fromCombiner) {
-      if (majorKindsOfFamily.includes(familyKind)) {
+      if (isMajorFamily) {
         console.log(
-          `${step} - here: '${familyKind}' participant not found  - ${getSearchableIdForToBeEasyToCopy(
+          `${step} - here: '${familyKind}' participant not found - ${getSearchableIdForToBeEasyToCopy(
             messageId,
           )} '!family.value'`,
         );
       }
     }
-    return [sculptEmptyZenParticipant()];
+    return isMajorFamily ? [sculptEmptyZenParticipant()] : [];
   }
 
   if (family.value.length === 0) {
     if (!fromCombiner) {
-      if (majorKindsOfFamily.includes(familyKind)) {
+      if (isMajorFamily) {
         console.log(
-          `${step} - here: '${familyKind}' participant not found  - ${getSearchableIdForToBeEasyToCopy(
+          `${step} - here: '${familyKind}' participant not found - ${getSearchableIdForToBeEasyToCopy(
             messageId,
           )} 'family.value.length === 0'`,
         );
       }
     }
-    return [sculptEmptyZenParticipant()];
+    return isMajorFamily ? [sculptEmptyZenParticipant()] : [];
   }
 
   const zenArr: TyZenParticipant[] = family.value.map((ptc) => {
@@ -162,9 +162,9 @@ export const getZenParticipantsFromFamily = ({
       address: ptc.address
         ? isMaybeCorrectNotationOfAddress(ptc.address)
           ? ptc.address.toLowerCase()
-          : `${str_STRANGE}${ptc.address}`
-        : str_EMPTY,
-      name: ptc.name || str_EMPTY,
+          : `${str.STRANGE}${ptc.address}`
+        : str.EMPTY,
+      name: ptc.name || str.EMPTY,
     };
 
     return zenPtc;
@@ -178,7 +178,7 @@ export const getZenParticipantsFromFamily = ({
     const prt = duo[1];
 
     if (!fromCombiner) {
-      if (prt.address === str_EMPTY) {
+      if (prt.address === str.EMPTY) {
         console.log(
           `${step} - here: '${familyKind}' participant address is empty - ${getSearchableIdForToBeEasyToCopy(
             messageId,
@@ -186,7 +186,7 @@ export const getZenParticipantsFromFamily = ({
         );
       }
 
-      if (prt.address.includes(str_STRANGE)) {
+      if (prt.address.includes(str.STRANGE)) {
         console.log(
           `${step} - here: '${familyKind}' participant address is strange - ${getSearchableIdForToBeEasyToCopy(
             messageId,
@@ -219,7 +219,7 @@ export const combineTwoFamiliesIntoZenArr = ({
     !secondFamilyMeta.participationInfo
   ) {
     console.log(
-      `${step} - here: participant not found  - ${getSearchableIdForToBeEasyToCopy(
+      `${step} - here: participant not found - ${getSearchableIdForToBeEasyToCopy(
         messageId,
       )} --- both families are falsy`,
     );
@@ -257,7 +257,7 @@ export const combineTwoFamiliesIntoZenArr = ({
         : secondFamilyMeta.familyKind;
 
     console.log(
-      `${step} - here: participant "${blameKind}" not found  - ${getSearchableIdForToBeEasyToCopy(
+      `${step} - here: participant "${blameKind}" not found - ${getSearchableIdForToBeEasyToCopy(
         messageId,
       )} 'final.length === 0 --- combineTwoFamilies'`,
     );
@@ -306,12 +306,12 @@ export const prepareZenParticipantArrAsMainListItemStr = ({
 }): string => {
   if (zenParticipants.length === 0) {
     console.log(
-      `${step} - error!!! here: '${zenFamilyKind}' ${ptcProp} not found  - ${getSearchableIdForToBeEasyToCopy(
+      `${step} - error!!! here: '${zenFamilyKind}' ${ptcProp} not found - ${getSearchableIdForToBeEasyToCopy(
         messageId,
       )}`,
     );
 
-    return str_EMPTY;
+    return str.EMPTY;
   }
 
   if (zenParticipants.length === 1) {
