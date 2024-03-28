@@ -59,7 +59,7 @@ export type TyMboxMailHeaders = TyDeepHintsOfHeadersMap &
 
 type TyParticipationData = Pick<
   TyGmailMailHeadersAsObj,
-  "from" | "to" | "delivered-to" | "cc" | "bcc"
+  "from" | "to" | "cc" | "bcc" // | "delivered-to"
 >;
 
 export type TyFamilyKind = keyof TyParticipationData;
