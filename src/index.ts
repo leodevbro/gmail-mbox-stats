@@ -1,11 +1,32 @@
-// https://support.google.com/mail/answer/7190
-// In Gmail, find mail (message) by id
-// just type like this:
-// rfc822msgid:CAA_p-vyCSYhMN=mGZBd7GibPgaBxNX7ayh4sheQgPYqCS97P3A@mail.gmail.com
-// the id is after the ":" (colon).
+/*
+
+gmail-mbox-stats v1.0.8
+Created by leodevbro (Levan Katsadze)
+--- linkedin.com/in/leodevbro
+--- github.com/leodevbro
+--- facebook.com/leodevbro
+--- buymeacoffee.com/leodevbro
+
+*/
+
+// ===
+// ===
+// ===
+
+/*
+
+https://support.google.com/mail/answer/7190
+In Gmail, find mail (message) by id
+just type like this:
+rfc822msgid:CAA_p-vyCSYhMN=mGZBd7GibPgaBxNX7ayh4sheQgPYqCS97P3A@mail.gmail.com
+the id is after the ":" (colon).
+
+*/
 
 //
 //
+//
+
 // TODO: listFile parter to be 500K lines. // TODO
 
 import nodeMbox from "node-mbox";
@@ -40,13 +61,34 @@ import {
   // combineTwoFamiliesIntoZenArr,
   getZenParticipantsFromFamily,
 } from "./utils/sweetUtils";
+import { str } from "./constants";
 // import { handleOneLineOfMailboxIndex } from "./utils/mailboxIndexMaker";
 
 const startDateTimeStr = `Start datetime: ${new Date().toLocaleString()}`;
 
-console.log("\n");
 console.time("Full Execution Time");
-console.log(startDateTimeStr);
+
+export const logExecutionStartMessage = () => {
+  console.log("\n");
+
+  console.log(str.authoringText + "\n");
+
+  console.log("Started MBOX file analyzation");
+  // console.log("Relax a bit, here you can see the progress:\n");
+
+  console.log(startDateTimeStr);
+};
+
+const logExecutionEndMessage = () => {
+  console.log("\n");
+  console.log(startDateTimeStr);
+  console.log(`--End datetime: ${new Date().toLocaleString()}\n`);
+  console.timeEnd("Full Execution Time");
+  console.log("\n");
+  console.log(str.authoringText);
+  console.log("\n");
+  console.log("\n");
+};
 
 const argNameForMyEmailAddress = "mymail"; // main input !!!
 const argNameForMboxFilePath = "mboxpath"; // main input !!!
@@ -480,13 +522,7 @@ const analyzeMbox = () => {
       flag: "a+",
     });
 
-    console.log("\n");
-    console.log(startDateTimeStr);
-    console.log(`- End datetime: ${new Date().toLocaleString()}`);
-    console.log("\n");
-    console.timeEnd("Full Execution Time");
-    console.log("\n");
-    console.log("\n");
+    logExecutionEndMessage();
   });
 };
 
@@ -537,12 +573,3 @@ try {
 console.log('haaaa_end', process.argv, process.env.npm_config_aaabbbrt); // npm run go --aaabbbrt="sdfs"
 
 */
-
-export const logExecutionMessage = () => {
-  console.log("\n");
-
-  const executionMessage =
-    "Started MBOX file analyzation by gmail-mbox-stats v1.0.8 - created by leodevbro (Levan Katsadze)";
-  console.log(executionMessage);
-  console.log("Relax a bit, here you can see the progress:");
-};
