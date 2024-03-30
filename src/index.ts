@@ -2,10 +2,13 @@
 
 gmail-mbox-stats v1.0.8
 Created by leodevbro (Levan Katsadze)
---- linkedin.com/in/leodevbro
---- github.com/leodevbro
---- facebook.com/leodevbro
---- buymeacoffee.com/leodevbro
+* linkedin.com/in/leodevbro
+* github.com/leodevbro
+* facebook.com/leodevbro
+
+If you feel like donating
+* buymeacoffee.com/leodevbro
+* ko-fi.com/leodevbro
 
 */
 
@@ -71,7 +74,7 @@ console.time("Full Execution Time");
 export const logExecutionStartMessage = () => {
   console.log("\n");
 
-  console.log(str.authoringText + "\n");
+  console.log(str.authoringText + "\n\n");
 
   console.log("Started MBOX file analyzation");
   // console.log("Relax a bit, here you can see the progress:\n");
@@ -82,10 +85,11 @@ export const logExecutionStartMessage = () => {
 const logExecutionEndMessage = () => {
   console.log("\n");
   console.log(startDateTimeStr);
-  console.log(`--End datetime: ${new Date().toLocaleString()}\n`);
+  console.log(`->End datetime: ${new Date().toLocaleString()}\n`);
   console.timeEnd("Full Execution Time");
   console.log("\n");
-  console.log(str.authoringText);
+  console.log(str.authoringText + "\n");
+  console.log(str.donationText);
   console.log("\n");
   console.log("\n");
 };
@@ -345,8 +349,9 @@ const analyzeMbox = () => {
 
     console.log("\n");
     //
-    const line_success = `Success. Full count of messages: ${step.v}`;
-    console.log(line_success);
+    const line_fullCount = `Full count of messages: ${step.v}`;
+    console.log("Success.");
+    console.log(line_fullCount);
     //
     const line_fullCountAsMe = `Messages where sender is me: ${step.countOfMessagesWithSenderCategory.me}`;
     console.log(line_fullCountAsMe);
