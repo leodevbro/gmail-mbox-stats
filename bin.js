@@ -2,4 +2,4 @@
 
 const mainGate = require("./buildJS/index");
 
-mainGate.logExecutionMessage();
+mainGate.logExecutionStartMessage();
