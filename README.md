@@ -35,104 +35,129 @@ Coming soon...
 
 ## Textual instruction:
 
-- Download Gmail data from <a href="https://takeout.google.com/" target="_blank">Google Takeout</a> (Preferably select 'Include all messages in Mail', it will include all mail, not just inbox or just outbox/spam/archive). If your mailbox has 100K mails, the downloaded data can be 10 GB or more. So, be ready to deal with a large file. If it is too large, it may not be a single archive file, but multipart archive files, like split-files of ZIP.
+- Download Gmail data from <a href="https://takeout.google.com/" target="_blank">Google Takeout</a> (Preferably select 'Include all messages in Mail', it will include all mail, not just Inbox or just Sent/Spam/Archive/Trash). If your mailbox has 100K mails, the downloaded data can be 10 GB or more. So, be ready to deal with a large file. If it is too large, it may not be a single archive file, but multipart archive files, like split-files of ZIP.
 
-- Extract MBOX file from the Gmail data archive.
+- Extract MBOX file from the Gmail data file(s).
 
 - Make sure you have installed <a href="https://nodejs.org/" target="_blank">NodeJS</a>. It is available for Windows, Mac and also Linux.
 
-- Open terminal (preferably in the same folder where MBOX file is located) and run the command with this syntax:<br />
+- Open terminal (preferably in the same folder where MBOX file is located) - in Windows/Mac/Linux. For Windows, the terminal should be PowerShell, not CMD.
+
+- run a command with this syntax:<br />
   `npx gmail-mbox-stats mymail="<your email address>" mboxpath="<mbox file path>"`
 
   for example:<br />
   `npx gmail-mbox-stats mymail="leodevbro@gmail.com" mboxpath="./All mail Including Spam and Trash.mbox"`<br />
-  the notation `./` means to find the file `All mail Including Spam and Trash.mbox` in the current folder of terminal.
+  the notation `./` means to find the file `All mail Including Spam and Trash.mbox` in the current folder of the terminal.
 
-  <br />
-  <br />
-  <br />
-  <br />
-  That's it.<br />
-  Now just see the results:
-  <br />
-  <br />
-  <br />
-  <br />
-  <br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+That's it.<br />
+Now just see the results:
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
 
-  It will take probably 5-10-15 seconds to analyze 1000 mails,<br />
-  about 100 seconds for 10K mails,<br />
-  about 1000 seconds (about 17 minutes) for 100K mails and so on.<br />
+It will take probably 5-10-15 seconds to analyze 1000 mails (messages),<br />
+about 100 seconds for 10K mails,<br />
+about 1000 seconds (10-15-20 minutes) for 100K mails and so on.<br />
 
 - When it finishes, the terminal will log initial information like this:
 
 ```
-Success. Full count: 14577
-Full count of mails where sender is me: 425
-Full count of mails where sender is not me: 14152
+Success.
+Full count of messages: 14577
+Messages where sender is me: 425
+Messages where sender is not me: 14152
+Messages where sender is hidden: 0
+Messages where sender is empty: 0
+
+
+Start datetime: 3/30/2024, 5:21:29 PM
+->End datetime: 3/30/2024, 5:23:02 PM
+
+Full Execution Time: 1:33.267 (m:ss.mmm)
+
+
+gmail-mbox-stats v1.0.8
+Created by leodevbro (Levan Katsadze)
+* linkedin.com/in/leodevbro
+* github.com/leodevbro
+* facebook.com/leodevbro
+
+If you feel like donating
+* buymeacoffee.com/leodevbro
+* ko-fi.com/leodevbro
 ```
 
 - Also, there will be a new folder named "mboxStats" with current local datetime, <br />
-  like this: `mboxStats_2024-03-10_16-52-06`<br />
+  like this: `mboxStats_2024-03-14_16-52-06`<br />
   in the same folder where the MBOX file is located.<br />
 
-- In the 'mboxStats' folder, there will be two folders:<br />
-  `resultsForMailsWithSenderAsMe` - the stats for only the mails where sender is you.<br />
-  `resultsForMailsWithSenderAsNotMe` - the stats for only the mails where sender is not you.<br />
-  In both folders, there will be `.csv` files of stats. These are very simple csv files, so you can open them in any text editor (Notepad, Sublime), or Google Sheets, or Microsoft Excel.
+- In the 'mboxStats' folder, there will be `generalStats.csv` file. If you import it in Google Sheets it will like this:
+
+<br />
+
+![Example generalStats CSV In Google Sheets](./src/demoMedia/generalStatsExampleCsv.png "Example generalStats CSV In Google Sheets")
+
+<br />
+
+- In the 'mboxStats' folder, there will be also two folders:<br />
+  `forMailsWhereSenderIsMe` - the stats for only the mails where sender is you.<br />
+  `forMailsWhereSenderIsNotMe` - the stats for only the mails where sender is not you.<br />
+  In both folders, there will be `.csv` files of stats. You can import them one by one in Google Sheets.
 
 Here is what the full folder structure looks like:
 
 ```
-All mail Including Spam and Trash.mbox
+▨All mail Including Spam and Trash.mbox
 
-mboxStats_2024-03-10_16-52-06
-    resultsForMailsWithSenderAsMe
-        senderIsMeFrequencyBccAddress.csv
-        senderIsMeFrequencyCcAddress.csv
-        senderIsMeFrequencyReceiverAddress.csv --- Here you can find the receiver where you sent most mails
-        senderIsMeFrequencySenderAddress.csv
-        senderIsMeFrequencySenderAddressAndName.csv
-        senderIsMeFrequencySenderDomain.csv
+📂mboxStats_2024-03-14_16-52-06
+    ▦generalStats.csv
 
-    resultsForMailsWithSenderAsNotMe
-        senderIsNotMeFrequencyBccAddress.csv
-        senderIsNotMeFrequencyCcAddress.csv
-        senderIsNotMeFrequencyReceiverAddress.csv
-        senderIsNotMeFrequencySenderAddress.csv --- Here you can find the sender which sent most mails
-        senderIsNotMeFrequencySenderAddressAndName.csv
-        senderIsNotMeFrequencySenderDomain.csv
+    📂forMailsWhereSenderIsMe
+        ▦senderIsMe_freqBcc.csv
+        ▦senderIsMe_FreqCc.csv
+        ▦senderIsMe_FreqReceiver.csv --- Here you can find the receiver where you sent most mails
+        ▦senderIsMe_FreqSender.csv
+        ▦senderIsMe_freqSenderDomain.csv
+        ▦senderIsMe_freqSenderPlusName.csv
 
-```
-
-Now, for example, let's see what's inside the file `senderIsNotMeFrequencySenderAddress.csv`
+    📂forMailsWhereSenderIsNotMe
+        ▦senderIsNotMe_freqBcc.csv
+        ▦senderIsNotMe_FreqCc.csv
+        ▦senderIsNotMe_FreqReceiver.csv
+        ▦senderIsNotMe_FreqSender.csv --- Here you can find the sender which sent most mails
+        ▦senderIsNotMe_freqSenderDomain.csv
+        ▦senderIsNotMe_freqSenderPlusName.csv
 
 ```
-notifications@github.com,1011,7.14%,14152,senderIsNotMeFrequencySenderAddress --- here, first line has also the sum-count (14152) which is the sum of all counts: 1011, 895, 443 and so on. Also, you can see the name of the file.
-jobalerts-noreply@linkedin.com,895,6.32%,
-noreply@medium.com,443,3.13%,
-admin@crypto-careers.com,325,2.30%,
-no-reply@reply.experteer.co.uk,263,1.86%,
-noreply@glassdoor.com,247,1.75%,
-english-personalized-digest@quora.com,233,1.65%,
-news@email.experteer.com,221,1.56%,
-hello@digest.producthunt.com,218,1.54%,
-tbcconcept@tbc.ge,181,1.28%,
-vsmarketplace@microsoft.com,179,1.26%,
-(-),178,1.26% --- here, "(-)" means an empty address. Yeah, sometimes for some specific reason, mail sender and/or receiver address is empty.
-gitpod@noreply.github.com,174,1.23%
-...
-...
-...
-...
-```
-<br />
-If you import this file in Google Sheets, it will look like this:
-<br />
+
 <br />
 
-![Example Result CSV In Google Sheets](https://raw.githubusercontent.com/leodevbro/gmail-mbox-stats/main/exampleResultCsv.png "Example Result CSV In Google Sheets")
+Now, for example, let's import the file `senderIsNotMe_freqSender.csv` in Google Sheets:
+<br />
 
+![Example Result CSV In Google Sheets](./src/demoMedia/exampleOfSenderIsNotMe_freqSender.png "Example Result CSV In Google Sheets")
+
+Also, let's import the file `senderIsNotMe_freqReceiver.csv` in Google Sheets:
+<br />
+
+![Example Result CSV In Google Sheets](./src/demoMedia/exampleOfSenderIsNotMe_freqSender.png "Example Result CSV In Google Sheets")
+
+(README not yet completed, to do soon...)
 <br />
 <br />
 Thank you.
