@@ -18,6 +18,11 @@ const str_Bcc = "Bcc";
 const str_Domain = "Domain";
 const str_AddressAndName = "PlusName";
 
+//
+
+export const keyForMessageCountBySender: keyof TyOneResultCategory["innerFiles"] =
+  "frequencySenderAddress";
+
 export type TyOneFileIndicator = {
   fileName: `${string}${typeof dotCsv}`;
   pathAbsOrRel: string;
@@ -44,20 +49,24 @@ type TyCheckThatTObjExtendsTSource<TSource, TObj extends TSource> = TObj &
 
 export type TySenderCategory = "me" | "notMe";
 
-const commonInitialPropsOfFile = {
-  pathAbsOrRel: "" as string,
-  freqMap: new Map<TyMailAddress, number>([]),
-  messagesWhereRelevantValuesFound: 0 as number,
-  legitCount: 0 as number,
-  hiddenCount: 0 as number,
-  emptyCount: 0 as number,
-} as const;
+const sculptCommonInitialPropsOfFile = () => {
+  const commonInitialPropsOfFile = {
+    pathAbsOrRel: "" as string,
+    freqMap: new Map<TyMailAddress, number>([]),
+    messagesWhereRelevantValuesFound: 0 as number,
+    legitCount: 0 as number,
+    hiddenCount: 0 as number,
+    emptyCount: 0 as number,
+  } as const;
 
-type TyDoTheCheck0 = TyCheckThatTObjExtendsTSource<
-  Omit<TyOneFileIndicator, "fileName">,
-  typeof commonInitialPropsOfFile
->;
-null as TyDoTheCheck0;
+  type TyDoTheCheck0 = TyCheckThatTObjExtendsTSource<
+    Omit<TyOneFileIndicator, "fileName">,
+    typeof commonInitialPropsOfFile
+  >;
+  null as TyDoTheCheck0;
+
+  return commonInitialPropsOfFile;
+};
 
 const createResultsObjForSpecificSenderCategory = (
   category: TySenderCategory,
@@ -72,16 +81,16 @@ const createResultsObjForSpecificSenderCategory = (
     innerFiles: {
       frequencySenderAddress: {
         fileName: `${sCatStr}${str_frequency}${str_Sender}${dotCsv}`,
-        ...commonInitialPropsOfFile,
+        ...sculptCommonInitialPropsOfFile(),
       },
       frequencySenderDomain: {
         fileName: `${sCatStr}${str_frequency}${str_Sender}${str_Domain}${dotCsv}`,
-        ...commonInitialPropsOfFile,
+        ...sculptCommonInitialPropsOfFile(),
         freqMap: new Map<TyMailDomain, number>([]),
       },
       frequencySenderAddressAndName: {
         fileName: `${sCatStr}${str_frequency}${str_Sender}${str_AddressAndName}${dotCsv}`,
-        ...commonInitialPropsOfFile,
+        ...sculptCommonInitialPropsOfFile(),
         freqMap: new Map<string, number>([]),
       },
 
@@ -89,7 +98,7 @@ const createResultsObjForSpecificSenderCategory = (
 
       frequencyReceiverAddress: {
         fileName: `${sCatStr}${str_frequency}${str_Receiver}${dotCsv}`,
-        ...commonInitialPropsOfFile,
+        ...sculptCommonInitialPropsOfFile(),
       },
       // frequencyReceiverDomain: {
       //   fileName: `${sCatStr}${str_frequency}${str_Receiver}${str_Domain}${dotCsv}`,
@@ -106,7 +115,7 @@ const createResultsObjForSpecificSenderCategory = (
 
       frequencyCcAddress: {
         fileName: `${sCatStr}${str_frequency}${str_Cc}${dotCsv}`,
-        ...commonInitialPropsOfFile,
+        ...sculptCommonInitialPropsOfFile(),
       },
       // frequencyCcDomain: {
       //   fileName: `${sCatStr}${str_frequency}${str_Cc}${str_Domain}${dotCsv}`,
@@ -123,7 +132,7 @@ const createResultsObjForSpecificSenderCategory = (
 
       frequencyBccAddress: {
         fileName: `${sCatStr}${str_frequency}${str_Bcc}${dotCsv}`,
-        ...commonInitialPropsOfFile,
+        ...sculptCommonInitialPropsOfFile(),
       },
       // frequencyBccDomain: {
       //   fileName: `${sCatStr}${str_frequency}${str_Bcc}${str_Domain}${dotCsv}`,
@@ -160,12 +169,12 @@ export const groundFolder = {
         // not yet used in prod
         allMailList_csv: {
           fileName: `index__sender-senderName-receiver-cc-bcc-time-id${dotCsv}`,
-          ...commonInitialPropsOfFile, // maybe only 'pathAbsOrRel' is applicable here.
+          ...sculptCommonInitialPropsOfFile(), // maybe only 'pathAbsOrRel' is applicable here.
         },
 
         generalStats: {
           fileName: `generalStats${dotCsv}`,
-          ...commonInitialPropsOfFile, // maybe only 'pathAbsOrRel' is applicable here.
+          ...sculptCommonInitialPropsOfFile(), // maybe only 'pathAbsOrRel' is applicable here.
         },
       },
       innerFolders: {
@@ -353,10 +362,17 @@ export const prepareOutputFolderStructure = (mboxFilePath: string) => {
 
 type TySenderCategoryBig = "me" | "notMeOrUnknown";
 
+export type TyCoolCounts = {
+  fullSumOfNumbers: number;
+  countOfLegitValues: number;
+  countOfEmptyValues: number;
+  countOfHiddenValues: number;
+};
+
 const generateCoolCounts = (
   propName: keyof typeof theFilesObj,
   theFilesObj: TyOneResultCategory["innerFiles"],
-) => {
+): TyCoolCounts => {
   const currFile = theFilesObj[propName];
 
   const freqDataAsSortedArr = [...currFile.freqMap].sort((a, b) => b[1] - a[1]);
@@ -385,7 +401,7 @@ const generateCoolCounts = (
   const countOfLegitValues =
     fullSumOfNumbers - (countOfEmptyValues + countOfHiddenValues);
 
-  const outObj = {
+  const outObj: TyCoolCounts = {
     fullSumOfNumbers,
     countOfLegitValues,
     countOfEmptyValues,
@@ -395,21 +411,27 @@ const generateCoolCounts = (
   return outObj;
 };
 
+// This will be executed two times. One for "me" and one for "notMeOrUnknown"
 const recordMajorCounts = (
   theFilesObj: TyOneResultCategory["innerFiles"],
   senderCategory: TySenderCategoryBig,
-) => {
-  // frequencySenderAddress
+): TyCoolCounts => {
+  // frequencySenderAddress --> keyForMessageCountBySender
 
   // We count messages (where sender is me or not me) with sender address,
   // because sender is most likely just one for each message.
+
+  const majorCountsForCurrCategory = generateCoolCounts(
+    keyForMessageCountBySender,
+    theFilesObj,
+  );
 
   const {
     fullSumOfNumbers,
     countOfEmptyValues,
     countOfHiddenValues,
     countOfLegitValues,
-  } = generateCoolCounts("frequencySenderAddress", theFilesObj);
+  } = majorCountsForCurrCategory;
 
   if (senderCategory === "me") {
     // here, guarateed that fullSumOfNumbers equals countOfLegitValues
@@ -425,6 +447,8 @@ const recordMajorCounts = (
 
     step.countOfMessagesWithSenderCategory["notMe"] = countOfLegitValues;
   }
+
+  return majorCountsForCurrCategory;
 };
 
 export const writeStatsOfSpecificSenderCategoryIntoFiles = (
@@ -435,7 +459,7 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
 
   //
 
-  recordMajorCounts(theFilesObj, senderCategory);
+  const majorCounts = recordMajorCounts(theFilesObj, senderCategory);
 
   //
 
@@ -451,7 +475,10 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
       countOfEmptyValues,
       countOfHiddenValues,
       countOfLegitValues,
-    } = generateCoolCounts(propName, theFilesObj);
+    } =
+      propName === keyForMessageCountBySender
+        ? majorCounts
+        : generateCoolCounts(propName, theFilesObj);
 
     currFile[
       // @ts-ignore
