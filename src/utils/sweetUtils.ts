@@ -91,8 +91,8 @@ import {
 // };
 
 const emptyZenParticipant: TyZenParticipant = {
-  address: str.EMPTY,
-  name: str.EMPTY,
+  address: str.EMPTY_ADDR,
+  name: str.EMPTY_ADDR,
 } as const;
 
 const sculptEmptyZenParticipant = (): TyZenParticipant => {
@@ -163,8 +163,8 @@ export const getZenParticipantsFromFamily = ({
         ? isMaybeCorrectNotationOfAddress(ptc.address)
           ? ptc.address.toLowerCase()
           : `${str.STRANGE}${ptc.address}`
-        : str.EMPTY,
-      name: ptc.name || str.EMPTY,
+        : str.EMPTY_ADDR,
+      name: ptc.name || str.EMPTY_NAME,
     };
 
     return zenPtc;
@@ -178,7 +178,7 @@ export const getZenParticipantsFromFamily = ({
     const prt = duo[1];
 
     if (!fromCombiner) {
-      if (prt.address === str.EMPTY) {
+      if (prt.address === str.EMPTY_ADDR) {
         console.log(
           `${step} - here: '${familyKind}' participant address is empty - ${getSearchableIdForToBeEasyToCopy(
             messageId,
@@ -188,7 +188,9 @@ export const getZenParticipantsFromFamily = ({
 
       if (prt.address.includes(str.STRANGE)) {
         console.log(
-          `${step} - here: '${familyKind}' participant address is strange - ${getSearchableIdForToBeEasyToCopy(
+          `${step} - here: '${familyKind}' participant address is strange: "${prt.address.slice(
+            str.STRANGE.length,
+          )}" - ${getSearchableIdForToBeEasyToCopy(
             messageId,
           )} 'prt.address.includes(str_STRANGE)'`,
         );
@@ -291,6 +293,7 @@ export const combineAddressAndName = (address: string, name: string) => {
   return `${address} --- ${name}`;
 };
 
+/*
 export const prepareZenParticipantArrAsMainListItemStr = ({
   zenParticipants,
   ptcProp,
@@ -311,7 +314,7 @@ export const prepareZenParticipantArrAsMainListItemStr = ({
       )}`,
     );
 
-    return str.EMPTY;
+    return str.EMPTY_ADDR;
   }
 
   if (zenParticipants.length === 1) {
@@ -339,3 +342,4 @@ export const prepareZenParticipantArrAsMainListItemStr = ({
 
   return JSON.stringify(strArr);
 };
+*/

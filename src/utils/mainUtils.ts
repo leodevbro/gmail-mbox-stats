@@ -83,3 +83,10 @@ export const getSlimDateTime = (myDate: Date): tySlimDatetime => {
 
   return str;
 };
+
+// not yet used
+export const countOccurrences = (fullStr: string, partStr: string) => {
+  const regExp = new RegExp(partStr, "g");
+  const count = (fullStr.match(regExp) || []).length;
+  return count;
+};

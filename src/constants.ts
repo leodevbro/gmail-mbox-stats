@@ -11,7 +11,8 @@ Created by leodevbro (Levan Katsadze)
 * buymeacoffee.com/leodevbro
 * ko-fi.com/leodevbro`,
 
-  EMPTY: "(-)",
+  EMPTY_ADDR: "(-)",
+  EMPTY_NAME: "{=}",
   STRANGE: "STRANGE-->",
 } as const;
 
