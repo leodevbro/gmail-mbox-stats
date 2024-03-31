@@ -1,3 +1,5 @@
+import { getSlimDateTime } from "./utils/mainUtils";
+
 export const str = {
   authoringText: `gmail-mbox-stats v1.0.8
 Created by leodevbro (Levan Katsadze)
@@ -12,3 +14,11 @@ Created by leodevbro (Levan Katsadze)
   EMPTY: "(-)",
   STRANGE: "STRANGE-->",
 } as const;
+
+const startDateTime = {
+  v: new Date(),
+} as const;
+
+export const slimStartDateTime = {
+  v: getSlimDateTime(startDateTime.v),
+};
