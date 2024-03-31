@@ -45,7 +45,11 @@ import {
 
 // import { parse as parseCsvInto2dArr } from "csv-parse";
 
-import { getEnvItemValue, waitSomeSeconds } from "./utils/mainUtils";
+import {
+  getEnvItemValue,
+  getSlimDateTime,
+  waitSomeSeconds,
+} from "./utils/mainUtils";
 import {
   groundFolder,
   prepareOutputFolderStructure,
@@ -64,10 +68,10 @@ import {
   // combineTwoFamiliesIntoZenArr,
   getZenParticipantsFromFamily,
 } from "./utils/sweetUtils";
-import { str } from "./constants";
+import { slimStartDateTime, str } from "./constants";
 // import { handleOneLineOfMailboxIndex } from "./utils/mailboxIndexMaker";
 
-const startDateTimeStr = `Start datetime: ${new Date().toLocaleString()}`;
+const startDateTimeStr = `Start datetime: ${slimStartDateTime.v}`;
 
 console.time("Full Execution Time");
 
@@ -85,7 +89,7 @@ export const logExecutionStartMessage = () => {
 const logExecutionEndMessage = () => {
   console.log("\n");
   console.log(startDateTimeStr);
-  console.log(`->End datetime: ${new Date().toLocaleString()}\n`);
+  console.log(`->End datetime: ${getSlimDateTime(new Date())}\n`);
   console.timeEnd("Full Execution Time");
   console.log("\n");
   console.log(str.authoringText + "\n");
@@ -364,6 +368,10 @@ const analyzeMbox = () => {
 
     const line_countAsEmpty = `Messages where sender is empty: ${step.countOfMessagesWithSenderCategory.empty}`;
     console.log(line_countAsEmpty);
+
+    console.log(
+      `\nCreated new folder "${groundFolder.innerFolders.mboxStats.folderName}"`,
+    );
 
     const generalStats2dArrNotation: (string | number)[][] = [
       [
