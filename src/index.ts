@@ -507,14 +507,15 @@ const analyzeMbox = () => {
     generalStats2dArrNotation.push(
       ...[
         ["", ""],
-        [`Let's count unique things for messages`],
+        [`Let's count unique addresses and more`],
         [
           "(Will include hidden addresses as one unique address and also empty addresses as one unique address)",
         ],
-        ["Hidden address --- non-empty text but not valid email address"],
+        ["Participant --> Sender/Receiver/CC/BCC"],
         [
-          "Empty address --- empty text in a participant (Sender/Receiver, maybe never for CC/BCC) address value.",
+          "Hidden address --> Participant exists but address value is other kind of text instead of email address",
         ],
+        ["Empty address --> Participant exists but address value is empty"],
       ],
       ...generateSideStatsForOneCategory("me", generateStatsObj("me")),
       ...generateSideStatsForOneCategory("not me", generateStatsObj("notMe")),
