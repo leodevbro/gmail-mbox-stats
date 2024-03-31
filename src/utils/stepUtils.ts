@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { TyMailAddress, TyMailDomain } from "../types/mailparserTypes";
 import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
 import { step } from "..";
-import { str } from "../constants";
+import { slimStartDateTime, str } from "../constants";
 
 const dotCsv = ".csv";
 // const dotTxt = ".txt";
@@ -163,7 +163,7 @@ export const groundFolder = {
   innerFiles: {},
   innerFolders: {
     mboxStats: {
-      folderName: "mboxStats",
+      folderName: `mboxStats_${slimStartDateTime.v}`,
       pathAbsOrRel: "" as string,
       innerFiles: {
         // not yet used in prod
@@ -202,33 +202,6 @@ type TyDoTheCheck = TyCheckThatTObjExtendsTSource<
   typeof groundFolder
 >;
 null as TyDoTheCheck;
-
-export const getPrettyDateTime = (): string => {
-  const newDate = new Date();
-  const localDT = {
-    year: newDate.getFullYear(),
-    month: newDate.getMonth() + 1,
-    monthDay: newDate.getDate(),
-    //
-    hour: newDate.getHours(),
-    minute: newDate.getMinutes(),
-    seconds: newDate.getSeconds(),
-  };
-
-  const eachStr: Record<keyof typeof localDT, string> = {
-    year: String(localDT.year),
-    month: String(localDT.month).padStart(2, "0"),
-    monthDay: String(localDT.monthDay).padStart(2, "0"),
-    //
-    hour: String(localDT.hour).padStart(2, "0"),
-    minute: String(localDT.minute).padStart(2, "0"),
-    seconds: String(localDT.seconds).padStart(2, "0"),
-  };
-
-  const str = `${eachStr.year}-${eachStr.month}-${eachStr.monthDay}_${eachStr.hour}-${eachStr.minute}-${eachStr.seconds}`;
-
-  return str;
-};
 
 export const prepareResultsFolderForSenderCategory = (
   mboxStatsFolderPath: string,
@@ -291,7 +264,7 @@ export const prepareOutputFolderStructure = (mboxFilePath: string) => {
 
   const mboxStatsFolderPath = path.join(
     path.dirname(mboxFilePath),
-    groundFolder.innerFolders.mboxStats.folderName + "_" + getPrettyDateTime(),
+    groundFolder.innerFolders.mboxStats.folderName,
   );
 
   // console.log("haaaa_end", process.argv, process.env.npm_config_sss); // npm run go --aaabbbrt="sdfs"
