@@ -3,7 +3,7 @@ import {
   TyFamilyKind,
   TyGmailMailHeadersAsObj,
   TyParticipationFamilyInfo,
-  TyZenFamilyKind,
+  // TyZenFamilyKind,
   TyZenParticipant,
 } from "../types/mailparserTypes";
 import {

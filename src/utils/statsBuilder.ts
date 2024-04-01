@@ -7,7 +7,8 @@ import {
   TyZenMainInfoForMail,
   TyZenParticipant,
 } from "../types/mailparserTypes";
-import { groundFolder } from "./stepUtils";
+import { groundFolder } from "./groundFolderMaker";
+
 import {
   combineAddressAndName,
   // str_EMPTY
