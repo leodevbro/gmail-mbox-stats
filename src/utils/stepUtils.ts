@@ -5,6 +5,7 @@ import { TyMailAddress, TyMailDomain } from "../types/mailparserTypes";
 import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
 import { step } from "..";
 import { slimStartDateTime, str } from "../constants";
+import { combineAddressAndName } from "./sweetUtils";
 
 const dotCsv = ".csv";
 // const dotTxt = ".txt";
@@ -340,6 +341,7 @@ export type TyCoolCounts = {
   countOfLegitValues: number;
   countOfEmptyValues: number;
   countOfHiddenValues: number;
+  uniqueCountOfHiddenValues: number; // strange values
 };
 
 const generateCoolCounts = (
@@ -356,13 +358,23 @@ const generateCoolCounts = (
 
   //
 
-  const countOfEmptyValues = currFile.freqMap.get(str.EMPTY as any) || 0;
+  const countOfEmptyValues =
+    (propName !== "frequencySenderAddressAndName"
+      ? currFile.freqMap.get(str.EMPTY_ADDR as any)
+      : currFile.freqMap.get(
+          combineAddressAndName(str.EMPTY_ADDR, str.EMPTY_NAME) as any,
+        )) || 0;
+
+  const uniqueCountOfHiddenValues_obj = {
+    v: 0,
+  };
 
   const countOfHiddenValues = freqDataAsSortedArr.reduce<number>(
     (accu, item) => {
       const [currItemKey, currItemFreqNumber] = item;
 
       if (currItemKey.includes(str.STRANGE)) {
+        uniqueCountOfHiddenValues_obj.v += 1;
         return accu + currItemFreqNumber;
       }
 
@@ -379,6 +391,7 @@ const generateCoolCounts = (
     countOfLegitValues,
     countOfEmptyValues,
     countOfHiddenValues,
+    uniqueCountOfHiddenValues: uniqueCountOfHiddenValues_obj.v,
   };
 
   return outObj;
@@ -448,6 +461,9 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
       countOfEmptyValues,
       countOfHiddenValues,
       countOfLegitValues,
+
+      // @ts-ignore
+      uniqueCountOfHiddenValues,
     } =
       propName === keyForMessageCountBySender
         ? majorCounts
@@ -472,6 +488,11 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
       senderCategory === "me"
         ? step.countOfMessagesWithSenderCategory["me"]
         : step.v - step.countOfMessagesWithSenderCategory["me"];
+
+    // const legitUniqueAddresses =
+    //   currFile.freqMap.size -
+    //   (currFile.emptyCount === 0 ? 0 : 1) -
+    //   uniqueCountOfHiddenValues;
 
     const sideArr = [
       ["File name:", currFile.fileName.slice(0, currFile.fileName.length - 4)],
