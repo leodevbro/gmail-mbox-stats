@@ -69,7 +69,7 @@ const msFolders = groundFolder.innerFolders.mboxStats.innerFolders;
 
 const resultsInnerFilesCategories = {
   me: msFolders.forMailsWhereSenderIsMe.innerFiles,
-  notMe: msFolders.forMailsWhereSenderIsNotMe.innerFiles,
+  notMe: msFolders.forMailsWhereSenderIsNotMeOrIsUnknown.innerFiles,
 } as const;
 
 export const isMaybeCorrectNotationOfAddress = (notation: string): boolean => {

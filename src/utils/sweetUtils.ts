@@ -92,7 +92,7 @@ import {
 
 const emptyZenParticipant: TyZenParticipant = {
   address: str.EMPTY_ADDR,
-  name: str.EMPTY_ADDR,
+  name: str.EMPTY_NAME,
 } as const;
 
 const sculptEmptyZenParticipant = (): TyZenParticipant => {

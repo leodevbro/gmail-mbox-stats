@@ -70,7 +70,7 @@ const createResultsObjForSpecificSenderCategory = (
 
   // const resultsFolderForSpecificSenderCategory: TyOneFolderIndicator
   const resultsFolderForSpecificSenderCategory = {
-    folderName: "results", // will become "forMailsWhereSenderIsMe" or "forMailsWhereSenderIsNotMe"
+    folderName: "results", // will become "forMailsWhereSenderIsMe" or "forMailsWhereSenderIsNotMeOrIsUnknown"
     pathAbsOrRel: "" as string,
     innerFolders: {},
     innerFiles: {
@@ -177,9 +177,9 @@ export const groundFolder = {
           ...createResultsObjForSpecificSenderCategory("me"),
           folderName: "forMailsWhereSenderIsMe",
         } as const,
-        forMailsWhereSenderIsNotMe: {
+        forMailsWhereSenderIsNotMeOrIsUnknown: {
           ...createResultsObjForSpecificSenderCategory("notMe"),
-          folderName: "forMailsWhereSenderIsNotMe",
+          folderName: "forMailsWhereSenderIsNotMeOrIsUnknown",
         } as const,
       },
     },

@@ -138,7 +138,8 @@ export const prepareOutputFolderStructure = (mboxFilePath: string) => {
 
   prepareResultsFolderForSenderCategory(
     mboxStatsFolderPath,
-    groundFolder.innerFolders.mboxStats.innerFolders.forMailsWhereSenderIsNotMe,
+    groundFolder.innerFolders.mboxStats.innerFolders
+      .forMailsWhereSenderIsNotMeOrIsUnknown,
   );
 };
 
@@ -377,7 +378,8 @@ export const writeStatsIntoFiles = () => {
   );
 
   writeStatsOfSpecificSenderCategoryIntoFiles(
-    groundFolder.innerFolders.mboxStats.innerFolders.forMailsWhereSenderIsNotMe,
+    groundFolder.innerFolders.mboxStats.innerFolders
+      .forMailsWhereSenderIsNotMeOrIsUnknown,
     "notMeOrUnknown",
   );
 };
