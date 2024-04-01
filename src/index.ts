@@ -51,7 +51,6 @@ import {
   waitSomeSeconds,
 } from "./utils/mainUtils";
 import {
-  groundFolder,
   prepareOutputFolderStructure,
   writeStatsIntoFiles,
 } from "./utils/stepUtils";
@@ -69,6 +68,7 @@ import {
   getZenParticipantsFromFamily,
 } from "./utils/sweetUtils";
 import { slimStartDateTime, str } from "./constants";
+import { groundFolder } from "./utils/groundFolderMaker";
 // import { handleOneLineOfMailboxIndex } from "./utils/mailboxIndexMaker";
 
 const startDateTimeStr = `Start datetime: ${slimStartDateTime.v}`;
@@ -182,13 +182,27 @@ const analyzeMbox = () => {
       const init_date = headers.get("date");
       const init_messageId = headers.get("message-id");
 
-      // if ([7].includes(step.v)) {
-      //   init_From?.value?.forEach((val) => {
-      //     val.address = undefined;
-      //   });
+      // for testing:
+      /* 
+      if ([7, 14, 18].includes(step.v)) {
+        init_From?.value?.forEach((val, index) => {
+          // @ts-ignore
+          val.address = `huhahuha${index}${step.v}`;
+        });
+      }
 
-      //   console.log(JSON.stringify(init_bcc));
-      // }
+      if ([21, 25].includes(step.v)) {
+        init_From = undefined;
+      }
+
+      if ([29, 30].includes(step.v)) {
+        init_From?.value?.forEach((val) => {
+          // @ts-ignore
+          val.address = ``;
+          val.name = ``;
+        });
+      }
+      */
 
       // if (
       //   init_messageId ===
@@ -469,13 +483,13 @@ const analyzeMbox = () => {
       groundFolder.innerFolders.mboxStats.innerFolders.forMailsWhereSenderIsMe
         .innerFiles;
 
-    const folder_notMe =
+    const folder_notMeOrUnknown =
       groundFolder.innerFolders.mboxStats.innerFolders
-        .forMailsWhereSenderIsNotMe.innerFiles;
+        .forMailsWhereSenderIsNotMeOrIsUnknown.innerFiles;
 
     const fol = {
       me: folder_me,
-      notMe: folder_notMe,
+      notMeOrUnknown: folder_notMeOrUnknown,
     };
 
     const generateStatsObj = (meOrNotMe: keyof typeof fol): TyInpStats => {
@@ -508,17 +522,21 @@ const analyzeMbox = () => {
       ...[
         ["", ""],
         [`Let's count unique addresses and more`],
-        [
-          "(Will include hidden addresses as one unique address and also empty addresses as one unique address)",
-        ],
+
         ["Participant --> Sender/Receiver/CC/BCC"],
         [
           "Hidden address --> Participant exists but address value is other kind of text instead of email address",
         ],
         ["Empty address --> Participant exists but address value is empty"],
+        [
+          "- - - - - - - - - - - - - Also another case: Participant does not exist at all (only for Sender/Receiver, not for CC/BCC)",
+        ],
       ],
       ...generateSideStatsForOneCategory("me", generateStatsObj("me")),
-      ...generateSideStatsForOneCategory("not me", generateStatsObj("notMe")),
+      ...generateSideStatsForOneCategory(
+        "not me",
+        generateStatsObj("notMeOrUnknown"),
+      ),
     );
 
     const generalStatsPath =
