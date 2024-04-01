@@ -116,7 +116,7 @@ If you feel like donating
 
 - In the 'mboxStats' folder, there will be also two folders:<br />
   `forMailsWhereSenderIsMe` - the stats for only the mails where sender is you.<br />
-  `forMailsWhereSenderIsNotMe` - the stats for only the mails where sender is not you.<br />
+  `forMailsWhereSenderIsNotMeOrIsUnknown` - the stats for only the mails where sender is not you, or sender is unknown.<br />
   In both folders, there will be `.csv` files of stats. You can import them one by one in Google Sheets.
 
 Here is what the full folder structure looks like:
@@ -135,7 +135,7 @@ Here is what the full folder structure looks like:
         ▦senderIsMe_freqSenderDomain.csv
         ▦senderIsMe_freqSenderPlusName.csv
 
-    📂forMailsWhereSenderIsNotMe
+    📂forMailsWhereSenderIsNotMeOrIsUnknown
         ▦senderIsNotMe_freqBcc.csv
         ▦senderIsNotMe_FreqCc.csv
         ▦senderIsNotMe_FreqReceiver.csv
