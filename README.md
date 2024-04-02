@@ -74,21 +74,23 @@ It will take probably 5-10-15 seconds to analyze 1000 mails (messages),<br />
 about 100 seconds for 10K mails,<br />
 about 1000 seconds (10-15-20 minutes) for 100K mails and so on.<br />
 
-- When it finishes, the terminal will log initial information like this:
+- When it finishes, the terminal will log basic information like this:
 
 ```
 Success.
 Full count of messages: 14577
 Messages where sender is me: 425
-Messages where sender is not me: 14152
-Messages where sender is hidden: 0
-Messages where sender is empty: 0
+Messages where sender is not me: 14147
+Messages where sender is hidden: 2
+Messages where sender is empty: 3
+
+Created new folder "mailStats_2024-04-14_23-50-21"
 
 
-Start datetime: 3/30/2024, 5:21:29 PM
-->End datetime: 3/30/2024, 5:23:02 PM
+Start datetime: 2024-04-14_23-50-21
+->End datetime: 2024-04-14_23-51-54
 
-Full Execution Time: 1:33.267 (m:ss.mmm)
+Full Execution Time: 1:32.222 (m:ss.mmm)
 
 
 gmail-mbox-stats v1.0.8
@@ -103,7 +105,7 @@ If you feel like donating
 ```
 
 - Also, there will be a new folder named "mailStats" with current local datetime, <br />
-  like this: `mailStats_2024-03-14_16-52-06`<br />
+  like this: `mailStats_2024-04-14_23-50-21`<br />
   in the same folder where the MBOX file is located.<br />
 
 - In the 'mailStats' folder, there will be `generalStats.csv` file. If you import it in Google Sheets it will like this:
@@ -124,7 +126,7 @@ Here is what the full folder structure looks like:
 ```
 ▨All mail Including Spam and Trash.mbox
 
-📂mailStats_2024-03-14_16-52-06
+📂mailStats_2024-04-14_23-50-21
     ▦generalStats.csv
 
     📂forMailsWhereSenderIsMe
