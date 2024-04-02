@@ -197,3 +197,16 @@ type TyDoTheCheck = TyCheckThatTObjExtendsTSource<
   typeof groundFolder
 >;
 null as TyDoTheCheck;
+
+//
+//
+
+const meInner =
+  groundFolder.innerFolders.mboxStats.innerFolders.forMailsWhereSenderIsMe
+    .innerFiles;
+
+export const keysForSenders: (keyof typeof meInner)[] = [
+  "frequencySenderAddress",
+  "frequencySenderDomain",
+  "frequencySenderAddressAndName",
+];

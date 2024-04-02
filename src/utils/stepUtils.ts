@@ -10,6 +10,7 @@ import {
   TyOneResultCategory,
   groundFolder,
   keyForMessageCountBySender,
+  keysForSenders,
 } from "./groundFolderMaker";
 
 export const prepareResultsFolderForSenderCategory = (
@@ -303,12 +304,16 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
     //   (currFile.emptyCount === 0 ? 0 : 1) -
     //   uniqueCountOfHiddenValues;
 
+    const isKeyForSenders = keysForSenders.includes(propName);
+
+    const notApplicable_hiddEmpt = senderCategory === "me" && isKeyForSenders;
+
     const sideArr = [
       ["File name:", currFile.fileName.slice(0, currFile.fileName.length - 4)],
       ["100% (All Occurrences):", fullSumOfNumbers],
       ["Legit Occurrences:", countOfLegitValues],
-      ["Empty:", countOfEmptyValues],
-      ["Hidden:", countOfHiddenValues],
+      ["Empty:", notApplicable_hiddEmpt ? "-" : countOfEmptyValues],
+      ["Hidden:", notApplicable_hiddEmpt ? "-" : countOfHiddenValues],
       ["Unique Count:", currFile.freqMap.size],
       ["Messages Where We Searched:", messagesWhereWeSearched],
       ["Messages Where Found:", currFile.messagesWhereRelevantValuesFound],
