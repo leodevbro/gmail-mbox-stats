@@ -68,7 +68,7 @@ import {
   getZenParticipantsFromFamily,
 } from "./utils/sweetUtils";
 import { slimStartDateTime, str } from "./constants";
-import { groundFolder } from "./utils/groundFolderMaker";
+import { groundFolder, keysForSenders } from "./utils/groundFolderMaker";
 // import { handleOneLineOfMailboxIndex } from "./utils/mailboxIndexMaker";
 
 const startDateTimeStr = `Start datetime: ${slimStartDateTime.v}`;
@@ -183,7 +183,7 @@ const analyzeMbox = () => {
       const init_messageId = headers.get("message-id");
 
       // for testing:
-      /* 
+      /*
       if ([7, 14, 18].includes(step.v)) {
         init_From?.value?.forEach((val, index) => {
           // @ts-ignore
@@ -434,8 +434,8 @@ const analyzeMbox = () => {
     type TyUniAndFull = [
       unique: number,
       fullLegit: number,
-      hidden: number,
-      empty: number,
+      hidden: number | "-",
+      empty: number | "-",
       messagesWhereFound: number,
     ];
 
@@ -449,18 +449,18 @@ const analyzeMbox = () => {
     };
 
     const generateSideStatsForOneCategory = (
-      category: "me" | "not me",
+      category: "me" | "not me or unknown",
       stats: TyInpStats,
     ) => {
       const arr = [
         ["", ""],
         [`For messages where sender is ${category}`],
         [
-          "Description",
+          "", // "Description",
 
           // like TyUniAndFull
-          "Unique count",
-          "Legit Count",
+          "Unique",
+          "Legit",
           "Hidden",
           "Empty",
           "Messages Where Found",
@@ -496,11 +496,15 @@ const analyzeMbox = () => {
       const currFolder = fol[meOrNotMe];
 
       const sculptOneFileStat = (fileKey: keyof typeof currFolder) => {
+        const isKeyForSenders = keysForSenders.includes(fileKey);
+
+        const notApplicable_hiddEmpt = meOrNotMe === "me" && isKeyForSenders;
+
         const arr: TyUniAndFull = [
           currFolder[fileKey].freqMap.size,
           currFolder[fileKey].legitCount,
-          currFolder[fileKey].hiddenCount,
-          currFolder[fileKey].emptyCount,
+          notApplicable_hiddEmpt ? "-" : currFolder[fileKey].hiddenCount,
+          notApplicable_hiddEmpt ? "-" : currFolder[fileKey].emptyCount,
           currFolder[fileKey].messagesWhereRelevantValuesFound,
         ];
         return arr;
@@ -521,20 +525,20 @@ const analyzeMbox = () => {
     generalStats2dArrNotation.push(
       ...[
         ["", ""],
-        [`Let's count unique addresses and more`],
+        // [`Let's count unique addresses and more`],
 
         ["Participant --> Sender/Receiver/CC/BCC"],
         [
           "Hidden address --> Participant exists but address value is other kind of text instead of email address",
         ],
-        ["Empty address --> Participant exists but address value is empty"],
         [
-          "- - - - - - - - - - - - - Also another case: Participant does not exist at all (only for Sender/Receiver, not for CC/BCC)",
+          "Empty address --> Participant exists but address is empty. Or: participant (only for sender/receiver) does not exist at all.",
         ],
+        ["Unknown address -> hidden or empty address"],
       ],
       ...generateSideStatsForOneCategory("me", generateStatsObj("me")),
       ...generateSideStatsForOneCategory(
-        "not me",
+        "not me or unknown",
         generateStatsObj("notMeOrUnknown"),
       ),
     );
