@@ -42,7 +42,7 @@ export type TyOneFolderIndicator = {
 type TyCheckThatTObjExtendsTSource<TSource, TObj extends TSource> = TObj &
   never;
 
-export type TySenderCategory = "me" | "notMe";
+export type TySenderCategory = "me" | "notMeOrUnkn"; // for names of files
 
 const sculptCommonInitialPropsOfFile = () => {
   const commonInitialPropsOfFile = {
@@ -66,7 +66,7 @@ const sculptCommonInitialPropsOfFile = () => {
 const createResultsObjForSpecificSenderCategory = (
   category: TySenderCategory,
 ) => {
-  const sCatStr = category === "me" ? "senderIsMe" : "senderIsNotMe";
+  const sCatStr = category;
 
   // const resultsFolderForSpecificSenderCategory: TyOneFolderIndicator
   const resultsFolderForSpecificSenderCategory = {
@@ -158,7 +158,7 @@ export const groundFolder = {
   innerFiles: {},
   innerFolders: {
     mboxStats: {
-      folderName: `mboxStats_${slimStartDateTime.v}`,
+      folderName: `mailStats_${slimStartDateTime.v}`,
       pathAbsOrRel: "" as string,
       innerFiles: {
         // not yet used in prod
@@ -178,7 +178,7 @@ export const groundFolder = {
           folderName: "forMailsWhereSenderIsMe",
         } as const,
         forMailsWhereSenderIsNotMeOrIsUnknown: {
-          ...createResultsObjForSpecificSenderCategory("notMe"),
+          ...createResultsObjForSpecificSenderCategory("notMeOrUnkn"),
           folderName: "forMailsWhereSenderIsNotMeOrIsUnknown",
         } as const,
       },

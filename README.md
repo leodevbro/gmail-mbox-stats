@@ -102,11 +102,11 @@ If you feel like donating
 * ko-fi.com/leodevbro
 ```
 
-- Also, there will be a new folder named "mboxStats" with current local datetime, <br />
-  like this: `mboxStats_2024-03-14_16-52-06`<br />
+- Also, there will be a new folder named "mailStats" with current local datetime, <br />
+  like this: `mailStats_2024-03-14_16-52-06`<br />
   in the same folder where the MBOX file is located.<br />
 
-- In the 'mboxStats' folder, there will be `generalStats.csv` file. If you import it in Google Sheets it will like this:
+- In the 'mailStats' folder, there will be `generalStats.csv` file. If you import it in Google Sheets it will like this:
 
 <br />
 
@@ -114,7 +114,7 @@ If you feel like donating
 
 <br />
 
-- In the 'mboxStats' folder, there will be also two folders:<br />
+- In the 'mailStats' folder, there will be also two folders:<br />
   `forMailsWhereSenderIsMe` - the stats for only the mails where sender is you.<br />
   `forMailsWhereSenderIsNotMeOrIsUnknown` - the stats for only the mails where sender is not you, or sender is unknown.<br />
   In both folders, there will be `.csv` files of stats. You can import them one by one in Google Sheets.
@@ -124,35 +124,35 @@ Here is what the full folder structure looks like:
 ```
 ▨All mail Including Spam and Trash.mbox
 
-📂mboxStats_2024-03-14_16-52-06
+📂mailStats_2024-03-14_16-52-06
     ▦generalStats.csv
 
     📂forMailsWhereSenderIsMe
-        ▦senderIsMe_freqBcc.csv
-        ▦senderIsMe_FreqCc.csv
-        ▦senderIsMe_FreqReceiver.csv --- Here you can find the receiver where you sent most mails
-        ▦senderIsMe_FreqSender.csv
-        ▦senderIsMe_freqSenderDomain.csv
-        ▦senderIsMe_freqSenderPlusName.csv
+        ▦me_freqBcc.csv
+        ▦me_FreqCc.csv
+        ▦me_FreqReceiver.csv --- Here you can find the receiver where you sent most mails
+        ▦me_FreqSender.csv
+        ▦me_freqSenderDomain.csv
+        ▦me_freqSenderPlusName.csv
 
     📂forMailsWhereSenderIsNotMeOrIsUnknown
-        ▦senderIsNotMe_freqBcc.csv
-        ▦senderIsNotMe_FreqCc.csv
-        ▦senderIsNotMe_FreqReceiver.csv
-        ▦senderIsNotMe_FreqSender.csv --- Here you can find the sender which sent most mails
-        ▦senderIsNotMe_freqSenderDomain.csv
-        ▦senderIsNotMe_freqSenderPlusName.csv
+        ▦notMeOrUnkn_freqBcc.csv
+        ▦notMeOrUnkn_FreqCc.csv
+        ▦notMeOrUnkn_FreqReceiver.csv
+        ▦notMeOrUnkn_FreqSender.csv --- Here you can find the sender which sent most mails
+        ▦notMeOrUnkn_freqSenderDomain.csv
+        ▦notMeOrUnkn_freqSenderPlusName.csv
 
 ```
 
 <br />
 
-Now, for example, let's import the file `senderIsNotMe_freqSender.csv` in Google Sheets:
+Now, for example, let's import the file `notMeOrUnkn_freqSender.csv` in Google Sheets:
 <br />
 
 ![Example Result CSV In Google Sheets](./src/demoMedia/exampleOfSenderIsNotMe_freqSender.png "Example Result CSV In Google Sheets")
 
-Also, let's import the file `senderIsNotMe_freqReceiver.csv` in Google Sheets:
+Also, let's import the file `notMeOrUnkn_freqReceiver.csv` in Google Sheets:
 <br />
 
 ![Example Result CSV In Google Sheets](./src/demoMedia/exampleOfSenderIsNotMe_freqSender.png "Example Result CSV In Google Sheets")

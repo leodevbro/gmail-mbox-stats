@@ -3,6 +3,7 @@ node_modules/
 
 # Generated stats
 mboxStats/
+mailStats/
 
 # Compiled
 buildJS/
