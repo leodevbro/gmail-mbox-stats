@@ -104,11 +104,11 @@ If you feel like donating
 * ko-fi.com/leodevbro
 ```
 
-- Also, there will be a new folder named "mailStats" with current local datetime, <br />
+- Also, there will be a new folder named "mailStats" with execution start datetime, <br />
   like this: `mailStats_2024-04-14_23-50-21`<br />
   in the same folder where the MBOX file is located.<br />
 
-- In the 'mailStats' folder, there will be `generalStats.csv` file. If you import it in Google Sheets it will like this:
+- In the 'mailStats' folder, there will be `generalStats.csv` file. If you import it in Google Sheets it will look like this:
 
 <br />
 
@@ -152,14 +152,23 @@ Here is what the full folder structure looks like:
 Now, for example, let's import the file `notMeOrUnkn_freqSender.csv` in Google Sheets:
 <br />
 
-![Example Result CSV In Google Sheets](./src/demoMedia/exampleOfSenderIsNotMe_freqSender.png "Example Result CSV In Google Sheets")
+![exampleCsv__notMeOrUnkn_freqSender In Google Sheets](./src/demoMedia/exampleCsv__notMeOrUnkn_freqSender.png "exampleCsv__notMeOrUnkn_freqSender In Google Sheets")
 
-Also, let's import the file `notMeOrUnkn_freqReceiver.csv` in Google Sheets:
+Also, some other files:
+
+`me_freqReceiver.csv`
 <br />
 
-![Example Result CSV In Google Sheets](./src/demoMedia/exampleOfSenderIsNotMe_freqSender.png "Example Result CSV In Google Sheets")
+![exampleCsv__me_freqReceiver In Google Sheets](./src/demoMedia/exampleCsv__me_freqReceiver.png "exampleCsv__me_freqReceiver In Google Sheets")
 
-(README not yet completed, to do soon...)
+<br />
+
+`notMeOrUnkn_freqReceiver.csv`
+<br />
+
+![zzzzz In Google Sheets](./src/demoMedia/zzzzz.png "zzzzz In Google Sheets")
+
+
 <br />
 <br />
 Thank you.
