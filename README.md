@@ -93,7 +93,7 @@ Start datetime: 2024-04-14_23-50-21
 Full Execution Time: 1:32.222 (m:ss.mmm)
 
 
-gmail-mbox-stats v1.0.8
+gmail-mbox-stats v1.0.10
 Created by leodevbro (Levan Katsadze)
 * linkedin.com/in/leodevbro
 * github.com/leodevbro
@@ -112,7 +112,7 @@ If you feel like donating
 
 <br />
 
-![Example generalStats CSV In Google Sheets](./src/demoMedia/generalStatsExampleCsv.png "Example generalStats CSV In Google Sheets")
+![Example generalStats CSV In Google Sheets](https://raw.githubusercontent.com/leodevbro/gmail-mbox-stats/main/src/demoMedia/generalStatsExampleCsv.png "Example generalStats CSV In Google Sheets")
 
 <br />
 
@@ -152,42 +152,42 @@ Here is what the full folder structure looks like:
 Now, for example, let's import the file `notMeOrUnkn_freqSender.csv` in Google Sheets:
 <br />
 
-![exampleCsv__notMeOrUnkn_freqSender In Google Sheets](./src/demoMedia/exampleCsv__notMeOrUnkn_freqSender.png "exampleCsv__notMeOrUnkn_freqSender In Google Sheets")
+![exampleCsv__notMeOrUnkn_freqSender In Google Sheets](https://raw.githubusercontent.com/leodevbro/gmail-mbox-stats/main/src/demoMedia/exampleCsv__notMeOrUnkn_freqSender.png "exampleCsv__notMeOrUnkn_freqSender In Google Sheets")
 
 Also, some other files:
 
 `me_freqReceiver.csv`
 <br />
 
-![exampleCsv__me_freqReceiver In Google Sheets](./src/demoMedia/exampleCsv__me_freqReceiver.png "exampleCsv__me_freqReceiver In Google Sheets")
+![exampleCsv__me_freqReceiver In Google Sheets](https://raw.githubusercontent.com/leodevbro/gmail-mbox-stats/main/src/demoMedia/exampleCsv__me_freqReceiver.png "exampleCsv__me_freqReceiver In Google Sheets")
 
 <br />
 
 `notMeOrUnkn_freqSenderDomain.csv`
 <br />
 
-![exampleCsv__notMeOrUnkn_freqSenderDomain In Google Sheets](./src/demoMedia/exampleCsv__notMeOrUnkn_freqSenderDomain.png "exampleCsv__notMeOrUnkn_freqSenderDomain In Google Sheets")
+![exampleCsv__notMeOrUnkn_freqSenderDomain In Google Sheets](https://raw.githubusercontent.com/leodevbro/gmail-mbox-stats/main/src/demoMedia/exampleCsv__notMeOrUnkn_freqSenderDomain.png "exampleCsv__notMeOrUnkn_freqSenderDomain In Google Sheets")
 
 <br />
 
 `notMeOrUnkn_freqSenderPlusName.csv`
 <br />
 
-![exampleCsv__notMeOrUnkn_freqSenderPlusName In Google Sheets](./src/demoMedia/exampleCsv__notMeOrUnkn_freqSenderPlusName.png "exampleCsv__notMeOrUnkn_freqSenderPlusName In Google Sheets")
+![exampleCsv__notMeOrUnkn_freqSenderPlusName In Google Sheets](https://raw.githubusercontent.com/leodevbro/gmail-mbox-stats/main/src/demoMedia/exampleCsv__notMeOrUnkn_freqSenderPlusName.png "exampleCsv__notMeOrUnkn_freqSenderPlusName In Google Sheets")
 
 <br />
 
 `notMeOrUnkn_freqReceiver.csv`
 <br />
 
-![exampleCsv__notMeOrUnkn_freqReceiver In Google Sheets](./src/demoMedia/exampleCsv__notMeOrUnkn_freqReceiver.png "exampleCsv__notMeOrUnkn_freqReceiver In Google Sheets")
+![exampleCsv__notMeOrUnkn_freqReceiver In Google Sheets](https://raw.githubusercontent.com/leodevbro/gmail-mbox-stats/main/src/demoMedia/exampleCsv__notMeOrUnkn_freqReceiver.png "exampleCsv__notMeOrUnkn_freqReceiver In Google Sheets")
 
 <br />
 
 `notMeOrUnkn_freqCc.csv`
 <br />
 
-![exampleCsv__notMeOrUnkn_freqCc In Google Sheets](./src/demoMedia/exampleCsv__notMeOrUnkn_freqCc.png "exampleCsv__notMeOrUnkn_freqCc In Google Sheets")
+![exampleCsv__notMeOrUnkn_freqCc In Google Sheets](https://raw.githubusercontent.com/leodevbro/gmail-mbox-stats/main/src/demoMedia/exampleCsv__notMeOrUnkn_freqCc.png "exampleCsv__notMeOrUnkn_freqCc In Google Sheets")
 
 
 <br />

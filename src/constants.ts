@@ -1,7 +1,7 @@
 import { getSlimDateTime } from "./utils/mainUtils";
 
 export const str = {
-  authoringText: `gmail-mbox-stats v1.0.8
+  authoringText: `gmail-mbox-stats v1.0.10
 Created by leodevbro (Levan Katsadze)
 * linkedin.com/in/leodevbro
 * github.com/leodevbro
