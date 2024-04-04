@@ -163,10 +163,24 @@ Also, some other files:
 
 <br />
 
+`notMeOrUnkn_freqSenderDomain.csv`
+<br />
+
+![exampleCsv__notMeOrUnkn_freqSenderDomain In Google Sheets](./src/demoMedia/exampleCsv__notMeOrUnkn_freqSenderDomain.png "exampleCsv__notMeOrUnkn_freqSenderDomain In Google Sheets")
+
+<br />
+
 `notMeOrUnkn_freqReceiver.csv`
 <br />
 
-![zzzzz In Google Sheets](./src/demoMedia/zzzzz.png "zzzzz In Google Sheets")
+![exampleCsv__notMeOrUnkn_freqReceiver In Google Sheets](./src/demoMedia/exampleCsv__notMeOrUnkn_freqReceiver.png "exampleCsv__notMeOrUnkn_freqReceiver In Google Sheets")
+
+<br />
+
+`notMeOrUnkn_freqCc.csv`
+<br />
+
+![exampleCsv__notMeOrUnkn_freqCc In Google Sheets](./src/demoMedia/exampleCsv__notMeOrUnkn_freqCc.png "exampleCsv__notMeOrUnkn_freqCc In Google Sheets")
 
 
 <br />
