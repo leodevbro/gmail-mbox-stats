@@ -184,14 +184,14 @@ const analyzeMbox = () => {
 
       // for testing:
       /*
-      if ([7, 14, 18].includes(step.v)) {
+      if ([7, 14].includes(step.v)) {
         init_From?.value?.forEach((val, index) => {
           // @ts-ignore
-          val.address = `huhahuha${index}${step.v}`;
+          val.address = `hidden${index}${step.v}`;
         });
       }
 
-      if ([21, 25].includes(step.v)) {
+      if ([21].includes(step.v)) {
         init_From = undefined;
       }
 
@@ -199,7 +199,7 @@ const analyzeMbox = () => {
         init_From?.value?.forEach((val) => {
           // @ts-ignore
           val.address = ``;
-          val.name = ``;
+          // val.name = ``;
         });
       }
       */
