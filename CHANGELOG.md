@@ -4,6 +4,10 @@ All notable changes to the gmail-mbox-stats tool will be documented in this file
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.0.9] - 2024-04-04
+
+-   update README
+
 ## [1.0.8] - 2024-04-04
 
 -   More understandable notation of CSV files
