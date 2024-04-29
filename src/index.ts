@@ -1,6 +1,6 @@
 /*
 
-gmail-mbox-stats v1.0.10
+gmail-mbox-stats v1.0.11
 Created by leodevbro (Levan Katsadze)
 * linkedin.com/in/leodevbro
 * github.com/leodevbro

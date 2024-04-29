@@ -5,20 +5,20 @@
 
 `gmail-mbox-stats` is a very simple tool to analyze your Gmail mailbox.
 
-- Find the sender which sent most mails.
-- Find the receiver where you sent most mails.
+- Find the senders which sent you most mails.
+- Find the receivers where you sent most mails.
   <br />
   <br />
-- Find the domain (@gmail.com, @live.com ...) which appears mostly in sender address.
-- Find the receiver where other senders (where sender is not you) sent most mails.
+- Find the domains (@gmail.com, @live.com ...) which appear mostly in sender addresses.
+- Find the receivers where other senders (where sender is not you) sent most mails.
   <br />
   <br />
-- Find the address which is most often placed in CC by you.
-- Find the address which is most often placed in CC by others.
+- Find the addresses which are most often placed in CC by you.
+- Find the addresses which are most often placed in CC by others.
   <br />
   <br />
-- Find the address which is most often placed in BCC by you.
-- Find the address which is most often placed in BCC by others.
+- Find the addresses which are most often placed in BCC by you.
+- Find the addresses which are most often placed in BCC by others.
   <br />
   <br />
 - And more.
@@ -28,7 +28,9 @@
 
 ## Video instruction:
 
-Coming soon...
+* <a href="https://www.youtube.com/watch?v=KKU84ogffeM" target="_blank">Main Tutorial (gmail-mbox-stats)</a><br /><br />
+* <a href="https://www.youtube.com/watch?v=DDXcm8F3roI" target="_blank">Detailed explanation (gmail-mbox-stats)</a><br /><br />
+* <a href="https://www.youtube.com/watch?v=A_cJBQbiexQ" target="_blank">Old method (Apps Script method)</a> - Not recommended, because NodeJS (gmail-mbox-stats) method is much faster and more stable. The "Apps Script" method does not use the gmail-mbox-stats software at all.<br /><br />
 
 <br />
 <br />
@@ -93,7 +95,7 @@ Start datetime: 2024-04-14_23-50-21
 Full Execution Time: 1:32.222 (m:ss.mmm)
 
 
-gmail-mbox-stats v1.0.10
+gmail-mbox-stats v1.0.11
 Created by leodevbro (Levan Katsadze)
 * linkedin.com/in/leodevbro
 * github.com/leodevbro
@@ -132,7 +134,7 @@ Here is what the full folder structure looks like:
     📂forMailsWhereSenderIsMe
         ▦me_freqBcc.csv
         ▦me_FreqCc.csv
-        ▦me_FreqReceiver.csv --- Here you can find the receiver where you sent most mails
+        ▦me_FreqReceiver.csv --- Here you can find the receivers where you sent most mails
         ▦me_FreqSender.csv
         ▦me_freqSenderDomain.csv
         ▦me_freqSenderPlusName.csv
@@ -141,7 +143,7 @@ Here is what the full folder structure looks like:
         ▦notMeOrUnkn_freqBcc.csv
         ▦notMeOrUnkn_FreqCc.csv
         ▦notMeOrUnkn_FreqReceiver.csv
-        ▦notMeOrUnkn_FreqSender.csv --- Here you can find the sender which sent most mails
+        ▦notMeOrUnkn_FreqSender.csv --- Here you can find the senders which sent most mails
         ▦notMeOrUnkn_freqSenderDomain.csv
         ▦notMeOrUnkn_freqSenderPlusName.csv
 
