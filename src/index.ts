@@ -1,7 +1,8 @@
 /*
 
-gmail-mbox-stats v1.0.11
+gmail-mbox-stats v1.1.0
 Created by leodevbro (Levan Katsadze)
+* leodevbro@gmail.com
 * linkedin.com/in/leodevbro
 * github.com/leodevbro
 * facebook.com/leodevbro
@@ -37,12 +38,6 @@ import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
 
 import { createReadStream, writeFileSync } from "node:fs";
 
-import {
-  MailParser,
-  Headers as TyMailparserHeaders,
-  // simpleParser,
-} from "mailparser";
-
 // import { parse as parseCsvInto2dArr } from "csv-parse";
 
 import {
@@ -54,23 +49,17 @@ import {
   prepareOutputFolderStructure,
   writeStatsIntoFiles,
 } from "./utils/stepUtils";
-import {
-  TyMainInfoForMail,
-  TyMboxMailHeaders,
-  TyZenMainInfoForMail,
-} from "./types/mailparserTypes";
-import {
-  addOneMailInfoToStats,
-  isMaybeCorrectNotationOfAddress,
-} from "./utils/statsBuilder";
-import {
-  // combineTwoFamiliesIntoZenArr,
-  getZenParticipantsFromFamily,
-} from "./utils/sweetUtils";
+
+import { isMaybeCorrectNotationOfAddress } from "./utils/statsBuilder";
+
 import { slimStartDateTime, str } from "./constants";
 import { groundFolder, keysForSenders } from "./utils/groundFolderMaker";
+import { step } from "./gloAccu";
+import { processOneMail } from "./utils/mailParsingUtils";
+
 // import { handleOneLineOfMailboxIndex } from "./utils/mailboxIndexMaker";
 
+// console.log("test AAA BBB 01");
 const startDateTimeStr = `Start datetime: ${slimStartDateTime.v}`;
 
 console.time("Full Execution Time");
@@ -127,28 +116,6 @@ const mbox = nodeMbox.MboxStream(mailbox, {
   /* options */
 });
 
-export const step: {
-  v: number;
-  countOfFullCountCheckForTimer: number;
-  //
-  countOfMessagesWithSenderCategory: {
-    me: number;
-    notMe: number;
-    empty: number;
-    hidden: number;
-  };
-} = {
-  v: 0,
-  countOfFullCountCheckForTimer: 0,
-  //
-  countOfMessagesWithSenderCategory: {
-    me: 0,
-    notMe: 0,
-    empty: 0,
-    hidden: 0,
-  },
-};
-
 const checkFullCount = async (currCandidateCount: number): Promise<number> => {
   step.countOfFullCountCheckForTimer += 1;
   await waitSomeSeconds(5);
@@ -168,182 +135,14 @@ const checkFullCount = async (currCandidateCount: number): Promise<number> => {
 };
 
 const analyzeMbox = () => {
-  const scanHeaders = (headersMap: TyMailparserHeaders): void => {
-    step.v += 1;
-    const headers = headersMap as TyMboxMailHeaders;
+  mbox.on("data", function (msg) {
+    step.v += 1; // This is count of all mails, not only succesfuly proccessed mails.
 
     try {
-      const init_From = headers.get("from");
-      const init_To = headers.get("to");
-      // const init_deliveredTo = headers.get("delivered-to");
-      const init_cc = headers.get("cc");
-      const init_bcc = headers.get("bcc");
-      //
-      const init_date = headers.get("date");
-      const init_messageId = headers.get("message-id");
-
-      // for testing:
-      /*
-      if ([7, 14].includes(step.v)) {
-        init_From?.value?.forEach((val, index) => {
-          // @ts-ignore
-          val.address = `hidden${index}${step.v}`;
-        });
-      }
-
-      if ([21].includes(step.v)) {
-        init_From = undefined;
-      }
-
-      if ([29, 30].includes(step.v)) {
-        init_From?.value?.forEach((val) => {
-          // @ts-ignore
-          val.address = ``;
-          // val.name = ``;
-        });
-      }
-      */
-
-      // if (
-      //   init_messageId ===
-      //   "<CAA_p-vxkKrYGM+QcZMbjvTkxQ6biC+6zdH4Mcp+bmAYzBXaxfQ@mail.gmail.com>"
-      // ) {
-      //   console.log("baaa", JSON.stringify([...headers]));
-      // }
-
-      const initialMainInfoForThisMail: TyMainInfoForMail = {
-        from: init_From,
-        to: init_To,
-        // "delivered-to": init_deliveredTo,
-        cc: init_cc,
-        bcc: init_bcc,
-        //
-        date: init_date,
-        ["message-id"]: init_messageId,
-      };
-
-      // if (step.v === 23) {
-      //   const rrr = initialMainInfoForThisMail.to?.value;
-      //   if (rrr) {
-      //     rrr.forEach((x) => {
-      //       x.address = undefined;
-      //     });
-      //   }
-
-      //   const rrr2 = initialMainInfoForThisMail["delivered-to"]?.value;
-      //   if (rrr2) {
-      //     rrr2.forEach((x) => {
-      //       x.address = undefined;
-      //     });
-      //   }
-      //   console.log(initialMainInfoForThisMail["message-id"]);
-      // }
-
-      const zenMainInfoForThisMail: TyZenMainInfoForMail = {
-        from: getZenParticipantsFromFamily({
-          family: initialMainInfoForThisMail.from,
-          step: step.v,
-          familyKind: "from",
-          messageId: initialMainInfoForThisMail["message-id"],
-          fromCombiner: false,
-        }),
-        // zenTo: combineTwoFamiliesIntoZenArr({
-        //   step: step.v,
-        //   messageId: initialMainInfoForThisMail["message-id"],
-        //   twoFamilies: [
-        //     {
-        //       familyKind: "to",
-        //       participationInfo: initialMainInfoForThisMail.to,
-        //     },
-        //     {
-        //       familyKind: "delivered-to",
-        //       participationInfo: initialMainInfoForThisMail["delivered-to"],
-        //     },
-        //   ],
-        // }),
-        zenTo: getZenParticipantsFromFamily({
-          family: initialMainInfoForThisMail.to,
-          step: step.v,
-          familyKind: "to",
-          messageId: initialMainInfoForThisMail["message-id"],
-          fromCombiner: false,
-        }),
-        cc: getZenParticipantsFromFamily({
-          family: initialMainInfoForThisMail.cc,
-          step: step.v,
-          familyKind: "cc",
-          messageId: initialMainInfoForThisMail["message-id"],
-          fromCombiner: false,
-        }),
-        bcc: getZenParticipantsFromFamily({
-          family: initialMainInfoForThisMail.bcc,
-          step: step.v,
-          familyKind: "bcc",
-          messageId: initialMainInfoForThisMail["message-id"],
-          fromCombiner: false,
-        }),
-        //
-        date: initialMainInfoForThisMail.date,
-        "message-id": initialMainInfoForThisMail["message-id"],
-      };
-
-      // TODO: maybe for future
-      /*
-      handleOneLineOfMailboxIndex({
-        stepV: step.v,
-        zenMainInfoForThisMail,
-      });
-      */
-      //
-
-      // maybe more logical for "addOneMailInfoToStats" to be here:
-      addOneMailInfoToStats(zenMainInfoForThisMail, step.v);
-
-      // counter.v += 1;
+      processOneMail(msg); // maybe manage in promise array
     } catch (err) {
       console.log(err);
     }
-
-    // just for CLI visualization:
-    const asStr = String(step.v);
-    const le = asStr.length;
-    if (asStr.slice(le - 3) === "000") {
-      console.log(step.v);
-    }
-  };
-
-  mbox.on("data", function (msg) {
-    // parse message using MailParser
-
-    // TODO: maybe for future
-    /*
-    simpleParser(msg, {
-      //
-    }).then((parsed) => {
-      const attt = parsed.attachments;
-      const fullSize = attt.reduce<number>((accu, item) => {
-        return accu + item.size;
-      }, 0);
-      if (fullSize === 0) {
-        return;
-      }
-      console.log(
-        "sttt:",
-        step.v,
-        "size:",
-        fullSize,
-        "id",
-        parsed.headers.get("message-id"),
-      );
-    });
-    */
-
-    const mailparser = new MailParser({
-      // streamAttachments: true
-    });
-    mailparser.on("headers", scanHeaders);
-    mailparser.write(msg);
-    mailparser.end();
   });
 
   mbox.on("error", function (err) {
@@ -352,10 +151,10 @@ const analyzeMbox = () => {
 
   mbox.on("finish", async function () {
     console.log(
-      `Probably finished reading mbox file. Current count: ${step.v}. Please wait.`,
+      `Finished accessing all the mails, but not yet finished proccessing them. All mails count: ${step.v}. Please wait.`,
     );
 
-    await checkFullCount(step.v);
+    await checkFullCount(step.succeededV);
 
     console.log("Please wait several seconds more to generate stats files.");
 

@@ -9,7 +9,7 @@ export type TyParticipant = {
 
 export type TyParticipationFamilyInfo = {
   html: string; // '<span class="mp_address_group"><span class="mp_address_name">Levan Katsadze</span> &lt;<a href="mailto:leodevbro@gmail.com" class="mp_address_email">leodevbro@gmail.com</a>&gt;</span>'
-  text: string; // generalInfo // '"Levan Katsadze" <leodevbro@gmail.com>'
+  text: string; // general info // '"Levan Katsadze" <leodevbro@gmail.com>'
   value?: TyParticipant[];
 };
 

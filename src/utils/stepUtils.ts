@@ -3,7 +3,7 @@ import path from "node:path";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
-import { step } from "..";
+import { step } from "../gloAccu";
 import { str } from "../constants";
 import { combineAddressAndName } from "./sweetUtils";
 import {
