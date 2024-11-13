@@ -4,7 +4,7 @@ import {
   // MailParser,
   simpleParser,
 } from "mailparser";
-import { processMailHeaders, scanHeaders } from "./mailHeadersUtils";
+import { processParsedMail } from "./mailHeadersUtils";
 import { step } from "../gloAccu";
 
 const print000SuccessCount = () => {
@@ -91,9 +91,7 @@ export const processOneMail = async (rawMail: Buffer) => {
 
   // const allZ = parsedMail.headers.get('x-gmail-labels');
 
-  const headers = scanHeaders(parsedMail.headers);
-
-  processMailHeaders(headers);
+  processParsedMail(parsedMail);
 
   // const attArr = parsedMail.attachments;
   // if (attArr.length !== 0) {

@@ -3,7 +3,7 @@ import path from "node:path";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
-import { step } from "../gloAccu";
+import { step, TyNumForEachSenderCategory } from "../gloAccu";
 import { str } from "../constants";
 import { combineAddressAndName } from "./sweetUtils";
 import {
@@ -154,6 +154,12 @@ export type TyCoolCounts = {
   uniqueCountOfHiddenValues: number; // strange values
 };
 
+export const getSumOfAllValuesOfMap = (myMap: Map<string, number>): number => {
+  const asArr = [...myMap];
+  const sumOfValues = asArr.reduce((accu, curr) => accu + curr[1], 0);
+  return sumOfValues;
+};
+
 const generateCoolCounts = (
   propName: keyof typeof theFilesObj,
   theFilesObj: TyOneResultCategory["innerFiles"],
@@ -161,10 +167,7 @@ const generateCoolCounts = (
   const currFile = theFilesObj[propName];
 
   const freqDataAsSortedArr = [...currFile.freqMap].sort((a, b) => b[1] - a[1]);
-  const fullSumOfNumbers = freqDataAsSortedArr.reduce<number>((accu, item) => {
-    const currItemFreqNumber = item[1];
-    return accu + currItemFreqNumber;
-  }, 0);
+  const fullSumOfNumbers = getSumOfAllValuesOfMap(currFile.freqMap);
 
   //
 
@@ -229,10 +232,35 @@ const recordMajorCounts = (
     countOfLegitValues,
   } = majorCountsForCurrCategory;
 
+  const recordAttachmMainStats = (
+    currCaget: keyof TyNumForEachSenderCategory,
+  ) => {
+    const currFileForAttachments = theFilesObj.attachmentsBySender;
+
+    //
+    //
+    //
+    step.totalSizeOfAttachmentsWithSenderCategory[currCaget] =
+      getSumOfAllValuesOfMap(currFileForAttachments.attachmTotalSizeMap);
+
+    step.totalCountOfAttachmentsWithSenderCategory[currCaget] =
+      getSumOfAllValuesOfMap(currFileForAttachments.attachmTotalCountMap);
+
+    step.countOfMailsWithAtLeastOneAttachmentWithSenderCategory[currCaget] =
+      getSumOfAllValuesOfMap(
+        currFileForAttachments.mailCountWithNonZeroCountOfAttachmentsMap,
+      );
+
+    // console.log("zazaaaaaaa===>>>>>>:", senderCategory);
+  };
+
   if (senderCategory === "me") {
     // here, guarateed that fullSumOfNumbers equals countOfLegitValues
     // because, in "me" category, sender addresses are known as just my address.
     step.countOfMessagesWithSenderCategory[senderCategory] = fullSumOfNumbers;
+
+    //
+    recordAttachmMainStats(senderCategory);
   } else {
     // senderCategory === "notMe" ---> or unknown (strange/hidden/empty)
 
@@ -242,6 +270,12 @@ const recordMajorCounts = (
     step.countOfMessagesWithSenderCategory["hidden"] = countOfHiddenValues;
 
     step.countOfMessagesWithSenderCategory["notMe"] = countOfLegitValues;
+
+    //
+    //
+
+    // I think specific senderCategory will always be me or notMe, never empty, never hidden.
+    recordAttachmMainStats("notMe");
   }
 
   return majorCountsForCurrCategory;
@@ -256,6 +290,7 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
   //
 
   const majorCounts = recordMajorCounts(theFilesObj, senderCategory);
+  // recordMajorCounts(theFilesObj, senderCategory);
 
   //
 

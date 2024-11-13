@@ -1,6 +1,6 @@
 /*
 
-gmail-mbox-stats v1.1.0
+gmail-mbox-stats v1.2.0
 Created by leodevbro (Levan Katsadze)
 * leodevbro@gmail.com
 * linkedin.com/in/leodevbro
@@ -54,12 +54,12 @@ import { isMaybeCorrectNotationOfAddress } from "./utils/statsBuilder";
 
 import { slimStartDateTime, str } from "./constants";
 import { groundFolder, keysForSenders } from "./utils/groundFolderMaker";
-import { step } from "./gloAccu";
+import { step, TyNumForEachSenderCategory } from "./gloAccu";
 import { processOneMail } from "./utils/mailParsingUtils";
 
 // import { handleOneLineOfMailboxIndex } from "./utils/mailboxIndexMaker";
 
-// console.log("test AAA BBB 01");
+console.log("test AAA BBB 046");
 const startDateTimeStr = `Start datetime: ${slimStartDateTime.v}`;
 
 console.time("Full Execution Time");
@@ -168,19 +168,41 @@ const analyzeMbox = () => {
     //
     const line_fullCount = `Full count of messages: ${step.v}`;
     console.log("Success.");
-    console.log(line_fullCount);
+    console.log(line_fullCount + "\n");
+
+    const generateOneConsoleLineOfSenderCategory = (
+      senderCateg: keyof TyNumForEachSenderCategory,
+    ) => {
+      let categRender: string = senderCateg;
+      if (senderCateg === "me") {
+        categRender = `--> me`;
+      } else if (senderCateg === "notMe") {
+        categRender = "not me";
+      }
+
+      const arr = [
+        `Messages where sender is ${categRender}: ${step.countOfMessagesWithSenderCategory[senderCateg]}`,
+        `Count of mails with at least one attachment: ${step.countOfMailsWithAtLeastOneAttachmentWithSenderCategory[senderCateg]}`,
+        `Total count of attachments: ${step.totalCountOfAttachmentsWithSenderCategory[senderCateg]}`,
+        `Total size of attachments: ${step.totalSizeOfAttachmentsWithSenderCategory[senderCateg]} Bytes`,
+      ];
+
+      return arr.join(`\n${" ".repeat(33)}`) + "\n";
+    };
+
     //
-    const line_fullCountAsMe = `Messages where sender is me: ${step.countOfMessagesWithSenderCategory.me}`;
+    const line_fullCountAsMe = generateOneConsoleLineOfSenderCategory("me");
     console.log(line_fullCountAsMe);
     //
-    const line_countAsLegitNotMe = `Messages where sender is not me: ${step.countOfMessagesWithSenderCategory.notMe}`;
+    const line_countAsLegitNotMe =
+      generateOneConsoleLineOfSenderCategory("notMe");
     console.log(line_countAsLegitNotMe);
 
-    const line_countAsHidden = `Messages where sender is hidden: ${step.countOfMessagesWithSenderCategory.hidden}`;
-    console.log(line_countAsHidden);
+    // const line_countAsHidden = generateOneConsoleLineOfSenderCategory("hidden");
+    // console.log(line_countAsHidden);
 
-    const line_countAsEmpty = `Messages where sender is empty: ${step.countOfMessagesWithSenderCategory.empty}`;
-    console.log(line_countAsEmpty);
+    // const line_countAsEmpty = generateOneConsoleLineOfSenderCategory("empty");
+    // console.log(line_countAsEmpty);
 
     console.log(
       `\nCreated new folder "${groundFolder.innerFolders.mboxStats.folderName}"`,

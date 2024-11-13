@@ -1,4 +1,4 @@
-import { Headers as TyMailparserHeaders } from "mailparser";
+import { ParsedMail, Headers as TyMailparserHeaders } from "mailparser";
 import { step } from "../gloAccu";
 import {
   TyMainInfoForMail,
@@ -82,13 +82,21 @@ export const scanHeaders = (
   // }
 };
 
-export const processMailHeaders = (neededHeaders: TyMainInfoForMail) => {
-  const initialMainInfoForThisMail = neededHeaders;
+export const processParsedMail = (theParsedMail: ParsedMail) => {
+  const initialMainInfoForThisMail = scanHeaders(theParsedMail.headers);
+
+  // bytes
+  const sumOfSizesOfAttachmentsOfOneMail = theParsedMail.attachments.reduce(
+    (accu, curr) => accu + curr.size,
+    0,
+  );
+
+  const countOfAttachmentsInThisMail = theParsedMail.attachments.length;
 
   const zenMainInfoForThisMail: TyZenMainInfoForMail = {
     from: getZenParticipantsFromFamily({
       family: initialMainInfoForThisMail.from,
-      step: step.v,
+      step: step.succeededV,
       familyKind: "from",
       messageId: initialMainInfoForThisMail["message-id"],
       fromCombiner: false,
@@ -109,21 +117,21 @@ export const processMailHeaders = (neededHeaders: TyMainInfoForMail) => {
     // }),
     zenTo: getZenParticipantsFromFamily({
       family: initialMainInfoForThisMail.to,
-      step: step.v,
+      step: step.succeededV,
       familyKind: "to",
       messageId: initialMainInfoForThisMail["message-id"],
       fromCombiner: false,
     }),
     cc: getZenParticipantsFromFamily({
       family: initialMainInfoForThisMail.cc,
-      step: step.v,
+      step: step.succeededV,
       familyKind: "cc",
       messageId: initialMainInfoForThisMail["message-id"],
       fromCombiner: false,
     }),
     bcc: getZenParticipantsFromFamily({
       family: initialMainInfoForThisMail.bcc,
-      step: step.v,
+      step: step.succeededV,
       familyKind: "bcc",
       messageId: initialMainInfoForThisMail["message-id"],
       fromCombiner: false,
@@ -143,5 +151,11 @@ export const processMailHeaders = (neededHeaders: TyMainInfoForMail) => {
   //
 
   // maybe more logical for "addOneMailInfoToStats" to be here:
-  addOneMailInfoToStats(zenMainInfoForThisMail, step.v);
+  addOneMailInfoToStats({
+    oneMail: zenMainInfoForThisMail,
+    stepN: step.succeededV,
+    //
+    sumOfSizesOfAttachmentsOfOneMail,
+    countOfAttachmentsInThisMail,
+  });
 };

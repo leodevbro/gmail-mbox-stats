@@ -12,6 +12,8 @@ const str_Bcc = "Bcc";
 // const str_Address = "Address";
 const str_Domain = "Domain";
 const str_AddressAndName = "PlusName";
+//
+const str_attachm_size = "_attachm_size";
 
 //
 
@@ -22,6 +24,11 @@ export type TyOneFileIndicator = {
   fileName: `${string}${typeof dotCsv}`;
   pathAbsOrRel: string;
   freqMap: Map<string, number>;
+  //
+  attachmTotalSizeMap: Map<string, number>;
+  attachmTotalCountMap: Map<string, number>;
+  mailCountWithNonZeroCountOfAttachmentsMap: Map<string, number>;
+  //
   messagesWhereRelevantValuesFound: number;
   legitCount: number;
   hiddenCount: number;
@@ -44,14 +51,26 @@ type TyCheckThatTObjExtendsTSource<TSource, TObj extends TSource> = TObj &
 
 export type TySenderCategory = "me" | "notMeOrUnkn"; // for names of files
 
-const sculptCommonInitialPropsOfFile = () => {
+const sculptCommonInitialPropsOfFile = <
+  TyMapKey extends string = TyMailAddress,
+>() => {
+  const generateNewMap = () => {
+    return new Map<TyMapKey, number>([]);
+  };
+
   const commonInitialPropsOfFile = {
     pathAbsOrRel: "" as string,
-    freqMap: new Map<TyMailAddress, number>([]),
+    freqMap: generateNewMap(),
     messagesWhereRelevantValuesFound: 0 as number,
     legitCount: 0 as number,
     hiddenCount: 0 as number,
     emptyCount: 0 as number,
+
+    //
+    attachmTotalSizeMap: generateNewMap(),
+    attachmTotalCountMap: generateNewMap(),
+    mailCountWithNonZeroCountOfAttachmentsMap: generateNewMap(),
+    //
   } as const;
 
   type TyDoTheCheck0 = TyCheckThatTObjExtendsTSource<
@@ -80,13 +99,11 @@ const createResultsObjForSpecificSenderCategory = (
       },
       frequencySenderDomain: {
         fileName: `${sCatStr}${str_frequency}${str_Sender}${str_Domain}${dotCsv}`,
-        ...sculptCommonInitialPropsOfFile(),
-        freqMap: new Map<TyMailDomain, number>([]),
+        ...sculptCommonInitialPropsOfFile<TyMailDomain>(),
       },
       frequencySenderAddressAndName: {
         fileName: `${sCatStr}${str_frequency}${str_Sender}${str_AddressAndName}${dotCsv}`,
-        ...sculptCommonInitialPropsOfFile(),
-        freqMap: new Map<string, number>([]),
+        ...sculptCommonInitialPropsOfFile<string>(),
       },
 
       // not just first receiver, but includes all receivers. So, count of receivers can me more than count of senders
@@ -139,6 +156,15 @@ const createResultsObjForSpecificSenderCategory = (
       //   pathAbsOrRel: "" as string,
       //   freqMap: new Map<string, number>([]),
       // },
+      attachmentsBySender: {
+        fileName: `${sCatStr}${str_attachm_size}${str_Sender}${dotCsv}`,
+        ...sculptCommonInitialPropsOfFile(),
+      },
+
+      attachmentsByDomain: {
+        fileName: `${sCatStr}${str_attachm_size}${str_Sender}${str_Domain}${dotCsv}`,
+        ...sculptCommonInitialPropsOfFile<TyMailDomain>(),
+      },
     },
   } as const;
 
