@@ -294,13 +294,16 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
 
   //
 
-  const theKeysOfFilesObj = Object.keys(
-    theFilesObj,
-  ) as (keyof typeof theFilesObj)[];
+  type TyAllKeysOfFiles = keyof typeof theFilesObj;
 
-  theKeysOfFilesObj.forEach((propName) => {
-    const currFile = theFilesObj[propName];
+  const theKeysOfFilesObj = Object.keys(theFilesObj) as TyAllKeysOfFiles[];
 
+  const fnForFreqFiles = (
+    propName: TyAllKeysOfFiles,
+    currFile: TyOneResultCategory["innerFiles"][TyAllKeysOfFiles],
+  ): {
+    final2dArr: (string | number)[][];
+  } => {
     const {
       fullSumOfNumbers,
       countOfEmptyValues,
@@ -389,6 +392,21 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
     sideArr.forEach((tupleItem, index) => {
       final2dArr[index].push("", ...tupleItem);
     });
+    //
+
+    return { final2dArr };
+  };
+
+  theKeysOfFilesObj.forEach((propName) => {
+    const currFile = theFilesObj[propName];
+
+    let final2dArr = [["", 0]];
+
+    if (propName.includes("attachm")) {
+      // final2dArr = fnForFreqFiles(propName, currFile).final2dArr;
+    } else {
+      final2dArr = fnForFreqFiles(propName, currFile).final2dArr;
+    }
 
     //
     //
