@@ -397,6 +397,107 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
     return { final2dArr };
   };
 
+  const fnForAttachmStatFiles = (
+    propName: TyAllKeysOfFiles,
+    currFile: TyOneResultCategory["innerFiles"][TyAllKeysOfFiles],
+  ): {
+    final2dArr: (string | number)[][];
+  } => {
+    const {
+      //
+      fullSumOfNumbers, //
+      //
+      countOfEmptyValues,
+      countOfHiddenValues, //
+      countOfLegitValues,
+
+      // @ts-ignore
+      uniqueCountOfHiddenValues,
+    } =
+      propName === keyForMessageCountBySender
+        ? majorCounts
+        : generateCoolCounts(propName, theFilesObj);
+
+    currFile[ //
+      // @ts-ignore
+      "legitCount"
+    ] = countOfLegitValues;
+
+    currFile[
+      // @ts-ignore
+      "hiddenCount"
+    ] = countOfHiddenValues;
+
+    currFile[
+      // @ts-ignore
+      "emptyCount"
+    ] = countOfEmptyValues;
+
+    const messagesWhereWeSearched =
+      senderCategory === "me"
+        ? step.countOfMessagesWithSenderCategory["me"]
+        : step.v - step.countOfMessagesWithSenderCategory["me"];
+
+    // const legitUniqueAddresses =
+    //   currFile.freqMap.size -
+    //   (currFile.emptyCount === 0 ? 0 : 1) -
+    //   uniqueCountOfHiddenValues;
+
+    const isKeyForSenders = keysForSenders.includes(propName);
+
+    const notApplicable_hiddEmpt = senderCategory === "me" && isKeyForSenders;
+
+    const sideArr = [
+      ["File name:", currFile.fileName.slice(0, currFile.fileName.length - 4)],
+      ["100% (All Occurrences):", fullSumOfNumbers],
+      ["Legit Occurrences:", countOfLegitValues],
+      ["Empty:", notApplicable_hiddEmpt ? "-" : countOfEmptyValues],
+      ["Hidden:", notApplicable_hiddEmpt ? "-" : countOfHiddenValues],
+      ["Unique Count:", currFile.freqMap.size],
+      ["Messages Where We Searched:", messagesWhereWeSearched],
+      ["Messages Where Found:", currFile.messagesWhereRelevantValuesFound],
+      [
+        "Messages Where Not Found:",
+        messagesWhereWeSearched - currFile.messagesWhereRelevantValuesFound,
+      ],
+    ];
+
+    const freqDataAsSortedArr = [...currFile.freqMap].sort(
+      (a, b) => b[1] - a[1],
+    );
+
+    const final2dArr = freqDataAsSortedArr.map((line) => {
+      const freq = line[1];
+      const percentage = (100 * freq) / fullSumOfNumbers;
+
+      // const fixedStr =
+      //   percentage >= 0.02 ? percentage.toFixed(2) : percentage.toFixed(5);
+
+      const fixedStr = percentage.toFixed(12);
+
+      const percentageStr = `${fixedStr}%`;
+      const coolLine = [...line, percentageStr];
+      return coolLine;
+    });
+
+    const deltaheight = sideArr.length - final2dArr.length;
+
+    if (deltaheight >= 1) {
+      Array(deltaheight)
+        .fill("-")
+        .forEach(() => {
+          final2dArr.push(["", "", ""]); // to fill left area
+        });
+    }
+
+    sideArr.forEach((tupleItem, index) => {
+      final2dArr[index].push("", ...tupleItem);
+    });
+    //
+
+    return { final2dArr };
+  };
+
   theKeysOfFilesObj.forEach((propName) => {
     const currFile = theFilesObj[propName];
 
