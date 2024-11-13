@@ -273,6 +273,9 @@ const analyzeMbox = () => {
       category: "me" | "not me or unknown",
       stats: TyInpStats,
     ) => {
+      const categOfStepObj: keyof TyNumForEachSenderCategory =
+        category === "me" ? category : "notMe";
+
       const arr = [
         ["", ""],
         [`For messages where sender is ${category}`],
@@ -294,6 +297,25 @@ const analyzeMbox = () => {
         ["CC addresses", ...stats.ccAddresses],
         ["BCC addresses", ...stats.BccAddresses],
         //
+        ["", ""],
+        ["", ""],
+        [
+          "Count of mails with at least one attachment",
+          step.countOfMailsWithAtLeastOneAttachmentWithSenderCategory[
+            categOfStepObj
+          ],
+        ],
+        [
+          "Total count of attachments",
+          step.totalCountOfAttachmentsWithSenderCategory[categOfStepObj],
+        ],
+        [
+          "Total size of attachments (Bytes)",
+          step.totalSizeOfAttachmentsWithSenderCategory[categOfStepObj],
+        ],
+        ["", ""],
+        ["", ""],
+        ["", ""],
         ["", ""],
       ];
 
