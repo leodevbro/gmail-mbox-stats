@@ -293,6 +293,30 @@ export const combineAddressAndName = (address: string, name: string) => {
   return `${address} --- ${name}`;
 };
 
+export type TyPercentStr = `${number}%`;
+
+export const toPercentageString = (num: number): TyPercentStr => {
+  const asFixed = num.toFixed(12);
+  const asPercentStr = `${asFixed}%` as TyPercentStr;
+  return asPercentStr;
+};
+
+export const calcPercent = (total: number, target: number): number => {
+  return (100 * target) / total;
+};
+
+export const generatePercentStr = (total: number, target: number) => {
+  const percent = calcPercent(total, target);
+  const percentStr = toPercentageString(percent);
+  return percentStr;
+};
+
+export const getSumOfAllValuesOfMap = (myMap: Map<string, number>): number => {
+  const asArr = [...myMap];
+  const sumOfValues = asArr.reduce((accu, curr) => accu + curr[1], 0);
+  return sumOfValues;
+};
+
 /*
 export const prepareZenParticipantArrAsMainListItemStr = ({
   zenParticipants,
