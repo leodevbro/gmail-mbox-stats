@@ -5,7 +5,12 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { stringify as stringify2dArrIntoCsv } from "csv-stringify/sync";
 import { step, TyNumForEachSenderCategory } from "../gloAccu";
 import { str } from "../constants";
-import { combineAddressAndName } from "./sweetUtils";
+import {
+  combineAddressAndName,
+  generatePercentStr,
+  getSumOfAllValuesOfMap,
+  TyPercentStr,
+} from "./sweetUtils";
 import {
   TyOneResultCategory,
   groundFolder,
@@ -152,12 +157,6 @@ export type TyCoolCounts = {
   countOfEmptyValues: number;
   countOfHiddenValues: number;
   uniqueCountOfHiddenValues: number; // strange values
-};
-
-export const getSumOfAllValuesOfMap = (myMap: Map<string, number>): number => {
-  const asArr = [...myMap];
-  const sumOfValues = asArr.reduce((accu, curr) => accu + curr[1], 0);
-  return sumOfValues;
 };
 
 const generateCoolCounts = (
@@ -403,8 +402,11 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
   ): {
     final2dArr: (string | number)[][];
   } => {
+    const isForDomain = propName.toLowerCase().includes("domain");
+
     const {
       //
+      // @ts-ignore
       fullSumOfNumbers, //
       //
       countOfEmptyValues,
@@ -433,50 +435,81 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
       "emptyCount"
     ] = countOfEmptyValues;
 
-    const messagesWhereWeSearched =
-      senderCategory === "me"
-        ? step.countOfMessagesWithSenderCategory["me"]
-        : step.v - step.countOfMessagesWithSenderCategory["me"];
-
-    // const legitUniqueAddresses =
-    //   currFile.freqMap.size -
-    //   (currFile.emptyCount === 0 ? 0 : 1) -
-    //   uniqueCountOfHiddenValues;
-
-    const isKeyForSenders = keysForSenders.includes(propName);
-
-    const notApplicable_hiddEmpt = senderCategory === "me" && isKeyForSenders;
-
     const sideArr = [
       ["File name:", currFile.fileName.slice(0, currFile.fileName.length - 4)],
-      ["100% (All Occurrences):", fullSumOfNumbers],
-      ["Legit Occurrences:", countOfLegitValues],
-      ["Empty:", notApplicable_hiddEmpt ? "-" : countOfEmptyValues],
-      ["Hidden:", notApplicable_hiddEmpt ? "-" : countOfHiddenValues],
-      ["Unique Count:", currFile.freqMap.size],
-      ["Messages Where We Searched:", messagesWhereWeSearched],
-      ["Messages Where Found:", currFile.messagesWhereRelevantValuesFound],
-      [
-        "Messages Where Not Found:",
-        messagesWhereWeSearched - currFile.messagesWhereRelevantValuesFound,
-      ],
+      ["", ""],
+      ["Legend:", ""],
+      ["", ""],
+      ["A:", isForDomain ? "domain" : "address"],
+      ["", ""],
+      ["B:", "total size of attachments (MB => million Bytes)"],
+      ["C:", "percent"],
+      ["", ""],
+      ["D:", "count of attachments"],
+      // ["E", "percent"],
+      ["", ""],
+      ["E", "count of mails with at least one attachment"],
+      // ["G", "percent"],
+      ["", ""],
+      ["F", "count of all mails"],
+      ["G", "percent"],
     ];
 
-    const freqDataAsSortedArr = [...currFile.freqMap].sort(
-      (a, b) => b[1] - a[1],
-    );
+    const attachmTotalSizeDataAsSortedArr = [
+      ...currFile.attachmTotalSizeMap,
+    ].sort((a, b) => b[1] - a[1]);
 
-    const final2dArr = freqDataAsSortedArr.map((line) => {
-      const freq = line[1];
-      const percentage = (100 * freq) / fullSumOfNumbers;
+    const final2dArr = attachmTotalSizeDataAsSortedArr.map((line) => {
+      const currAddressOrDomain = line[0];
 
-      // const fixedStr =
-      //   percentage >= 0.02 ? percentage.toFixed(2) : percentage.toFixed(5);
+      const buildCoolLinePair = (
+        currMap: Map<string, number>,
+        // mapName: string,
+      ): [number, TyPercentStr] => {
+        // console.log("jaaaaaaaaa-currMap.size", mapName, currMap.size);
+        const num = currMap.get(currAddressOrDomain) || 0;
+        // if (num === undefined) {
+        //   console.log(JSON.stringify([...currMap]));
+        //   throw new Error(
+        //     `${currAddressOrDomain} not found in ${mapName} for ${currFile.fileName} - size - ${currMap.size} --- buildCoolLinePair`,
+        //   );
+        // }
 
-      const fixedStr = percentage.toFixed(12);
+        const ofAllItems = getSumOfAllValuesOfMap(currMap);
 
-      const percentageStr = `${fixedStr}%`;
-      const coolLine = [...line, percentageStr];
+        const percentStr = generatePercentStr(ofAllItems, num);
+
+        return [num, percentStr];
+      };
+
+      const pair_totalSizeOfAttachments = buildCoolLinePair(
+        currFile.attachmTotalSizeMap,
+        // "attachmTotalSizeMap",
+      );
+      const pair_countOfAttachments = buildCoolLinePair(
+        currFile.attachmTotalCountMap,
+        // "attachmTotalCountMap",
+      );
+      const pair_countOfMailsWithAtLeastOneAttachment = buildCoolLinePair(
+        currFile.mailCountWithNonZeroCountOfAttachmentsMap,
+        // "mailCountWithNonZeroCountOfAttachmentsMap",
+      );
+
+      const pair_countOfAllMails = buildCoolLinePair(
+        theFilesObj[
+          isForDomain ? "frequencySenderDomain" : "frequencySenderAddress"
+        ].freqMap,
+        // "freqMap",
+      );
+      //
+
+      const coolLine = [
+        currAddressOrDomain,
+        ...pair_totalSizeOfAttachments,
+        pair_countOfAttachments[0],
+        pair_countOfMailsWithAtLeastOneAttachment[0],
+        ...pair_countOfAllMails,
+      ];
       return coolLine;
     });
 
@@ -486,7 +519,8 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
       Array(deltaheight)
         .fill("-")
         .forEach(() => {
-          final2dArr.push(["", "", ""]); // to fill left area
+          const forLeftEmptyAreaToFill = Array(final2dArr[0].length).fill("");
+          final2dArr.push(forLeftEmptyAreaToFill);
         });
     }
 
@@ -501,13 +535,11 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
   theKeysOfFilesObj.forEach((propName) => {
     const currFile = theFilesObj[propName];
 
-    let final2dArr = [["", 0]];
+    const isAttachmentStatFile = propName.toLowerCase().includes("attachm");
 
-    if (propName.includes("attachm")) {
-      // final2dArr = fnForFreqFiles(propName, currFile).final2dArr;
-    } else {
-      final2dArr = fnForFreqFiles(propName, currFile).final2dArr;
-    }
+    const { final2dArr } = isAttachmentStatFile
+      ? fnForAttachmStatFiles(propName, currFile)
+      : fnForFreqFiles(propName, currFile);
 
     //
     //

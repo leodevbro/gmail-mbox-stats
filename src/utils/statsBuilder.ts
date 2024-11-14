@@ -238,7 +238,8 @@ const handleParticipantArrIntoTheMaps = ({
         incr: attachmDataForCurrCateg.sumOfSizesOfAttachmentsOfOneMail,
       });
 
-      if (attachmDataForCurrCateg.countOfAttachmentsInThisMail >= 1) {
+      // it was '  >= 1  ' but now it is always true ('  >= 0  ')
+      if (attachmDataForCurrCateg.countOfAttachmentsInThisMail >= 0) {
         // attachments map for address for count of attachments
         advancedIncrInMap({
           stepN,
@@ -267,7 +268,7 @@ const handleParticipantArrIntoTheMaps = ({
               .mailCountWithNonZeroCountOfAttachments,
           participantRole,
           key: prtc.address,
-          incr: 1,
+          incr: attachmDataForCurrCateg.countOfAttachmentsInThisMail && 1,
         });
 
         // for domain:
@@ -278,7 +279,7 @@ const handleParticipantArrIntoTheMaps = ({
               .mailCountWithNonZeroCountOfAttachments,
           participantRole,
           key: theDomain,
-          incr: 1,
+          incr: attachmDataForCurrCateg.countOfAttachmentsInThisMail && 1,
         });
       }
     }
@@ -315,7 +316,7 @@ export const addOneMailInfoToStats = ({
   oneMail: TyZenMainInfoForMail;
   stepN: number;
   //
-  sumOfSizesOfAttachmentsOfOneMail: number; // bytes
+  sumOfSizesOfAttachmentsOfOneMail: number; // MB => million bytes
   countOfAttachmentsInThisMail: number;
 }): void => {
   const currSenderAddress = oneMail.from[0].address; // assumes there will be always 1 sender, not less, not more.

@@ -13,7 +13,7 @@ const str_Bcc = "Bcc";
 const str_Domain = "Domain";
 const str_AddressAndName = "PlusName";
 //
-const str_attachm_size = "_attachm_size";
+const str_attachm_size = "_attachmSize";
 
 //
 

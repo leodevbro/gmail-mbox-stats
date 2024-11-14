@@ -85,11 +85,10 @@ export const scanHeaders = (
 export const processParsedMail = (theParsedMail: ParsedMail) => {
   const initialMainInfoForThisMail = scanHeaders(theParsedMail.headers);
 
-  // bytes
-  const sumOfSizesOfAttachmentsOfOneMail = theParsedMail.attachments.reduce(
-    (accu, curr) => accu + curr.size,
-    0,
-  );
+  // MB => million bytes
+  const sumOfSizesOfAttachmentsOfOneMail =
+    theParsedMail.attachments.reduce((accu, curr) => accu + curr.size, 0) /
+    1000000;
 
   const countOfAttachmentsInThisMail = theParsedMail.attachments.length;
 

@@ -28,9 +28,9 @@ type TyStep = {
   //
   //
 
-  totalSizeOfAttachmentsWithSenderCategory: TyNumForEachSenderCategory; // total bytes
-  totalCountOfAttachmentsWithSenderCategory: TyNumForEachSenderCategory; // total count
-  countOfMailsWithAtLeastOneAttachmentWithSenderCategory: TyNumForEachSenderCategory; // total bytes
+  totalSizeOfAttachmentsWithSenderCategory: TyNumForEachSenderCategory; // ===> MB ===> million bytes
+  totalCountOfAttachmentsWithSenderCategory: TyNumForEachSenderCategory;
+  countOfMailsWithAtLeastOneAttachmentWithSenderCategory: TyNumForEachSenderCategory;
 };
 
 export const step: TyStep = {

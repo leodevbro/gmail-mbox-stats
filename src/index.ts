@@ -59,7 +59,7 @@ import { processOneMail } from "./utils/mailParsingUtils";
 
 // import { handleOneLineOfMailboxIndex } from "./utils/mailboxIndexMaker";
 
-console.log("test AAA BBB 046");
+console.log("test AA BB 050");
 const startDateTimeStr = `Start datetime: ${slimStartDateTime.v}`;
 
 console.time("Full Execution Time");
@@ -180,11 +180,26 @@ const analyzeMbox = () => {
         categRender = "not me";
       }
 
+      const currSpace =
+        groundFolder.innerFolders.mboxStats.innerFolders[
+          senderCateg === "me"
+            ? "forMailsWhereSenderIsMe"
+            : "forMailsWhereSenderIsNotMeOrIsUnknown"
+        ];
+
+      const senderAddressFreqFile = currSpace.innerFiles.frequencySenderAddress;
+      const senderDomainFreqFile = currSpace.innerFiles.frequencySenderDomain;
+      const receiverAddressFreqFile =
+        currSpace.innerFiles.frequencyReceiverAddress;
+
       const arr = [
         `Messages where sender is ${categRender}: ${step.countOfMessagesWithSenderCategory[senderCateg]}`,
         `Count of mails with at least one attachment: ${step.countOfMailsWithAtLeastOneAttachmentWithSenderCategory[senderCateg]}`,
         `Total count of attachments: ${step.totalCountOfAttachmentsWithSenderCategory[senderCateg]}`,
-        `Total size of attachments: ${step.totalSizeOfAttachmentsWithSenderCategory[senderCateg]} Bytes`,
+        `Total size of attachments: ${step.totalSizeOfAttachmentsWithSenderCategory[senderCateg]} MB => Million Bytes`,
+        `Unique sender addresses: ${senderAddressFreqFile.freqMap.size}`,
+        `Unique sender domains: ${senderDomainFreqFile.freqMap.size}`,
+        `Unique receiver addresses: ${receiverAddressFreqFile.freqMap.size}`,
       ];
 
       return arr.join(`\n${" ".repeat(33)}`) + "\n";
@@ -276,6 +291,18 @@ const analyzeMbox = () => {
       const categOfStepObj: keyof TyNumForEachSenderCategory =
         category === "me" ? category : "notMe";
 
+      const currSpace =
+        groundFolder.innerFolders.mboxStats.innerFolders[
+          category === "me"
+            ? "forMailsWhereSenderIsMe"
+            : "forMailsWhereSenderIsNotMeOrIsUnknown"
+        ];
+
+      const senderAddressFreqFile = currSpace.innerFiles.frequencySenderAddress;
+      const senderDomainFreqFile = currSpace.innerFiles.frequencySenderDomain;
+      const receiverAddressFreqFile =
+        currSpace.innerFiles.frequencyReceiverAddress;
+
       const arr = [
         ["", ""],
         [`For messages where sender is ${category}`],
@@ -310,9 +337,12 @@ const analyzeMbox = () => {
           step.totalCountOfAttachmentsWithSenderCategory[categOfStepObj],
         ],
         [
-          "Total size of attachments (Bytes)",
+          "Total size of attachments (MB => million Bytes)",
           step.totalSizeOfAttachmentsWithSenderCategory[categOfStepObj],
         ],
+        ["Unique sender addresses", senderAddressFreqFile.freqMap.size],
+        ["Unique sender domains", senderDomainFreqFile.freqMap.size],
+        ["Unique receiver addresses", receiverAddressFreqFile.freqMap.size],
         ["", ""],
         ["", ""],
         ["", ""],
