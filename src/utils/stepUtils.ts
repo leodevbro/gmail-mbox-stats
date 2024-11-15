@@ -455,13 +455,13 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
       ["C:", "percent"],
       ["", ""],
       ["D:", "count of attachments"],
-      // ["E", "percent"],
+      // ["E:", "percent"],
       ["", ""],
-      ["E", "count of mails with at least one attachment"],
+      ["E:", "count of mails with at least one attachment"],
       // ["G", "percent"],
       ["", ""],
-      ["F", "count of all mails"],
-      ["G", "percent"],
+      ["F:", "count of all mails"],
+      ["G:", "percent"],
     ];
 
     const attachmTotalSizeDataAsSortedArr = [
