@@ -32,7 +32,7 @@
 
 ## Quick intro of the CSV result files
 
-![Quick intro of the CSV result files](https://raw.githubusercontent.com/leodevbro/gmail-mbox-stats/main/src/demoMedia/basic-intro-of-folder-tree_v2.png "Quick intro of the CSV result files")
+![Quick intro of the CSV result files](https://raw.githubusercontent.com/leodevbro/gmail-mbox-stats/main/src/demoMedia/basic-intro-of-folder-tree_v3.png "Quick intro of the CSV result files")
 
 <br />
 
@@ -118,7 +118,7 @@ Start datetime: 2024-11-15_21-28-13
 Full Execution Time: 2:00.411 (m:ss.mmm)
 
 
-gmail-mbox-stats v1.2.1
+gmail-mbox-stats v1.2.2
 Created by leodevbro (Levan Katsadze)
 * leodevbro@gmail.com
 * linkedin.com/in/leodevbro
