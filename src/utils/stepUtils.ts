@@ -17,6 +17,7 @@ import {
   keyForMessageCountBySender,
   keysForSenders,
 } from "./groundFolderMaker";
+import { mboxFilePath, myEmail } from "../basicStarter";
 
 export const prepareResultsFolderForSenderCategory = (
   mboxStatsFolderPath: string,
@@ -573,4 +574,265 @@ export const writeStatsIntoFiles = () => {
       .forMailsWhereSenderIsNotMeOrIsUnknown,
     "notMeOrUnknown",
   );
+};
+
+type TyGeneralStats = {
+  generalStats2dArr: (string | number)[][];
+};
+
+export const generateGeneralStats = (): TyGeneralStats => {
+  console.log("\n");
+  //
+  const line_fullCount = `Full count of messages: ${step.v}`;
+  console.log("Success.");
+  console.log(line_fullCount + "\n");
+
+  const generateOneConsoleLineOfSenderCategory = (
+    senderCateg: keyof TyNumForEachSenderCategory,
+  ) => {
+    let categRender: string = senderCateg;
+    if (senderCateg === "me") {
+      categRender = `--> me`;
+    } else if (senderCateg === "notMe") {
+      categRender = "not me";
+    }
+
+    const currSpace =
+      groundFolder.innerFolders.mboxStats.innerFolders[
+        senderCateg === "me"
+          ? "forMailsWhereSenderIsMe"
+          : "forMailsWhereSenderIsNotMeOrIsUnknown"
+      ];
+
+    const senderAddressFreqFile = currSpace.innerFiles.frequencySenderAddress;
+    const senderDomainFreqFile = currSpace.innerFiles.frequencySenderDomain;
+    const receiverAddressFreqFile =
+      currSpace.innerFiles.frequencyReceiverAddress;
+
+    const arr = [
+      `Messages where sender is ${categRender}: ${step.countOfMessagesWithSenderCategory[senderCateg]}`,
+      `Count of mails with at least one attachment: ${step.countOfMailsWithAtLeastOneAttachmentWithSenderCategory[senderCateg]}`,
+      `Total count of attachments: ${step.totalCountOfAttachmentsWithSenderCategory[senderCateg]}`,
+      `Total size of attachments: ${step.totalSizeOfAttachmentsWithSenderCategory[senderCateg]} MB => Million Bytes`,
+      `Unique sender addresses: ${senderAddressFreqFile.freqMap.size}`,
+      `Unique sender domains: ${senderDomainFreqFile.freqMap.size}`,
+      `Unique receiver addresses: ${receiverAddressFreqFile.freqMap.size}`,
+    ];
+
+    return arr.join(`\n${" ".repeat(33)}`) + "\n";
+  };
+
+  //
+  const line_fullCountAsMe = generateOneConsoleLineOfSenderCategory("me");
+  console.log(line_fullCountAsMe);
+  //
+  const line_countAsLegitNotMe =
+    generateOneConsoleLineOfSenderCategory("notMe");
+  console.log(line_countAsLegitNotMe);
+
+  // const line_countAsHidden = generateOneConsoleLineOfSenderCategory("hidden");
+  // console.log(line_countAsHidden);
+
+  // const line_countAsEmpty = generateOneConsoleLineOfSenderCategory("empty");
+  // console.log(line_countAsEmpty);
+
+  console.log(
+    `\nCreated new folder "${groundFolder.innerFolders.mboxStats.folderName}"`,
+  );
+
+  const generalStats2dArrNotation: (string | number)[][] = [
+    [
+      "MBOX file name:",
+      (() => {
+        const nameWithFormat = mboxFilePath.split(/[/\\]/).at(-1);
+        if (!nameWithFormat) {
+          return mboxFilePath;
+        }
+
+        return nameWithFormat;
+      })(),
+    ],
+    ["My mail:", myEmail],
+    ["Full count of messages:", step.v],
+    ["Messages where sender is me:", step.countOfMessagesWithSenderCategory.me],
+    [
+      "Messages where sender is not me:",
+      step.countOfMessagesWithSenderCategory.notMe,
+    ],
+    [
+      "Messages where sender is empty:",
+      step.countOfMessagesWithSenderCategory.empty,
+    ],
+    [
+      "Messages where sender is hidden:",
+      step.countOfMessagesWithSenderCategory.hidden,
+    ],
+  ];
+
+  //
+  // const mePlusNotMe =
+  //   step.countOfMessagesWithSenderCategory.me +
+  //   step.countOfMessagesWithSenderCategory.notMe;
+
+  // if (mePlusNotMe !== step.v) {
+  //   const line_countingError = `Strange - Some kind of error of counting --- "me" (${step.countOfMessagesWithSenderCategory.me}) + "notMe" (${step.countOfMessagesWithSenderCategory.notMe}) should be totalCount (${step.v}), but the sum is ${mePlusNotMe}`;
+  //   console.log(line_countingError);
+  //   // linesOfGeneralStats.push(line_countingError);
+  //   generalStats2dArrNotation.push(["Error:", line_countingError]);
+  // }
+
+  type TyUniAndFull = [
+    unique: number,
+    fullLegit: number,
+    hidden: number | "-",
+    empty: number | "-",
+    messagesWhereFound: number,
+  ];
+
+  type TyInpStats = {
+    senderAddresses: TyUniAndFull;
+    senderDomains: TyUniAndFull;
+    senderPlusNames: TyUniAndFull;
+    receiverAddresses: TyUniAndFull;
+    ccAddresses: TyUniAndFull;
+    BccAddresses: TyUniAndFull;
+  };
+
+  const generateSideStatsForOneCategory = (
+    category: "me" | "not me or unknown",
+    stats: TyInpStats,
+  ) => {
+    const categOfStepObj: keyof TyNumForEachSenderCategory =
+      category === "me" ? category : "notMe";
+
+    const currSpace =
+      groundFolder.innerFolders.mboxStats.innerFolders[
+        category === "me"
+          ? "forMailsWhereSenderIsMe"
+          : "forMailsWhereSenderIsNotMeOrIsUnknown"
+      ];
+
+    const senderAddressFreqFile = currSpace.innerFiles.frequencySenderAddress;
+    const senderDomainFreqFile = currSpace.innerFiles.frequencySenderDomain;
+    const receiverAddressFreqFile =
+      currSpace.innerFiles.frequencyReceiverAddress;
+
+    const arr = [
+      ["", ""],
+      [`For messages where sender is ${category}`],
+      [
+        "", // "Description",
+
+        // like TyUniAndFull
+        "Unique",
+        "Legit",
+        "Hidden",
+        "Empty",
+        "Messages Where Found",
+      ],
+      //
+      ["Sender addresses", ...stats.senderAddresses],
+      ["Sender domains", ...stats.senderDomains],
+      ["SenderPlusNames", ...stats.senderPlusNames],
+      ["Receiver addresses", ...stats.receiverAddresses],
+      ["CC addresses", ...stats.ccAddresses],
+      ["BCC addresses", ...stats.BccAddresses],
+      //
+      ["", ""],
+      ["", ""],
+      [
+        "Count of mails with at least one attachment",
+        step.countOfMailsWithAtLeastOneAttachmentWithSenderCategory[
+          categOfStepObj
+        ],
+      ],
+      [
+        "Total count of attachments",
+        step.totalCountOfAttachmentsWithSenderCategory[categOfStepObj],
+      ],
+      [
+        "Total size of attachments (MB => million Bytes)",
+        step.totalSizeOfAttachmentsWithSenderCategory[categOfStepObj],
+      ],
+      ["Unique sender addresses", senderAddressFreqFile.freqMap.size],
+      ["Unique sender domains", senderDomainFreqFile.freqMap.size],
+      ["Unique receiver addresses", receiverAddressFreqFile.freqMap.size],
+      ["", ""],
+      ["", ""],
+      ["", ""],
+      ["", ""],
+    ];
+
+    return arr;
+  };
+
+  const folder_me =
+    groundFolder.innerFolders.mboxStats.innerFolders.forMailsWhereSenderIsMe
+      .innerFiles;
+
+  const folder_notMeOrUnknown =
+    groundFolder.innerFolders.mboxStats.innerFolders
+      .forMailsWhereSenderIsNotMeOrIsUnknown.innerFiles;
+
+  const fol = {
+    me: folder_me,
+    notMeOrUnknown: folder_notMeOrUnknown,
+  };
+
+  const generateStatsObj = (meOrNotMe: keyof typeof fol): TyInpStats => {
+    const currFolder = fol[meOrNotMe];
+
+    const sculptOneFileStat = (fileKey: keyof typeof currFolder) => {
+      const isKeyForSenders = keysForSenders.includes(fileKey);
+
+      const notApplicable_hiddEmpt = meOrNotMe === "me" && isKeyForSenders;
+
+      const arr: TyUniAndFull = [
+        currFolder[fileKey].freqMap.size,
+        currFolder[fileKey].legitCount,
+        notApplicable_hiddEmpt ? "-" : currFolder[fileKey].hiddenCount,
+        notApplicable_hiddEmpt ? "-" : currFolder[fileKey].emptyCount,
+        currFolder[fileKey].messagesWhereRelevantValuesFound,
+      ];
+      return arr;
+    };
+
+    const obj: TyInpStats = {
+      senderAddresses: sculptOneFileStat("frequencySenderAddress"),
+      senderDomains: sculptOneFileStat("frequencySenderDomain"),
+      senderPlusNames: sculptOneFileStat("frequencySenderAddressAndName"),
+      receiverAddresses: sculptOneFileStat("frequencyReceiverAddress"),
+      ccAddresses: sculptOneFileStat("frequencyCcAddress"),
+      BccAddresses: sculptOneFileStat("frequencyBccAddress"),
+    };
+
+    return obj;
+  };
+
+  generalStats2dArrNotation.push(
+    ...[
+      ["", ""],
+      // [`Let's count unique addresses and more`],
+
+      ["Participant --> Sender/Receiver/CC/BCC"],
+      [
+        "Hidden address --> Participant exists but address value is other kind of text instead of email address",
+      ],
+      [
+        "Empty address --> Participant exists but address is empty. Or: participant (only for sender/receiver) does not exist at all.",
+      ],
+      ["Unknown address -> hidden or empty address"],
+    ],
+    ...generateSideStatsForOneCategory("me", generateStatsObj("me")),
+    ...generateSideStatsForOneCategory(
+      "not me or unknown",
+      generateStatsObj("notMeOrUnknown"),
+    ),
+  );
+
+  const returnObj: TyGeneralStats = {
+    generalStats2dArr: generalStats2dArrNotation,
+  };
+
+  return returnObj;
 };

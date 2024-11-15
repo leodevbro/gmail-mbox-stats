@@ -1,4 +1,4 @@
-import { myEmail } from "..";
+import { isMaybeCorrectNotationOfAddress, myEmail } from "../basicStarter";
 import {
   TyGmailMailHeadersAsObj,
   TyMailAddress,
@@ -92,18 +92,6 @@ const resultsInnerFilesCategories = {
   me: msFolders.forMailsWhereSenderIsMe.innerFiles,
   notMe: msFolders.forMailsWhereSenderIsNotMeOrIsUnknown.innerFiles,
 } as const;
-
-export const isMaybeCorrectNotationOfAddress = (notation: string): boolean => {
-  const indexOfTheAtSymbol = notation.indexOf("@");
-  const theAtSymbolIsAtCorrectIndex =
-    indexOfTheAtSymbol >= 1 && indexOfTheAtSymbol <= notation.length - 3;
-
-  if (!theAtSymbolIsAtCorrectIndex) {
-    return false;
-  }
-
-  return true;
-};
 
 const incrementInMap = <
   TKey extends string,

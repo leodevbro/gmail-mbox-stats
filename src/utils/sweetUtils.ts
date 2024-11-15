@@ -1,3 +1,4 @@
+import { isMaybeCorrectNotationOfAddress } from "../basicStarter";
 import { str } from "../constants";
 import {
   TyFamilyKind,
@@ -6,10 +7,7 @@ import {
   // TyZenFamilyKind,
   TyZenParticipant,
 } from "../types/mailparserTypes";
-import {
-  getSearchableIdForToBeEasyToCopy,
-  isMaybeCorrectNotationOfAddress,
-} from "./statsBuilder";
+import { getSearchableIdForToBeEasyToCopy } from "./statsBuilder";
 
 // type TyFamilyMeta = {
 //   familyKind: TyFamilyKind;
