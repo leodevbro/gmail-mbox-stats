@@ -9,6 +9,10 @@
 - Find the receivers where you sent most mails.
   <br />
   <br />
+- Find the senders which accumulated largest size with attachments.
+- Find the receivers where you accumulated largest size with attachments.
+  <br />
+  <br />
 - Find the domains (@gmail.com, @live.com ...) which appear mostly in sender addresses.
 - Find the receivers where other senders (where sender is not you) sent most mails.
   <br />
@@ -95,8 +99,9 @@ Start datetime: 2024-04-14_23-50-21
 Full Execution Time: 1:32.222 (m:ss.mmm)
 
 
-gmail-mbox-stats v1.0.11
+gmail-mbox-stats v1.2.0
 Created by leodevbro (Levan Katsadze)
+* leodevbro@gmail.com
 * linkedin.com/in/leodevbro
 * github.com/leodevbro
 * facebook.com/leodevbro
