@@ -9,8 +9,8 @@
 - Find the receivers where you sent most mails.
   <br />
   <br />
-- Find the senders with largest total size of attachments.
-- Find the receivers where you sent mails with largest total size of attachments.
+- Find the senders with largest total size (MB) of attachments.
+- Find the receivers where you sent mails with largest total size (MB) of attachments.
   <br />
   <br />
 - Find the domains (@gmail.com, @live.com ...) which appear mostly in sender addresses.
