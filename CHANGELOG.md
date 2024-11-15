@@ -4,9 +4,10 @@ All notable changes to the gmail-mbox-stats tool will be documented in this file
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [1.2.0] - 2024-11-16
+## [1.2.1] - 2024-11-16
 
--   add attachments size stats
+-   added attachments size stats
+-   polished some code
 
 ## [1.0.11] - 2024-04-29
 
