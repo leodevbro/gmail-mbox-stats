@@ -9,8 +9,8 @@
 - Find the receivers where you sent most mails.
   <br />
   <br />
-- Find the senders which accumulated largest size with attachments.
-- Find the receivers where you accumulated largest size with attachments.
+- Find the senders with largest total size of attachments.
+- Find the receivers where you sent mails with largest total size of attachments.
   <br />
   <br />
 - Find the domains (@gmail.com, @live.com ...) which appear mostly in sender addresses.
@@ -29,6 +29,12 @@
   <br />
   <br />
   <br />
+
+## Quick intro of the CSV result files
+
+![Quick intro of the CSV result files](https://raw.githubusercontent.com/leodevbro/gmail-mbox-stats/main/src/demoMedia/basic-intro-of-folder-tree.png "Quick intro of the CSV result files")
+
+<br />
 
 ## Video instruction:
 
@@ -84,19 +90,32 @@ about 1000 seconds (10-15-20 minutes) for 100K mails and so on.<br />
 
 ```
 Success.
-Full count of messages: 14577
-Messages where sender is me: 425
-Messages where sender is not me: 14147
-Messages where sender is hidden: 2
-Messages where sender is empty: 3
+Full count of messages: 18686
 
-Created new folder "mailStats_2024-04-14_23-50-21"
+Messages where sender is --> me: 495
+                                 Count of mails with at least one attachment: 148
+                                 Total count of attachments: 231
+                                 Total size of attachments: 120.800749 MB => Million Bytes
+                                 Unique sender addresses: 1
+                                 Unique sender domains: 1
+                                 Unique receiver addresses: 285
+
+Messages where sender is not me: 18191
+                                 Count of mails with at least one attachment: 850
+                                 Total count of attachments: 2409
+                                 Total size of attachments: 231.40515899999997 MB => Million Bytes
+                                 Unique sender addresses: 1473
+                                 Unique sender domains: 804
+                                 Unique receiver addresses: 94
 
 
-Start datetime: 2024-04-14_23-50-21
-->End datetime: 2024-04-14_23-51-54
+Created new folder "mailStats_2024-11-15_21-28-13"
 
-Full Execution Time: 1:32.222 (m:ss.mmm)
+
+Start datetime: 2024-11-15_21-28-13
+->End datetime: 2024-11-15_21-30-13
+
+Full Execution Time: 2:00.411 (m:ss.mmm)
 
 
 gmail-mbox-stats v1.2.0
@@ -112,7 +131,7 @@ If you feel like donating
 ```
 
 - Also, there will be a new folder named "mailStats" with execution start datetime, <br />
-  like this: `mailStats_2024-04-14_23-50-21`<br />
+  like this: `mailStats_2024-11-15_21-28-13`<br />
   in the same folder where the MBOX file is located.<br />
 
 - In the 'mailStats' folder, there will be `generalStats.csv` file. If you import it in Google Sheets it will look like this:
@@ -131,26 +150,32 @@ If you feel like donating
 Here is what the full folder structure looks like:
 
 ```
-▨All mail Including Spam and Trash.mbox
+▨ All mail Including Spam and Trash.mbox
 
-📂mailStats_2024-04-14_23-50-21
-    ▦generalStats.csv
+📂 mailStats_2024-11-15_21-28-13
+    ▦ generalStats.csv
 
-    📂forMailsWhereSenderIsMe
-        ▦me_freqBcc.csv
-        ▦me_FreqCc.csv
-        ▦me_FreqReceiver.csv --- Here you can find the receivers where you sent most mails
-        ▦me_FreqSender.csv
-        ▦me_freqSenderDomain.csv
-        ▦me_freqSenderPlusName.csv
+    📂 forMailsWhereSenderIsMe
+        ▦ me_attachmSizeReceiver.csv
+        ▦ me_attachmSizeSender.csv
+        ▦ me_attachmSizeSenderDomain.csv
+        ▦ me_freqBcc.csv
+        ▦ me_FreqCc.csv
+        ▦ me_FreqReceiver.csv --- Here you can find the receivers where you sent most mails
+        ▦ me_FreqSender.csv
+        ▦ me_freqSenderDomain.csv
+        ▦ me_freqSenderPlusName.csv
 
-    📂forMailsWhereSenderIsNotMeOrIsUnknown
-        ▦notMeOrUnkn_freqBcc.csv
-        ▦notMeOrUnkn_FreqCc.csv
-        ▦notMeOrUnkn_FreqReceiver.csv
-        ▦notMeOrUnkn_FreqSender.csv --- Here you can find the senders which sent most mails
-        ▦notMeOrUnkn_freqSenderDomain.csv
-        ▦notMeOrUnkn_freqSenderPlusName.csv
+    📂 forMailsWhereSenderIsNotMeOrIsUnknown
+        ▦ notMeOrUnkn_attachmSizeReceiver.csv
+        ▦ notMeOrUnkn_attachmSizeSender.csv
+        ▦ notMeOrUnkn_attachmSizeSenderDomain.csv
+        ▦ notMeOrUnkn_freqBcc.csv
+        ▦ notMeOrUnkn_FreqCc.csv
+        ▦ notMeOrUnkn_FreqReceiver.csv
+        ▦ notMeOrUnkn_FreqSender.csv --- Here you can find the senders which sent most mails
+        ▦ notMeOrUnkn_freqSenderDomain.csv
+        ▦ notMeOrUnkn_freqSenderPlusName.csv
 
 ```
 
