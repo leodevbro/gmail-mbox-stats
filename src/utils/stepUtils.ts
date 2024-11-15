@@ -405,6 +405,14 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
   } => {
     const isForDomain = propName.toLowerCase().includes("domain");
 
+    const allMailCountPropFinder: Partial<
+      Record<TyAllKeysOfFiles, TyAllKeysOfFiles>
+    > = {
+      attachmentsBySender: "frequencySenderAddress",
+      attachmentsByDomain: "frequencySenderDomain",
+      attachmentsByReceiver: "frequencyReceiverAddress",
+    };
+
     const {
       //
       // @ts-ignore
@@ -496,11 +504,16 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
         // "mailCountWithNonZeroCountOfAttachmentsMap",
       );
 
+      const mapFinderKey = allMailCountPropFinder[propName];
+
+      if (!mapFinderKey) {
+        throw new Error(
+          `!mapFinderKey --- fnForAttachmStatFiles --- propName: ${propName}`,
+        );
+      }
+
       const pair_countOfAllMails = buildCoolLinePair(
-        theFilesObj[
-          isForDomain ? "frequencySenderDomain" : "frequencySenderAddress"
-        ].freqMap,
-        // "freqMap",
+        theFilesObj[mapFinderKey].freqMap,
       );
       //
 
@@ -520,7 +533,9 @@ export const writeStatsOfSpecificSenderCategoryIntoFiles = (
       Array(deltaheight)
         .fill("-")
         .forEach(() => {
-          const forLeftEmptyAreaToFill = Array(final2dArr[0].length).fill("");
+          const forLeftEmptyAreaToFill = Array(
+            (final2dArr[0] || []).length,
+          ).fill("");
           final2dArr.push(forLeftEmptyAreaToFill);
         });
     }

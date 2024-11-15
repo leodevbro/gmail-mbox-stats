@@ -14,6 +14,12 @@ import {
   // str_EMPTY
 } from "./sweetUtils";
 
+export type TyAttachmMapsCollection<TyKey extends string> = {
+  attachmTotalSize: Map<TyKey, number>;
+  attachmTotalCount: Map<TyKey, number>;
+  mailCountWithNonZeroCountOfAttachments: Map<TyKey, number>;
+};
+
 export type TyAttachmData = {
   sumOfSizesOfAttachmentsOfOneMail: number;
   countOfAttachmentsInThisMail: number;
@@ -21,17 +27,18 @@ export type TyAttachmData = {
   //
   //
   maps: {
-    forAddress: {
-      attachmTotalSize: Map<TyMailAddress, number>;
-      attachmTotalCount: Map<TyMailAddress, number>;
-      mailCountWithNonZeroCountOfAttachments: Map<TyMailAddress, number>;
+    forSender: {
+      forAddress: TyAttachmMapsCollection<TyMailAddress>;
+      forDomain: TyAttachmMapsCollection<TyMailDomain>;
     };
 
-    forDomain: {
-      attachmTotalSize: Map<TyMailDomain, number>;
-      attachmTotalCount: Map<TyMailDomain, number>;
-      mailCountWithNonZeroCountOfAttachments: Map<TyMailDomain, number>;
+    forReceiver: {
+      forAddress: TyAttachmMapsCollection<TyMailAddress>;
+      forDomain: null;
     };
+
+    forCc: null;
+    forBcc: null;
   };
 };
 
@@ -195,6 +202,19 @@ const handleParticipantArrIntoTheMaps = ({
     throw new Error("Sender not found --- handleParticipantIntoFreqMap");
   }
 
+  const categSelectorObj: Record<TyZenFamilyKind, keyof TyAttachmData["maps"]> =
+    {
+      from: "forSender",
+      zenTo: "forReceiver",
+      cc: "forCc",
+      bcc: "forBcc",
+    };
+
+  const categSelector = categSelectorObj[participantRole];
+
+  const attachmMapsWrapOfCurrCateg =
+    attachmDataForCurrCateg?.maps[categSelector];
+
   participantArr.forEach((prtc) => {
     // first, Address and domain
 
@@ -207,69 +227,46 @@ const handleParticipantArrIntoTheMaps = ({
 
     const theDomain = getDomainFromAddress(prtc.address);
 
-    if (attachmDataForCurrCateg) {
-      // attachments map for address for size
-      advancedIncrInMap({
-        stepN,
-        theMap: attachmDataForCurrCateg.maps.forAddress.attachmTotalSize,
-        participantRole,
-        key: prtc.address,
-        incr: attachmDataForCurrCateg.sumOfSizesOfAttachmentsOfOneMail,
-      });
+    if (attachmMapsWrapOfCurrCateg) {
+      type TySuperPropsForIncr<TyKey extends string> = {
+        theMap: Map<TyKey, number>;
+        incr: number;
+      };
 
-      // for domain:
-      advancedIncrInMap({
-        stepN,
-        theMap: attachmDataForCurrCateg.maps.forDomain.attachmTotalSize,
-        participantRole,
-        key: theDomain,
-        incr: attachmDataForCurrCateg.sumOfSizesOfAttachmentsOfOneMail,
-      });
+      const handleByKey = (theKey: "forAddress" | "forDomain") => {
+        const currSpaceOfMaps = attachmMapsWrapOfCurrCateg[theKey];
 
-      // it was '  >= 1  ' but now it is always true ('  >= 0  ')
-      if (attachmDataForCurrCateg.countOfAttachmentsInThisMail >= 0) {
-        // attachments map for address for count of attachments
-        advancedIncrInMap({
-          stepN,
-          theMap: attachmDataForCurrCateg.maps.forAddress.attachmTotalCount,
-          participantRole,
-          key: prtc.address,
-          incr: attachmDataForCurrCateg.countOfAttachmentsInThisMail,
+        if (!currSpaceOfMaps) {
+          return;
+        }
+        const superArrByAddress: TySuperPropsForIncr<string>[] = [
+          {
+            theMap: currSpaceOfMaps.attachmTotalSize,
+            incr: attachmDataForCurrCateg.sumOfSizesOfAttachmentsOfOneMail,
+          },
+          {
+            theMap: currSpaceOfMaps.attachmTotalCount,
+            incr: attachmDataForCurrCateg.countOfAttachmentsInThisMail,
+          },
+          {
+            theMap: currSpaceOfMaps.mailCountWithNonZeroCountOfAttachments,
+            incr: attachmDataForCurrCateg.countOfAttachmentsInThisMail && 1,
+          },
+        ];
+
+        superArrByAddress.forEach(({ theMap, incr }) => {
+          advancedIncrInMap({
+            stepN,
+            theMap,
+            participantRole,
+            key: theKey === "forDomain" ? theDomain : prtc.address,
+            incr,
+          });
         });
-        // for domain:
-        advancedIncrInMap({
-          stepN,
-          theMap: attachmDataForCurrCateg.maps.forDomain.attachmTotalCount,
-          participantRole,
-          key: theDomain,
-          incr: attachmDataForCurrCateg.countOfAttachmentsInThisMail,
-        });
+      };
 
-        //
-        //
-
-        // attachments map for address for mailCountWithNonZeroCountOfAttachments
-        advancedIncrInMap({
-          stepN,
-          theMap:
-            attachmDataForCurrCateg.maps.forAddress
-              .mailCountWithNonZeroCountOfAttachments,
-          participantRole,
-          key: prtc.address,
-          incr: attachmDataForCurrCateg.countOfAttachmentsInThisMail && 1,
-        });
-
-        // for domain:
-        advancedIncrInMap({
-          stepN,
-          theMap:
-            attachmDataForCurrCateg.maps.forDomain
-              .mailCountWithNonZeroCountOfAttachments,
-          participantRole,
-          key: theDomain,
-          incr: attachmDataForCurrCateg.countOfAttachmentsInThisMail && 1,
-        });
-      }
+      handleByKey("forAddress");
+      handleByKey("forDomain");
     }
 
     // this mapForDomain is for freq, not for attachments
@@ -340,29 +337,50 @@ export const addOneMailInfoToStats = ({
     countOfAttachmentsInThisMail,
     sumOfSizesOfAttachmentsOfOneMail,
     maps: {
-      forAddress: {
-        attachmTotalSize:
-          innerFilesForThisCategory.attachmentsBySender.attachmTotalSizeMap,
+      forSender: {
+        forAddress: {
+          attachmTotalSize:
+            innerFilesForThisCategory.attachmentsBySender.attachmTotalSizeMap,
 
-        attachmTotalCount:
-          innerFilesForThisCategory.attachmentsBySender.attachmTotalCountMap,
+          attachmTotalCount:
+            innerFilesForThisCategory.attachmentsBySender.attachmTotalCountMap,
 
-        mailCountWithNonZeroCountOfAttachments:
-          innerFilesForThisCategory.attachmentsBySender
-            .mailCountWithNonZeroCountOfAttachmentsMap,
+          mailCountWithNonZeroCountOfAttachments:
+            innerFilesForThisCategory.attachmentsBySender
+              .mailCountWithNonZeroCountOfAttachmentsMap,
+        },
+
+        forDomain: {
+          attachmTotalSize:
+            innerFilesForThisCategory.attachmentsByDomain.attachmTotalSizeMap,
+
+          attachmTotalCount:
+            innerFilesForThisCategory.attachmentsByDomain.attachmTotalCountMap,
+
+          mailCountWithNonZeroCountOfAttachments:
+            innerFilesForThisCategory.attachmentsByDomain
+              .mailCountWithNonZeroCountOfAttachmentsMap,
+        },
       },
 
-      forDomain: {
-        attachmTotalSize:
-          innerFilesForThisCategory.attachmentsByDomain.attachmTotalSizeMap,
+      forReceiver: {
+        forAddress: {
+          attachmTotalSize:
+            innerFilesForThisCategory.attachmentsByReceiver.attachmTotalSizeMap,
 
-        attachmTotalCount:
-          innerFilesForThisCategory.attachmentsByDomain.attachmTotalCountMap,
+          attachmTotalCount:
+            innerFilesForThisCategory.attachmentsByReceiver
+              .attachmTotalCountMap,
 
-        mailCountWithNonZeroCountOfAttachments:
-          innerFilesForThisCategory.attachmentsByDomain
-            .mailCountWithNonZeroCountOfAttachmentsMap,
+          mailCountWithNonZeroCountOfAttachments:
+            innerFilesForThisCategory.attachmentsByReceiver
+              .mailCountWithNonZeroCountOfAttachmentsMap,
+        },
+        forDomain: null,
       },
+
+      forCc: null,
+      forBcc: null,
     },
   };
 
@@ -403,7 +421,7 @@ export const addOneMailInfoToStats = ({
     mapForAANInfo: null,
     participantRole: "zenTo",
     stepN,
-    attachmDataForCurrCateg: null,
+    attachmDataForCurrCateg,
   });
 
   //

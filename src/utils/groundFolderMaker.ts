@@ -165,6 +165,11 @@ const createResultsObjForSpecificSenderCategory = (
         fileName: `${sCatStr}${str_attachm_size}${str_Sender}${str_Domain}${dotCsv}`,
         ...sculptCommonInitialPropsOfFile<TyMailDomain>(),
       },
+
+      attachmentsByReceiver: {
+        fileName: `${sCatStr}${str_attachm_size}${str_Receiver}${dotCsv}`,
+        ...sculptCommonInitialPropsOfFile(),
+      },
     },
   } as const;
 

@@ -55,7 +55,7 @@ import { mboxFilePath } from "./basicStarter";
 
 // import { handleOneLineOfMailboxIndex } from "./utils/mailboxIndexMaker";
 
-// console.log("test AA BB 052"); // add also receivers attachment data for both: me and notMe
+// console.log("test AA BB 02");
 const startDateTimeStr = `Start datetime: ${slimStartDateTime.v}`;
 
 console.time("Full Execution Time");
