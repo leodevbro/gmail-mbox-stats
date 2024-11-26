@@ -599,7 +599,9 @@ export const generateGeneralStats = (): TyGeneralStats => {
   console.log("\n");
   //
   const line_fullCount = `Full count of messages: ${step.v}`;
-  console.log("Success.");
+  if (step.v === step.succeededV) {
+    console.log("\n\n\nSuccess.");
+  }
   console.log(line_fullCount + "\n");
 
   const generateOneConsoleLineOfSenderCategory = (

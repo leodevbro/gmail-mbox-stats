@@ -1,6 +1,6 @@
 /*
 
-gmail-mbox-stats v1.2.2
+gmail-mbox-stats v1.2.3
 Created by leodevbro (Levan Katsadze)
 * leodevbro@gmail.com
 * linkedin.com/in/leodevbro
@@ -55,7 +55,7 @@ import { mboxFilePath } from "./basicStarter";
 
 // import { handleOneLineOfMailboxIndex } from "./utils/mailboxIndexMaker";
 
-// console.log("test AA BB 02");
+// console.log("test AA BB 01");
 const startDateTimeStr = `Start datetime: ${slimStartDateTime.v}`;
 
 console.time("Full Execution Time");
@@ -85,35 +85,42 @@ const logExecutionEndMessage = () => {
 
 prepareOutputFolderStructure(mboxFilePath);
 
-const mailbox = createReadStream(mboxFilePath);
-const mbox = nodeMbox.MboxStream(mailbox, {
-  /* options */
-});
-
-const checkFullCount = async (currCandidateCount: number): Promise<number> => {
+const checkFullCount = async (): Promise<boolean> => {
   step.countOfFullCountCheckForTimer += 1;
-  await waitSomeSeconds(5);
 
-  if (currCandidateCount === step.v) {
-    console.log("Full count:", step.v);
-    return step.v;
+  await waitSomeSeconds(10);
+
+  console.log("So far processed mails:", step.succeededV);
+
+  if (step.succeededV === step.v) {
+    console.log("Success! Full count:", step.succeededV);
+    return true;
   } else {
-    if (step.countOfFullCountCheckForTimer >= 5) {
+    if (step.countOfFullCountCheckForTimer > 720) {
+      // 720 * 10 seconds = 2 hours
       console.log(
-        `Something's wrong --- could not determine full count of messages, current count is: ${step.v}`,
+        `Took too long --- could not process all ${step.v} mails. Processed mails: ${step.succeededV}`,
       );
-      return step.v;
+      return false;
     }
-    return await checkFullCount(step.v);
+    return await checkFullCount();
   }
 };
 
 const analyzeMbox = () => {
-  mbox.on("data", function (msg) {
+  const mailboxReadStream = createReadStream(mboxFilePath);
+  const mbox = nodeMbox.MboxStream(mailboxReadStream, {
+    /* options */
+  });
+
+  //
+  //
+
+  mbox.on("data", async (msg) => {
     step.v += 1; // This is count of all mails, not only succesfuly proccessed mails.
 
     try {
-      processOneMail(msg); // maybe manage in promise array
+      processOneMail(msg);
     } catch (err) {
       console.log(err);
     }
@@ -125,10 +132,10 @@ const analyzeMbox = () => {
 
   mbox.on("finish", async function () {
     console.log(
-      `Finished accessing all the mails, but not yet finished proccessing them. All mails count: ${step.v}. Please wait.`,
+      `Finished accessing all the mails (${step.v}), but not yet finished proccessing them. Please wait.`,
     );
 
-    await checkFullCount(step.succeededV);
+    await checkFullCount();
 
     console.log("Please wait several seconds more to generate stats files.");
 

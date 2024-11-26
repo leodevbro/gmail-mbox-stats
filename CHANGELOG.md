@@ -4,6 +4,10 @@ All notable changes to the gmail-mbox-stats tool will be documented in this file
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.2.3] - 2024-11-26
+
+-   Fix bug of not processing all the mails before 'Success' log.
+
 ## [1.2.2] - 2024-11-16
 
 -   added attachments size stats

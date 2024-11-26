@@ -1,6 +1,6 @@
 {
   "name": "gmail-mbox-stats",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Nice tool to analyze Gmail MBOX file",
   "main": "./bin.js",
   "scripts": {
@@ -48,13 +48,13 @@
   },
   "homepage": "https://github.com/leodevbro/gmail-mbox-stats#readme",
   "dependencies": {
-    "csv-parse": "^5.5.6",
-    "csv-stringify": "^6.5.1",
+    "csv-parse": "^5.6.0",
+    "csv-stringify": "^6.5.2",
     "mailparser": "^3.7.1",
     "node-mbox": "^2.0.0"
   },
   "devDependencies": {
     "@types/mailparser": "^3.4.5",
-    "@types/node": "^22.9.0"
+    "@types/node": "^22.10.0"
   }
 }
