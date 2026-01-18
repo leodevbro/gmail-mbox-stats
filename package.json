@@ -10,11 +10,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "gmail-mbox-stats": "./bin.js"
+    "gmail-mbox-stats": "bin.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/leodevbro/gmail-mbox-stats"
+    "url": "git+https://github.com/leodevbro/gmail-mbox-stats.git"
   },
   "keywords": [
     "gmail",
