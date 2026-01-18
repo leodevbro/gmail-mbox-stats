@@ -1,6 +1,6 @@
 /*
 
-gmail-mbox-stats v1.2.3
+gmail-mbox-stats v1.2.4
 Created by leodevbro (Levan Katsadze)
 * leodevbro@gmail.com
 * linkedin.com/in/leodevbro

@@ -30,7 +30,7 @@ export type TyGmailMailHeadersAsObj = {
 
   //
 
-  "message-id": `${"<"}${string}${">"}`; // "<CAKQNcJf6xnUS+B4jEgnQr1psUXWXZbsH-G2f9T8d01XO8FrfvQ@mail.gmail.com>"
+  "message-id": undefined | null | `${"<"}${string}${">"}`; // "<CAKQNcJf6xnUS+B4jEgnQr1psUXWXZbsH-G2f9T8d01XO8FrfvQ@mail.gmail.com>"
   date?: Date; // Date object which can be converted to ISO format string: "2023-12-30T01:01:24.000Z",
   //
   from?: TyParticipationFamilyInfo;

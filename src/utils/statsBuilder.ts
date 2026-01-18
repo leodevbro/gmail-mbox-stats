@@ -47,14 +47,18 @@ export type TyAttachmData = {
 const gmailMessageIdSearchParam = "rfc822msgid";
 const gmailMessageIdSearcher = `${gmailMessageIdSearchParam}:`;
 
-export const generateSearchableIdOfMail = (nonCleanId: string): string => {
+export const generateSearchableIdOfMail = (nonCleanId: undefined | null | string): string => {
+  if (!nonCleanId) {
+    return `(  this mail ID is somehow missing, the value is -->${nonCleanId}<--  )`;
+  }
+
   const asArr = nonCleanId.split(/[<>]/);
   const cleanId = asArr.join("");
   const searchable = `${gmailMessageIdSearcher}${cleanId}`;
   return searchable;
 };
 
-export const getSearchableIdForToBeEasyToCopy = (nonCleanId: string) => {
+export const getSearchableIdForToBeEasyToCopy = (nonCleanId: undefined | null | string) => {
   return `Search: ===${generateSearchableIdOfMail(nonCleanId)}===`;
 };
 
@@ -139,8 +143,7 @@ const advancedIncrInMap = <
 
   if (!key) {
     console.log(
-      `${stepN} - here (${
-        participantRole || ""
+      `${stepN} - here (${participantRole || ""
       }): maybe error, value is somehow nullish: ${key}, type is: ${typeof key}`,
     );
     return;
@@ -203,12 +206,12 @@ const handleParticipantArrIntoTheMaps = ({
   }
 
   const categSelectorObj: Record<TyZenFamilyKind, keyof TyAttachmData["maps"]> =
-    {
-      from: "forSender",
-      zenTo: "forReceiver",
-      cc: "forCc",
-      bcc: "forBcc",
-    };
+  {
+    from: "forSender",
+    zenTo: "forReceiver",
+    cc: "forCc",
+    bcc: "forBcc",
+  };
 
   const categSelector = categSelectorObj[participantRole];
 

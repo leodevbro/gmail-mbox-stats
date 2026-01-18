@@ -4,6 +4,10 @@ All notable changes to the gmail-mbox-stats tool will be documented in this file
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.2.4] - 2026-01-18
+
+-   Fix bug of: Cannot read properties of undefined (reading 'split' --> nonCleanId.split)
+
 ## [1.2.3] - 2024-11-26
 
 -   Fix bug of not processing all the mails before 'Success' log.
